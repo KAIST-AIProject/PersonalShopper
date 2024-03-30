@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {"messages": [{"role": "sustem", "content": "You are an agent that classifies input into words suitable for shopping searches "}, {"role": "user", "content": "질기지 않은 1등급 무항생제 스테이크용 한우 안심을 사고 싶어."}, {"role": "assistant", "content": "SearchKeyWord:1등급,무항생제,스테이크용,한우,안심\nDecisionFactor:질기지 않은"}]}
 {"messages": [{"role": "sustem", "content": "You are an agent that classifies input into words suitable for shopping searches "}, {"role": "user", "content": "샌드위치에 넣을 고소한 냉장 보관 리코타 치즈를 사고싶어"}, {"role": "assistant", "content": "SearchKeyWord:냉장,리코타 치즈\nDecisionFactor:샌드위치에 넣을,고소한"}]}
 {"messages": [{"role": "sustem", "content": "You are an agent that classifies input into words suitable for shopping searches "}, {"role": "user", "content": "건강하고 식사 대용이 되는 포만감이 드는 대용량 단백질 쉐이크를 초코맛으로 사고싶어"}, {"role": "assistant", "content": "SearchKeyWord:단백질 쉐이크,대용량,초코맛,식사 대용,포만감,건강한\nDecisionFactor:None"}]}
@@ -19,7 +18,6 @@
 {"messages": [{"role": "sustem", "content": "You are an agent that classifies input into words suitable for shopping searches "}, {"role": "user", "content": "스타벅스 네스프레소 커피 캡슐을 사야해"}, {"role": "assistant", "content": "SearchKeyWord:스타벅스,네스프레소,커피,캡슐\nDecisionFactor:None"}]}
 {"messages": [{"role": "sustem", "content": "You are an agent that classifies input into words suitable for shopping searches "}, {"role": "user", "content": "검은콩 두유를 사고싶어.고소하고 맛있었으면 좋겠고 칼로리가 적었으면 좋겠어"}, {"role": "assistant", "content": "SearchKeyWord:검은콩,두유,고소한,맛있는\nDecisionFactor:칼로리가 적은"}]}
 {"messages": [{"role": "sustem", "content": "You are an agent that classifies input into words suitable for shopping searches "}, {"role": "user", "content": "흑갈색 염색약을 사야 하는데, 머릿결 손상이 적고 유명한 걸로 골라줘. 좋은 리뷰가 많은 걸로 골라줘"}, {"role": "assistant", "content": "SearchKeyWord:염색약,흑갈색\nDecisionFactor:머릿결 손상이 적은,유명한,좋은 리뷰가 많은"}]}
-=======
 {"messages": [{"role": "system", "content": "You are an agent that classifies input into words suitable for shopping searches "}, {"role": "user", "content": "질기지 않은 1등급 무항생제 스테이크용 한우 안심을 사고 싶어."}, {"role": "assistant", "content": "SearchKeyWord:스테이크용, 한우, 안심\nDecisionFactor:1등급, 무항생제, 질기지 않은"}]}
 {"messages": [{"role": "system", "content": "You are an agent that classifies input into words suitable for shopping searches "}, {"role": "user", "content": "샌드위치에 넣을 고소한 냉장 보관 리코타 치즈를 사고싶어"}, {"role": "assistant", "content": "SearchKeyWord:리코타 치즈\nDecisionFactor:고소한, 샌드위치에 넣을, 냉장보관"}]}
 {"messages": [{"role": "system", "content": "You are an agent that classifies input into words suitable for shopping searches "}, {"role": "user", "content": "건강하고 식사 대용이 되는 포만감이 있는 대용량 단백질 쉐이크 초코맛으로 사고싶어."}, {"role": "assistant", "content": "SearchKeyWord:대용량, 초코맛, 단백질 쉐이크\nDecisionFactor:맛있는, 건강한, 식사대용, 포만감이 드는"}]}
@@ -69,4 +67,3 @@
 {"messages": [{"role": "system", "content": "You are an agent that classifies input into words suitable for shopping searches "}, {"role": "user", "content": "휴대용 선풍기"}, {"role": "assistant", "content": "SearchKeyWord:휴대용 선풍기\nDecisionFactor:None"}]}
 {"messages": [{"role": "system", "content": "You are an agent that classifies input into words suitable for shopping searches "}, {"role": "user", "content": "닌텐도 스위치"}, {"role": "assistant", "content": "SearchKeyWord:닌텐도 스위치\nDecisionFactor:None"}]}
 
->>>>>>> 7889e1d (keyword updates)
