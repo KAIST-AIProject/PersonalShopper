@@ -1,37 +1,59 @@
-# 네이버 블로그 자동 글발행
-from selenium import webdriver
 import time
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options
 import pyperclip
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
+from utils import *
 
+
+#debugging mode 실행 터미널 명령어
+#/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir="/Users/Woo/Applications/Google Chrome.app/
 
 def NaverSession(id, pw, url):
-    #url은 구매 가능한 상세페이지로 시작, 추후 작업 진행
-    naver_id = id
-    naver_pw = pw
+    chrome_options = Options() ## 옵션 추가를 위한 준비
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
 
-    driver = webdriver.Chrome()
+    # 크롬 드라이버 생성
+    driver = webdriver.Chrome(options=chrome_options)
     driver.get(url)
-    driver.implicitly_wait(5)
-
-    pyperclip.copy(naver_id) # COMMAND+c가 된 상태
-    e = driver.find_element(By.NAME, 'id')
-    e.send_keys(Keys.COMMAND, 'v') # COMMAND+v
-    time.sleep(2)
-
-    pyperclip.copy(naver_pw) # COMMAND+c
-    e = driver.find_element(By.NAME, 'pw')
-    e.send_keys(Keys.COMMAND, 'v') # cCOMMAND+v
-    time.sleep(2)
-
-    driver.find_element(By.CLASS_NAME, 'btn_login').click()
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(3) ## 연결 후 3초간 기다리기
     
-    # driver 종료
-    time.sleep(10)
-    driver.quit()
+    #########################################################    
+    #옵션 선택
+    if driver.find_elements(By.CSS_SELECTOR, "fieldset > div > div:nth-child(1) > div > div > button:nth-child(1)"):
+        select_opt = NaverClickOption(driver)
+    else:
+        if driver.find_elements(By.CSS_SELECTOR, "fieldset > div > ul > li > div > div > div > input"):
+            select_opt = ''
+            print("선택 옵션이 없습니다.")
+        else:
+            select_opt = NaverBtnOption(driver)
+            
+    #########################################################
+    #구매 버튼 선택
+    driver.find_element(By.CSS_SELECTOR, 'fieldset > div > div:nth-child(1) > div > a').click()
+
+    # 팝업창 '확인' 클릭
+    from selenium.webdriver.common.alert import Alert
+    main_handle = driver.current_window_handle
+    da = Alert(driver)
+
+    try:
+        da.accept()
+        print("로그인을 진행하겠습니다.")
+    except:
+        print("로그인을 진행하겠습니다.")
+        
+    driver.implicitly_wait(3)
+    #이부분 나중에 데이터베이스 연결
+    ID = id
+    PW = pw
+    ret = NaverLogin(ID, PW, driver, main_handle)
+    #########################################################
+    #구매진행
+    if ret:
+        NaverAddressCheck(driver,main_handle)
 
 
 def CoupangSession(id, pw, url):
@@ -137,15 +159,17 @@ if __name__ == "__main__":
                   "kurly": "https://www.kurly.com/member/login",
                   "gmarket": 'https://signin.gmarket.co.kr/LogIn/LogIn?URL=http://myg.gmarket.co.kr/'}
     
+    
+    
     function_dict = {"naver":NaverSession,
                   "coupang": CoupangSession,
                   "kurly": KurlySession,
                   "gmarket": GmarketSession}
     
     # test
-    site = "coupang"
+    site = "naver"
     ID = 'dwkim8155@naver.com'
-    PW = 'clsrn+ad7733'
-    url = 'https://www.coupang.com/vp/products/6667719?itemId=29571747&vendorItemId=3043948891&sourceType=SDW_TOP_SELLING_WIDGET_V2&searchId=c24816ed1925446aa9d5977713584fed&q=%EA%B3%BC%EC%9E%90&isAddedCart='
+    PW = 'dwkim+ad7733'
+    url = 'https://smartstore.naver.com/solsweet/products/5211086676?NaPm=ct%3Dluusxza8%7Cci%3Dc336f02cc3423697e362eecbdea60b76e158f9f3%7Ctr%3Dsls%7Csn%3D1166073%7Chk%3Dfe6355fb05713726c54f98e47fd7bbc551af1bd8'
     
     function_dict[site](ID, PW, url)
