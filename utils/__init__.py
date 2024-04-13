@@ -1,1 +1,1 @@
-from naver_utils import *
+from .naver_utils import *
