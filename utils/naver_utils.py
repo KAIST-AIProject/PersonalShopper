@@ -16,10 +16,10 @@ def NaverBtnOption(driver):
         print(f"{i+1}번 옵션:{opt_name}")
         for opt in opt_text_lst:
             print(f"{opt[0]}. {opt[1]}")
-        print("*"*10)
+        print("*"*20)
         while True:
             try:
-                s_opt = int(input("위 옵션 중 번호를 선택해주세요"))
+                s_opt = int(input("위 옵션 중 번호를 선택해주세요:"))
             except:
                 print("정수형태의 번호로 다시 입력해주세요")
                 continue
@@ -31,7 +31,7 @@ def NaverBtnOption(driver):
             if 1<=s_opt<=len(opt_ele_lst):
                 break
             else:
-                print(f"1부터 {len(opt_ele_lst)} 범위의 숫자를 입력해주세요")
+                print(f"1부터 {len(opt_ele_lst)} 범위의 숫자를 입력해주세요:")
             
                 
         selected_opt.append((opt_name,opt_text_lst[s_opt-1][1]))
@@ -39,7 +39,7 @@ def NaverBtnOption(driver):
 
     for idx, opt in enumerate(selected_opt):
         print(f"내가 선택한 {opt[0]} 옵션: {opt[1]}")
-    print("*"*10)
+    print("*"*20)
     return selected_opt
 
 
@@ -61,7 +61,7 @@ def NaverClickOption(driver):
         print(f'{i+1}번 옵션:{opt_name}')
         for opt in opt_text_lst:
             print(f"{opt[0]}. {opt[1]}")
-        print("*"*10)
+        print("*"*20)
         while True:
             try:
                 s_opt = int(input("위 옵션 중 번호를 선택해주세요"))
@@ -79,7 +79,7 @@ def NaverClickOption(driver):
 
     for idx, opt in enumerate(selected_opt):
         print(f"내가 선택한 {opt_name_lst[idx]} 옵션: {opt[1]}")
-    print("*"*10)
+    print("*"*20)
     return selected_opt
 
 
@@ -104,20 +104,25 @@ def NaverLogin(ID, PW, driver, main_handle):
     e.click()
     driver.implicitly_wait(3)
     print(f"로그인 아이디:{ID}")
+    cnt=0
     while not e.get_attribute('value'):
-        print('시도1')
+        if cnt>=3:
+            e.send_keys(ID)
+            continue
         pyperclip.copy(ID) # COMMAND+c가 된 상태
         driver.implicitly_wait(3)
         e.click()
         e.send_keys(Keys.COMMAND, 'v') # COMMAND+v
         driver.implicitly_wait(2)
-
+        cnt+=1
     
     e = driver.find_element(By.NAME, 'pw')
     e.click()
     driver.implicitly_wait(3)
     while not e.get_attribute('value'):    
-        print('시도2')
+        if cnt>=3:
+            e.send_keys(PW)
+            continue
         pyperclip.copy(PW) # COMMAND+c
         e.click()
         driver.implicitly_wait(3)
@@ -129,7 +134,7 @@ def NaverLogin(ID, PW, driver, main_handle):
     
     #창 다시 전환
     driver.switch_to.window(main_handle)
-
+    return True
 
 def clearText(driver):
     input_e = driver.find_element(By.CSS_SELECTOR, 'div > div.article > div > div > div.InputBoxSearch_article__ckXvT > div.InputBoxSearch_section-input__C7oz4 > div > div > input')
@@ -196,7 +201,7 @@ def NaverSelectAdderss(driver, main_handle):
     address_ele_lst = driver.find_elements(By.CSS_SELECTOR, "div[class*=DeliveryList_area-address__]")
     ad_arr =[]
     print("저장된 주소 목록")
-    print("*"*10)
+    print("*"*20)
     for idx, ad in enumerate(address_ele_lst):
         adr = ad.find_element(By.CSS_SELECTOR, "p").text
         ad_arr.append(adr)
@@ -221,7 +226,7 @@ def NaverSelectAdderss(driver, main_handle):
         elif ad_flag=="no":
             NaverCreateAddress(driver)
             print("주소를 추가하였습니다. 주소 선택 과정을 다시 진행해주세요")
-            print("*"*10)
+            print("*"*20)
             driver.switch_to.window(main_handle)
             while driver.current_window_handle != main_handle:
                 driver.switch_to.window(main_handle)
@@ -244,18 +249,17 @@ def NaverSelectAdderss(driver, main_handle):
                     driver.switch_to.window(w)
                     break
             
-            NaverSelectAdderss(driver,main_handle)
-            break
+            return NaverSelectAdderss(driver,main_handle)
         elif ad_flag == 'e':
             break
         else:
             print("입력 형식이 잘못 되었습니다.다시 입력해주세요")
-            
         
 #기본 배송지 확인
 def NaverAddressCheck(driver, main_handle):
     address = driver.find_element(By.CSS_SELECTOR, "div.DeliveryContent_area-address__3llA_").text
-    flag = input(f"{address}로 배송을 원하시면 'yes'를 다른 배송지를 원하면 'no'를 입력해주세요:")
+    print("*"*20)
+    flag = input(f"{address}로 배송을 원하시면\n 'yes'를 다른 배송지를 원하면 'no'를 입력해주세요:")
     if flag.lower()=="yes":
         driver.find_element(By.CSS_SELECTOR, 'div.SubmitButton_article__133Dz.SubmitButton_type-pc__Vwp7H > button').click()
     elif flag.lower()=="no":
@@ -276,8 +280,8 @@ def NaverAddressCheck(driver, main_handle):
                 driver.switch_to.window(w)
                 break
             
-        NaverSelectAdderss(driver,main_handle)
-        print("선택된 주소\n{select_address}")
+        select_address = NaverSelectAdderss(driver,main_handle)
+        print(f"선택된 주소\n{select_address}")
         driver.switch_to.window(main_handle)
         driver.find_element(By.CSS_SELECTOR, 'div.SubmitButton_article__133Dz.SubmitButton_type-pc__Vwp7H > button').click()
     elif flag =='e':
