@@ -100,7 +100,7 @@ def NaverFinalUrl(keyword, n_top):
     url_list = NaverLinkGet(keyword, 30)
     
     chrome_options = Options() ## 옵션 추가를 위한 준비
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+    # chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
     # chrome_options.add_argument("headless")
     driver = webdriver.Chrome(options=chrome_options)
     n_top =n_top
