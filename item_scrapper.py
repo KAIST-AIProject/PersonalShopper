@@ -52,15 +52,15 @@ def Naver_selenium_scraper(url, save_path):
         item_info['할인율'] = driver.find_element(By.CSS_SELECTOR, '#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._3k440DUKzy > div.WrkQhIlUY0 > span').text
     if check_exists_element(driver, '#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._3k440DUKzy > div.WrkQhIlUY0 > div > del > span._1LY7DqCnwR'): 
         item_info['할인 전 가격'] = driver.find_element(By.CSS_SELECTOR, '#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._3k440DUKzy > div.WrkQhIlUY0 > div > del > span._1LY7DqCnwR').text
-    item_info['판매가'] = driver.find_element(By.CSS_SELECTOR,'#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._3k440DUKzy > div.WrkQhIlUY0 > div > strong > span._1LY7DqCnwR').text
-    item_info['배송 정보'] = driver.find_element(By.CSS_SELECTOR, '#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._1rGSKv6aq_ > div.bd_1rmnr.bd_C8Tz1').text
-    item_info['배송 추가 정보'] = driver.find_element(By.CSS_SELECTOR, '#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._1rGSKv6aq_ > p').text
+    # item_info['판매가'] = driver.find_element(By.CSS_SELECTOR,'#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._3k440DUKzy > div.WrkQhIlUY0 > div > strong > span._1LY7DqCnwR').text
+    # item_info['배송 정보'] = driver.find_element(By.CSS_SELECTOR, '#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._1rGSKv6aq_ > div.bd_1rmnr.bd_C8Tz1').text
+    # item_info['배송 추가 정보'] = driver.find_element(By.CSS_SELECTOR, '#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._1rGSKv6aq_ > p').text
     # item_info['도착 예정 시간'] = driver.find_element(By.CSS_SELECTOR, '#INTRODUCE > div > div.bd_2UeeQ > div.bd_2kugS.bd_1gvyg > div.bd_lOeYy > div > span.bd_2OsjX').text
     # item_info['상품번호'] = driver.find_element(By.CSS_SELECTOR, '#INTRODUCE > div > div.attribute_wrapper > div > div._2E4i2Scsp4._copyable > table > tbody > tr:nth-child(1) > td:nth-child(2) > b').text
     # item_info['상품상태'] = driver.find_element(By.CSS_SELECTOR, '#INTRODUCE > div > div.attribute_wrapper > div > div._2E4i2Scsp4._copyable > table > tbody > tr:nth-child(1) > td:nth-child(4)').text
     # item_info['제조사'] = driver.find_element(By.CSS_SELECTOR, '').text
-    item_info['상품 정보 1']= driver.find_element(By.CSS_SELECTOR, '#INTRODUCE > div > div.attribute_wrapper > div > div._2E4i2Scsp4._copyable > table').text
-    item_info['상품 정보 2']= driver.find_element(By.CSS_SELECTOR, '#INTRODUCE > div > div.attribute_wrapper > div > div.detail_attributes > div > table > tbody').text
+    # item_info['상품 정보 1']= driver.find_element(By.CSS_SELECTOR, '#INTRODUCE > div > div.attribute_wrapper > div > div._2E4i2Scsp4._copyable > table').text
+    # item_info['상품 정보 2']= driver.find_element(By.CSS_SELECTOR, '#INTRODUCE > div > div.attribute_wrapper > div > div.detail_attributes > div > table > tbody').text
     # item_info[''] = driver.find_element(By.CSS_SELECTOR, '').text
 
 
@@ -68,10 +68,13 @@ def Naver_selenium_scraper(url, save_path):
 
 
 
-    print(item_info)
+    # print(item_info)
 
     with open(save_path,'wb') as file:
         pickle.dump(item_info, file, pickle.HIGHEST_PROTOCOL)
+
+
+    return item_info
 
 
 
