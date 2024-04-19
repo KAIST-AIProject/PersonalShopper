@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
 
 
 ################쿠팡 HTML 불러오기################
@@ -75,7 +76,7 @@ def NaverLinkGet(keyword, n_top=10):
         'origQuery': f'{keyword}',
         'pagingIndex': '1',
         'pagingSize': '40',
-        'productSet': 'total',
+        'productSet': 'checkout',
         'query': f'{keyword}',
         'sort': 'review_rel',
         'viewType': 'list',
@@ -91,7 +92,31 @@ def NaverLinkGet(keyword, n_top=10):
     for i in range(n_top):
         naver_ntop_url.append(itemlist[i]['crUrl'])
     return naver_ntop_url
-     
+
+################네이버 URL 체크하기 불러오기################
+def NaverFinalUrl(keyword, n_top):
+
+    url_list = NaverLinkGet(keyword, 30)
+    
+    chrome_options = Options() ## 옵션 추가를 위한 준비
+    # chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+    chrome_options.add_argument("headless")
+    driver = webdriver.Chrome(options=chrome_options)
+    n_top =n_top
+    count = 0
+    naver_url_lst = []
+    for url in url_list:
+        if count==n_top:
+            break
+        
+        driver.get(url)    
+        if driver.find_elements(By.CSS_SELECTOR, "a._3C8i4VFUIv._3SXdE7K-MC.N\=a\:GNB\.shopping._nlog_click"):
+            naver_url_lst.append(url)
+            count+=1
+        
+    driver.quit()
+    return naver_url_lst
+
 
 ################컬리 HTML 불러오기################
 #컬리는 CSR 방식이라 Selenium을 통해 접근 한 후 HTML 불러와야함
@@ -104,6 +129,7 @@ def KurlyLinkGet(url_kword, n_top=10):
     options = webdriver.ChromeOptions()
     # 창 숨기는 옵션 추가
     options.add_argument("headless")
+    # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
 
     driver = webdriver.Chrome(options=options)
     driver.get(url)
@@ -120,7 +146,7 @@ def KurlyLinkGet(url_kword, n_top=10):
     kurly_ntop_url = []
 
     qurey_arr = soup.select('div.css-11kh0cw a')
-    for i in range(n_top):
+    for i in range(min(len(qurey_arr),n_top)):
         kurly_ntop_url.append(root+qurey_arr[i]['href'])
     return kurly_ntop_url
 
@@ -154,14 +180,18 @@ if __name__ == '__main__':
     url_kword = parse.quote(keyword)
     
     #Get Links
-    func_arr = [CoupangLinkGet, NaverLinkGet, KurlyLinkGet, GmarketLinkGet]
-    fina_link_lst = []
-    for f in tqdm(func_arr):
-        if f==NaverLinkGet:
-            fina_link_lst+=f(keyword, n_top)
-        else:
-            fina_link_lst+=f(url_kword, n_top)
+    # func_arr = [CoupangLinkGet, NaverFinalUrl, KurlyLinkGet, GmarketLinkGet]
+    # fina_link_lst = []
+    # for f in tqdm(func_arr):
+    #     if f==NaverFinalUrl:
+    #         fina_link_lst+=f(keyword, n_top)
+    #     else:
+    #         fina_link_lst+=f(url_kword, n_top)
     #Create txt file   
+    
+    #Get Links-> 네이버만
+    fina_link_lst = NaverFinalUrl(keyword,n_top)
+    
     with open("./finalLink.txt", "w") as f:
         for l in fina_link_lst:
             f.write(l+'\n')
