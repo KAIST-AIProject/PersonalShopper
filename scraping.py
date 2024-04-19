@@ -1,5 +1,6 @@
 import requests
 import json
+import pickle
 import time
 from tqdm import tqdm
 from urllib  import parse
@@ -99,8 +100,8 @@ def NaverFinalUrl(keyword, n_top):
     url_list = NaverLinkGet(keyword, 30)
     
     chrome_options = Options() ## 옵션 추가를 위한 준비
-    # chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
-    chrome_options.add_argument("headless")
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+    # chrome_options.add_argument("headless")
     driver = webdriver.Chrome(options=chrome_options)
     n_top =n_top
     count = 0
@@ -129,7 +130,7 @@ def KurlyLinkGet(url_kword, n_top=10):
     options = webdriver.ChromeOptions()
     # 창 숨기는 옵션 추가
     options.add_argument("headless")
-    # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+    options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
 
     driver = webdriver.Chrome(options=options)
     driver.get(url)
@@ -192,7 +193,6 @@ if __name__ == '__main__':
     #Get Links-> 네이버만
     fina_link_lst = NaverFinalUrl(keyword,n_top)
     
-    with open("./finalLink.txt", "w") as f:
-        for l in fina_link_lst:
-            f.write(l+'\n')
+    with open("./finalLink.pickle", "wb") as fw:
+        pickle.dump(fina_link_lst, fw)
     print("완료!!")
