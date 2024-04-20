@@ -1,8 +1,6 @@
-import scraping
 import pickle
 import os
-from scraping import NaverFinalUrl
-from item_scrapper import Naver_selenium_scraper
+from scraping import NaverFinalUrl, Naver_selenium_scraper
 from openai import OpenAI
 
 
