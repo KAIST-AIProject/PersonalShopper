@@ -17,9 +17,9 @@ def check_exists_element(driver, selector):
 
 
 def Naver_selenium_scraper(url, save_path):
-    # co = Options()
-    # co.add_experimental_option('debuggerAddress', '127.0.0.1:9222')
-    driver = webdriver.Chrome()
+    co = Options()
+    co.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 
+    driver = webdriver.Chrome(options=co)
     driver.get(url)
     # driver.implicitly_wait(3) ## 연결 후 3초간 기다리기
 
