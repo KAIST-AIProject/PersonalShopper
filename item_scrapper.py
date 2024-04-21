@@ -17,8 +17,16 @@ def check_exists_element_and_return_text(driver, selector):
 
 
 def collect_reviews(driver, review_num):
+
+    review_th = 2
+    for i in range(1, 5):
+        button = driver.find_element(By.CSS_SELECTOR, f'#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child({str(i)}) > a')
+        # print(button.text)
+        if "리뷰" in str(button.text):
+            review_th = i
+
     review_list = []
-    driver.find_element(By.CSS_SELECTOR, '#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child(2) > a').click()
+    driver.find_element(By.CSS_SELECTOR, f'#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child({str(review_th)}) > a').click()
     while review_num>0: 
 
         for page in range(2, 12): # 1~ 10페이지 반복문
@@ -64,7 +72,7 @@ def Naver_selenium_scraper(url, save_path_item, save_path_quality):
 
     
     #문서 끝까지 스크롤
-    SCROLL_PAUSE_TIME = 0.5
+    SCROLL_PAUSE_TIME = 0.7
 
     # Get scroll height
     last_height = driver.execute_script("return document.body.scrollHeight")
@@ -136,7 +144,8 @@ if __name__ == '__main__':
     
     url1 = "https://smartstore.naver.com/mewansungmall/products/8206341003?n_campaign_type=50&NaPm=ci%3D4jC48doklFQQ2CKfPdWeProg%7Ctr%3Dgfa%7Cct%3Dlv6ghqy6%7Chk%3Dff2fd71e460cf9db0bfa394d84768f9ab846ff12"
     url2 = "https://smartstore.naver.com/authentico/products/5909442580?"
+    url3 = "https://smartstore.naver.com/itemrepublic/products/5411669555?NaPm=ct%3Dlv94l0ko%7Cci%3Ddd64ace6c3287f4a30440f867f36bbdbc11e6607%7Ctr%3Dslsl%7Csn%3D1241781%7Chk%3D731e5f74f10852cdd48540fbc4bc5853bec0a6c4"
     
     save_path_item = "Naver_item1.bin"
     save_path_quality = "Naver_item1_quality.bin"
-    Naver_selenium_scraper(url2, save_path_item, save_path_quality)
+    Naver_selenium_scraper(url3, save_path_item, save_path_quality)
