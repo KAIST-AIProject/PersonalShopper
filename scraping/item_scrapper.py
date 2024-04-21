@@ -3,9 +3,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
-import pickle
-
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
+import pickle
 from bs4 import BeautifulSoup
 
 def check_exists_element_and_return_text(driver, selector):
@@ -36,7 +38,7 @@ def scroll_down_to_end(driver):
 
 
 def collect_reviews(driver, review_num):
-
+    button_flag=False
     review_th = 2
     for i in range(1, 5):
         button = driver.find_element(By.CSS_SELECTOR, f'#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child({str(i)}) > a')
@@ -45,7 +47,28 @@ def collect_reviews(driver, review_num):
             review_th = i
 
     review_list = []
-    driver.find_element(By.CSS_SELECTOR, f'#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child({str(review_th)}) > a').send_keys(Keys.ENTER)
+    trial_count = 0
+    while button_flag==False:
+        try:
+            button = WebDriverWait(driver, 10).until(
+                            EC.element_to_be_clickable(
+                                (By.CSS_SELECTOR, f'#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child({str(review_th)}) > a')
+                            )
+                        )
+            driver.execute_script("arguments[0].click();", button)
+            button_flag=True
+        except TimeoutException:
+            trial_count+=1
+            if trial_count>3:
+                review_list.append("리뷰를 읽을 수 없습니다.")
+                return review_list
+            print("Page is now too slow. I'll refresh the page once.")
+            driver.refresh()
+            driver.get(driver.current_url)
+            scroll_down_to_end(driver)
+
+
+    # driver.find_element(By.CSS_SELECTOR, f'#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child({str(review_th)}) > a').send_keys(Keys.ENTER)
     while review_num>0: 
 
         for page in range(2, 12): # 1~ 10페이지 반복문
@@ -163,4 +186,5 @@ if __name__ == '__main__':
         driver.implicitly_wait(3) ## 연결 후 3초간 기다리기
         save_path_item = "Naver_item1.bin"
         save_path_quality = "Naver_item1_quality.bin"
+        print(url)
         Naver_selenium_scraper(driver, save_path_item, save_path_quality)
