@@ -15,6 +15,25 @@ def check_exists_element_and_return_text(driver, selector):
         return None
     return element.text
 
+def scroll_down_to_end(driver):
+    SCROLL_PAUSE_TIME = 0.7
+
+    # Get scroll height
+    last_height = driver.execute_script("return document.body.scrollHeight")
+
+    while True:
+        # Scroll down to bottom
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+        # Wait to load page
+        time.sleep(SCROLL_PAUSE_TIME)
+
+        # Calculate new scroll height and compare with last scroll height
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            break
+        last_height = new_height
+
 
 def collect_reviews(driver, review_num):
 
@@ -26,7 +45,7 @@ def collect_reviews(driver, review_num):
             review_th = i
 
     review_list = []
-    driver.find_element(By.CSS_SELECTOR, f'#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child({str(review_th)}) > a').click()
+    driver.find_element(By.CSS_SELECTOR, f'#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child({str(review_th)}) > a').send_keys(Keys.ENTER)
     while review_num>0: 
 
         for page in range(2, 12): # 1~ 10페이지 반복문
@@ -72,23 +91,7 @@ def Naver_selenium_scraper(driver, save_path_item, save_path_quality):
 
     
     #문서 끝까지 스크롤
-    SCROLL_PAUSE_TIME = 0.7
-
-    # Get scroll height
-    last_height = driver.execute_script("return document.body.scrollHeight")
-
-    while True:
-        # Scroll down to bottom
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
-        # Wait to load page
-        time.sleep(SCROLL_PAUSE_TIME)
-
-        # Calculate new scroll height and compare with last scroll height
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            break
-        last_height = new_height
+    scroll_down_to_end(driver)
     # driver.implicitly_wait(3) ## 연결 후 3초간 기다리기
 
     info_list = dict()
@@ -110,12 +113,15 @@ def Naver_selenium_scraper(driver, save_path_item, save_path_quality):
         else:
             item_info[key] = "정보 없음"
     
-    driver.find_element(By.CSS_SELECTOR, '#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child(3) > a').send_keys(Keys.ENTER)
+    # driver.find_element(By.CSS_SELECTOR, '#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child(3) > a').send_keys(Keys.ENTER)
     # driver.implicitly_wait(3)
 
     # print(item_info)
 
     quality_info = dict()
+
+    while check_exists_element_and_return_text(driver, "#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child(2) > a") == False:
+        scroll_down_to_end(driver)
     quality_info['총 평점'] = check_exists_element_and_return_text(driver, "#REVIEW > div > div._1f93qA0ngZ > div._7sK3cGXIH0._2tbImjE0Ih > div > div._3vokcktRs0._29BVF0J3DO > div")
     quality_info['리뷰 수'] = check_exists_element_and_return_text(driver, '#REVIEW > div > div._1f93qA0ngZ > div._7sK3cGXIH0._2tbImjE0Ih > div > div._3vokcktRs0._2iNVRGXEA6')
     # # print(quality_info)
@@ -126,8 +132,7 @@ def Naver_selenium_scraper(driver, save_path_item, save_path_quality):
     # review_table = driver.find_elements(By.CSS_SELECTOR, f'#REVIEW > div > div._2LvIMaBiIO > div._2g7PKvqCKe > ul > li:nth-child({str(review_number)}')
     # print(len(review_table))
     
-    review_list = collect_reviews(driver, 10)
-    quality_info['리뷰'] = review_list
+    quality_info['리뷰'] = collect_reviews(driver, 10)
     
     with open(save_path_item,'wb') as item_file:
         pickle.dump(item_info, item_file, pickle.HIGHEST_PROTOCOL)
@@ -142,10 +147,20 @@ def Naver_selenium_scraper(driver, save_path_item, save_path_quality):
 
 if __name__ == '__main__':
     
-    url1 = "https://smartstore.naver.com/mewansungmall/products/8206341003?n_campaign_type=50&NaPm=ci%3D4jC48doklFQQ2CKfPdWeProg%7Ctr%3Dgfa%7Cct%3Dlv6ghqy6%7Chk%3Dff2fd71e460cf9db0bfa394d84768f9ab846ff12"
-    url2 = "https://smartstore.naver.com/authentico/products/5909442580?"
-    url3 = "https://smartstore.naver.com/itemrepublic/products/5411669555?NaPm=ct%3Dlv94l0ko%7Cci%3Ddd64ace6c3287f4a30440f867f36bbdbc11e6607%7Ctr%3Dslsl%7Csn%3D1241781%7Chk%3D731e5f74f10852cdd48540fbc4bc5853bec0a6c4"
+    urls = ["https://smartstore.naver.com/mewansungmall/products/8206341003?n_campaign_type=50&NaPm=ci%3D4jC48doklFQQ2CKfPdWeProg%7Ctr%3Dgfa%7Cct%3Dlv6ghqy6%7Chk%3Dff2fd71e460cf9db0bfa394d84768f9ab846ff12",
+            "https://smartstore.naver.com/authentico/products/5909442580?",
+            "https://smartstore.naver.com/itemrepublic/products/5411669555?NaPm=ct%3Dlv94l0ko%7Cci%3Ddd64ace6c3287f4a30440f867f36bbdbc11e6607%7Ctr%3Dslsl%7Csn%3D1241781%7Chk%3D731e5f74f10852cdd48540fbc4bc5853bec0a6c4",
+            "https://smartstore.naver.com/beaubebe/products/4868991834?NaPm=ct%3Dlv9birbc%7Cci%3D4550ced922c6169bfce233f1deffa37740841b81%7Ctr%3Dslsl%7Csn%3D442246%7Chk%3D2450f1cf0f9cfff6677a243810f44d2e00a8853b,",
+            "https://smartstore.naver.com/eurokitchen/products/7230084092?NaPm=ct%3Dlv9bis34%7Cci%3D16b732ad5d5e22683148397251d5ed4ac272277c%7Ctr%3Dslsl%7Csn%3D294174%7Chk%3D5098f02d03938342eed308565106d887c0ea44da",
+            "https://smartstore.naver.com/kongkong2_kim/products/4958118823?NaPm=ct%3Dlv9bisuw%7Cci%3Dee2d850ee311284b34e147f9804fdcea0567d857%7Ctr%3Dslsl%7Csn%3D732111%7Chk%3D78870f37ce9d5b5013149b9c36facb3d66325e16",
+            "https://smartstore.naver.com/roshrosh/products/8120763063?NaPm=ct%3Dlv9biueg%7Cci%3D9c55242d68cdd5c2b6b490dae2c9c74c16e1b6f9%7Ctr%3Dslsl%7Csn%3D3150621%7Chk%3D952d955a38b06e3eb2d76870db06fd5d340b274a"
+            ]
     
-    save_path_item = "Naver_item1.bin"
-    save_path_quality = "Naver_item1_quality.bin"
-    Naver_selenium_scraper(url3, save_path_item, save_path_quality)
+
+    driver = webdriver.Chrome()
+    for url in urls: 
+        driver.get(url)
+        driver.implicitly_wait(3) ## 연결 후 3초간 기다리기
+        save_path_item = "Naver_item1.bin"
+        save_path_quality = "Naver_item1_quality.bin"
+        Naver_selenium_scraper(driver, save_path_item, save_path_quality)
