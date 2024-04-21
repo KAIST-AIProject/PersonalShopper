@@ -105,7 +105,7 @@ def Naver_selenium_scraper(url, save_path_item, save_path_quality):
     driver.find_element(By.CSS_SELECTOR, '#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child(3) > a').send_keys(Keys.ENTER)
     # driver.implicitly_wait(3)
 
-    print(item_info)
+    # print(item_info)
 
     quality_info = dict()
     quality_info['총 평점'] = check_exists_element_and_return_text(driver, "#REVIEW > div > div._1f93qA0ngZ > div._7sK3cGXIH0._2tbImjE0Ih > div > div._3vokcktRs0._29BVF0J3DO > div")
