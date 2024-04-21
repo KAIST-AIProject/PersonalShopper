@@ -98,9 +98,18 @@ def NaverLogin(ID, PW, driver, main_handle):
         if w != main_handle:
             driver.switch_to.window(w)
             break
-
-
-    e = driver.find_element(By.NAME, 'id')
+    
+    while True:
+        try:
+            e = driver.find_element(By.NAME, 'id')
+            break
+        except:
+            for w in driver.window_handles:
+                if w != main_handle:
+                    driver.switch_to.window(w)
+                    break
+            continue
+        
     e.click()
     driver.implicitly_wait(3)
     print(f"로그인 아이디:{ID}")
