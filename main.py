@@ -58,10 +58,10 @@ print()
 
 #분리된 키워드로 scraping 실행하기
 print('scraping 작업 실행')
-final_link_lst = NaverFinalUrl(keyword,n_top)
 
 url_path = os.path.join("cache", "finalLink.pickle")
 
+final_link_lst, data_details, data_reviews = NaverFinalUrl(input_keyword[0],n_top)
 with open(url_path, "wb") as fw_url:
     pickle.dump(final_link_lst, fw_url)
 print("scraping 완료!!")
@@ -69,18 +69,18 @@ print("scraping 완료!!")
 
 
 #product detail_scraping
-data_details = []
-data_reviews = []
-for idx,url in enumerate(final_link_lst):
-    os.makedirs('./database', exist_ok=True)
-    scrapped_data_path = os.path.join("database", "Naver_item_"+str(idx+1)+".bin")
-    review_data_path = os.path.join("database", "Naver_item_review_"+str(idx+1)+".bin")
-    # data_details.append(f"product number : {idx+1} ")
-    result_detail, result_review = Naver_selenium_scraper(url, scrapped_data_path,review_data_path ) #dictionary 반환
-    result_detail['product_number'] = idx+1 #product number 라는 key 값 추가
-    result_review['product_number'] = idx+1
-    data_details.append(result_detail) 
-    data_reviews.append(result_review)
+# data_details = []
+# data_reviews = []
+# for idx,url in enumerate(final_link_lst):
+#     os.makedirs('./database', exist_ok=True)
+#     scrapped_data_path = os.path.join("database", "Naver_item_"+str(idx+1)+".bin")
+#     review_data_path = os.path.join("database", "Naver_item_review_"+str(idx+1)+".bin")
+#     # data_details.append(f"product number : {idx+1} ")
+#     result_detail, result_review = Naver_selenium_scraper(url, scrapped_data_path,review_data_path ) #dictionary 반환
+#     result_detail['product_number'] = idx+1 #product number 라는 key 값 추가
+#     result_review['product_number'] = idx+1
+#     data_details.append(result_detail) 
+#     data_reviews.append(result_review)
 
 #decision_agent : use gpt api
 #Step 1. select gpt 
@@ -120,9 +120,11 @@ prompt_text = "Compare the products below and choose one of the cheapest product
 for idx, data in enumerate(data_reviews) :
     if (idx + 1) in select_numbers : 
         prompt_text += str(data)
-        
+
+print(len(prompt_text))
+
 response = client.chat.completions.create(
-  model="gpt-4",
+  model="gpt-4-turbo",
   messages=[
     {"role": "system", "content": "You are a helpful assistant."},
     {"role": "user", "content":prompt_text},

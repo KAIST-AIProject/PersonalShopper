@@ -62,12 +62,12 @@ def collect_reviews(driver, review_num):
     return review_list
 
 
-def Naver_selenium_scraper(url, save_path_item, save_path_quality):
+def Naver_selenium_scraper(driver, save_path_item, save_path_quality):
     # co = Options()
     # co.add_experimental_option('debuggerAddress', '127.0.0.1:9222')
-    driver = webdriver.Chrome()
-    driver.get(url)
-    driver.implicitly_wait(3) ## 연결 후 3초간 기다리기
+    # driver = webdriver.Chrome()
+    # driver.get(url)
+    # driver.implicitly_wait(3) ## 연결 후 3초간 기다리기
 
 
     

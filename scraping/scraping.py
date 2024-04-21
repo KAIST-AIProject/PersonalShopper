@@ -9,6 +9,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
+from .item_scrapper import *
+import os
 
 
 ################쿠팡 HTML 불러오기################
@@ -106,6 +108,12 @@ def NaverFinalUrl(keyword, n_top):
     n_top =n_top
     count = 0
     naver_url_lst = []
+    
+
+    data_details = []
+    data_reviews = []
+
+    
     with tqdm(total=n_top, ascii=True) as pbar:
         for url in url_list:
             if count==n_top:
@@ -113,12 +121,19 @@ def NaverFinalUrl(keyword, n_top):
             driver.get(url)
             driver.implicitly_wait(3)    
             if driver.find_elements(By.CSS_SELECTOR, "a._3C8i4VFUIv._3SXdE7K-MC.N\=a\:GNB\.shopping._nlog_click"):
+                scrapped_data_path = os.path.join("database", "Naver_item_"+str(count+1)+".bin")
+                review_data_path = os.path.join("database", "Naver_item_review_"+str(count+1)+".bin")
+                result_detail, result_review = Naver_selenium_scraper(driver, scrapped_data_path, review_data_path)
+                result_detail['product_number'] = count+1 #product number 라는 key 값 추가
+                result_review['product_number'] = count+1
+                data_details.append(result_detail) 
+                data_reviews.append(result_review)
                 naver_url_lst.append(url)
                 count+=1
                 pbar.update(1)
             
     driver.quit()
-    return naver_url_lst
+    return naver_url_lst, data_details, data_reviews
 
 
 ################컬리 HTML 불러오기################
