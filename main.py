@@ -4,6 +4,7 @@ from tqdm import tqdm
 from collections import Counter
 from scraping import NaverFinalUrl, Naver_selenium_scraper
 from openai import OpenAI
+from session import *
 
 
 #url scraping
@@ -65,7 +66,7 @@ final_link_lst, data_details, data_reviews = NaverFinalUrl(input_keyword[0],n_to
 with open(url_path, "wb") as fw_url:
     pickle.dump(final_link_lst, fw_url)
 print("scraping 완료!!")
-
+print()
 
 
 #product detail_scraping
@@ -121,8 +122,6 @@ for idx, data in enumerate(data_reviews) :
     if (idx + 1) in select_numbers : 
         prompt_text += str(data)
 
-print(len(prompt_text))
-
 response = client.chat.completions.create(
   model="gpt-4-turbo",
   messages=[
@@ -134,8 +133,9 @@ response = client.chat.completions.create(
   max_tokens=50
 )
 
-result = response.choices[0].message.content     
-print(result)
+result = response.choices[0].message.content
+print(f"Final_Link_number:{result}번 링크")
+print()
 #TODO : gpt의 불확실성 때문에 하나의 숫자외에 다른게 output으로 나온다면, 오류 control 하는 코드
 
 save_final_path = os.path.join("cache", "result_url.txt")
@@ -145,3 +145,13 @@ for idx, url in enumerate(final_link_lst) :
             file.write(url)
 
 
+#########################################뒷단 연결#########################################
+final_link = final_link_lst[select_numbers-1]
+print(f"최종 선택 사이트 URL: {final_link}")
+print('상기 사이트의 ID, PW를 입력해주세요')
+login_id = input("ID:")
+login_pw = input("PW:")
+print()
+
+
+NaverSession(login_id, login_pw, final_link)
