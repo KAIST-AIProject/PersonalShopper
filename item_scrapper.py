@@ -18,9 +18,8 @@ def check_exists_element_and_return_text(driver, selector):
 
 def collect_reviews(driver, review_num):
     review_list = []
-    review_count=0
-    driver.find_element(By.CSS_SELECTOR, '#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child(3) > a').click()
-    while review_count<review_num: 
+    driver.find_element(By.CSS_SELECTOR, '#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child(2) > a').click()
+    while review_num>0: 
 
         for page in range(2, 12): # 1~ 10페이지 반복문
             try: 
@@ -31,16 +30,23 @@ def collect_reviews(driver, review_num):
                     for review in review_table:
                         # df.loc[df_idx] = [review.find_element(By.CSS_SELECTOR, f'div._3z6gI4oI6l').text, "-" , "-"] # 코드를 크롤링 하여 DataFrame에 넣음.
                         # df_idx += 1
+                        
                         review_list.append(review.find_element(By.CSS_SELECTOR, f'div._3z6gI4oI6l').text)
+                    review_num-=1
+                    if review_num<=0:
+                        break
 
             except: # 페이지가 더 없는 경우
                 # print("마지막 페이지")
+                review_num=-1
                 break
-
+            
+            if review_num<=0:
+                        break
 
         try: 
             driver.find_element(By.CSS_SELECTOR, f'#REVIEW > div > div._2LvIMaBiIO > div._2g7PKvqCKe > div > div > a.fAUKm1ewwo._2Ar8-aEUTq').click() # [다음 >] 클릭
-            next_list_count -= 1 # 사용자가 미리 설정한 list_count임. 
+            # next_list_count -= 1 # 사용자가 미리 설정한 list_count임. 
 
         except: # 리뷰의 마지막 페이지까지 올 경우 [다음 >] 버튼이 없으므로 오류 발생함. 더이상의 반복은 무의미하므로 반복문 탈출
             # print("마지막 목록")
@@ -133,4 +139,4 @@ if __name__ == '__main__':
     
     save_path_item = "Naver_item1.bin"
     save_path_quality = "Naver_item1_quality.bin"
-    Naver_selenium_scraper(url1, save_path_item, save_path_quality)
+    Naver_selenium_scraper(url2, save_path_item, save_path_quality)
