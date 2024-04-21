@@ -1,27 +1,70 @@
-import scraping
 import pickle
 import os
-from scraping import NaverFinalUrl
-from item_scrapper import Naver_selenium_scraper
+from tqdm import tqdm
+from collections import Counter
+from scraping import NaverFinalUrl, Naver_selenium_scraper
 from openai import OpenAI
 
 
 #url scraping
-keyword = input("Search KeyWord 입력:")
+keyword = input("Search KeyWord 입력:") #질기지 않은 1등급 무항생제 스테이크용 한우 안심을 사고 싶어.
 n_top = int(input("검색 상위 N값 입력:"))
+
 
 #keyword_agent
 input_keyword = [] #scraper 가 사용할 키워드
-decision_keyword = ["어린이 사용가능"] #decision agent가 사용할 키워드
-#TODO : Option 키워드 분리하는 작업 
+decision_keyword = [] #decision agent가 사용할 키워드
 
+#TODO : Option 키워드 분리하는 작업 
+client = OpenAI(api_key='')
+
+#voting 구현
+n_select = 1
+n_sh_lst = []
+n_dc_lst = []
+print('Keyword 분류 작업 실행')
+for i in tqdm(range(n_select), ascii=True):
+  completion = client.chat.completions.create(
+      model="ft:gpt-3.5-turbo-0125:personal-shopper-gpt::98le9oZL",#네이버 잘 안돼서 컬리 모델로 바꿈.
+      messages=[
+        {"role": "system", "content": "You are an agent that classifies input into words suitable for shopping searches "},
+        {"role": "user", "content": keyword}
+      ]
+    )
+  ret = completion.choices[0].message.content.split('\n')
+  sh_keyword = ret[0].split(':')[1].split(",")
+  dc_keyword = ret[1].split(':')[1].split(",")
+  for sk in sh_keyword:
+    n_sh_lst.append(sk)
+  for dk in dc_keyword: 
+    n_dc_lst.append(dk)
+
+
+#앙상블 중 가장 많이 나온 키워드만 추출
+input_keyword.append(Counter(n_sh_lst).most_common(1)[0][0])
+decision_keyword = list(set(n_dc_lst))
+
+#decision_keyword에 여러 키워드가 존재하면 None 값 제외시키기
+if len(decision_keyword) > 1:
+  try:
+    decision_keyword.remove('None')
+  except:
+    pass
+
+print()
+print(f"input_keyword:{input_keyword}")
+print(f"decision_keyword:{decision_keyword}")
+print()
+
+#분리된 키워드로 scraping 실행하기
+print('scraping 작업 실행')
 final_link_lst = NaverFinalUrl(keyword,n_top)
 
 url_path = os.path.join("cache", "finalLink.pickle")
 
 with open(url_path, "wb") as fw_url:
     pickle.dump(final_link_lst, fw_url)
-print("완료!!")
+print("scraping 완료!!")
 
 
 
@@ -29,6 +72,7 @@ print("완료!!")
 data_details = []
 data_reviews = []
 for idx,url in enumerate(final_link_lst):
+    os.makedirs('./database', exist_ok=True)
     scrapped_data_path = os.path.join("database", "Naver_item_"+str(idx+1)+".bin")
     review_data_path = os.path.join("database", "Naver_item_review_"+str(idx+1)+".bin")
     # data_details.append(f"product number : {idx+1} ")
@@ -39,9 +83,8 @@ for idx,url in enumerate(final_link_lst):
     data_reviews.append(result_review)
 
 #decision_agent : use gpt api
-client = OpenAI(api_key='')
-
-#Step 1. select Agent 
+#Step 1. select gpt 
+input_strings = '\n'.join(list(str(i) for i in data_details))
 prompt_text = '''
 Among the products below, please return the product numbers that meet all the conditions of the user request according to the format.If there are multiple user requests, all conditions must be met.
 For example, if product 3 and product 5 satisfy the conditions, print 3 5

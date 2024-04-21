@@ -100,21 +100,23 @@ def NaverFinalUrl(keyword, n_top):
     url_list = NaverLinkGet(keyword, 30)
     
     chrome_options = Options() ## 옵션 추가를 위한 준비
-    # chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
     # chrome_options.add_argument("headless")
     driver = webdriver.Chrome(options=chrome_options)
     n_top =n_top
     count = 0
     naver_url_lst = []
-    for url in url_list:
-        if count==n_top:
-            break
-        
-        driver.get(url)    
-        if driver.find_elements(By.CSS_SELECTOR, "a._3C8i4VFUIv._3SXdE7K-MC.N\=a\:GNB\.shopping._nlog_click"):
-            naver_url_lst.append(url)
-            count+=1
-        
+    with tqdm(total=n_top, ascii=True) as pbar:
+        for url in url_list:
+            if count==n_top:
+                break
+            driver.get(url)
+            driver.implicitly_wait(3)    
+            if driver.find_elements(By.CSS_SELECTOR, "a._3C8i4VFUIv._3SXdE7K-MC.N\=a\:GNB\.shopping._nlog_click"):
+                naver_url_lst.append(url)
+                count+=1
+                pbar.update(1)
+            
     driver.quit()
     return naver_url_lst
 
