@@ -126,6 +126,9 @@ def NaverFinalUrl(keyword, n_top):
                 result_detail, result_review = Naver_selenium_scraper(driver, scrapped_data_path, review_data_path)
                 result_detail['product_number'] = count+1 #product number 라는 key 값 추가
                 result_review['product_number'] = count+1
+                result_review['Product name'] = result_detail['상품명']
+                result_review['Discount rate'] = result_detail['할인율']
+                result_review["할인 전 가격"] = result_detail['할인 전 가격']
                 data_details.append(result_detail) 
                 data_reviews.append(result_review)
                 naver_url_lst.append(url)

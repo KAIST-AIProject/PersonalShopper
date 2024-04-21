@@ -67,6 +67,8 @@ with open(url_path, "wb") as fw_url:
     pickle.dump(final_link_lst, fw_url)
 print("scraping 완료!!")
 print()
+# print(data_details)
+# print(data_reviews)
 
 
 #product detail_scraping
@@ -103,7 +105,7 @@ response = client.chat.completions.create(
     {"role": "user", "content":prompt_text},
     
   ],
-  temperature =0,
+  temperature = 0,
   max_tokens=50
 )
 
@@ -114,7 +116,8 @@ result = response.choices[0].message.content
 select_numbers=list(map(int,result.split(' ')))
 print(f"select_numbers = {select_numbers}")
 
-prompt_text = "Compare the products below and choose one of the cheapest products and return the url.  If there is only 1 product, choose that one product. Don't print out anything other than the number. For example, if product 3 is selected, print 3"
+prompt_text = "Compare the products below and choose one of the best products and Print out the selected product number and the reason for selecting the product according to the format  If there is only 1 product, choose that one product. Don't print out anything other than the number and reason. Please return the string that connects the number and reason with @. For example, if product 3 is selected, print 3@reason."
+
 
 for idx, data in enumerate(data_reviews) :
     if (idx + 1) in select_numbers : 
@@ -132,6 +135,8 @@ response = client.chat.completions.create(
 )
 
 result = response.choices[0].message.content
+result, reason = result.split('@')
+print(reason)
 print(f"Final_Link_number:{result}번 링크")
 print()
 #TODO : gpt의 불확실성 때문에 하나의 숫자외에 다른게 output으로 나온다면, 오류 control 하는 코드
