@@ -97,7 +97,7 @@ prompt_text +=  '\n'.join(list(str(i) for i in data_details))
 # print(f"input_prompt = {prompt_text}")
 
 response = client.chat.completions.create(
-  model="gpt-4",
+  model="gpt-4-turbo",
   messages=[
     {"role": "system", "content": "You are a helpful assistant."},
     {"role": "user", "content":prompt_text},
@@ -109,8 +109,6 @@ response = client.chat.completions.create(
 
 result = response.choices[0].message.content
 #TODO : GPT의 불확실성 때문에 번호가 아닌 다른 말이 포함된다면, 오류 control 하는 코드 (지피티한테 다시 번호만 주라고 시키거나, 시스템 오류로 종료 메시지 넣기)
-
-
 
 #Step 2. compare gpt : 위의 select agent에서 선택된 number의 product들 중 가장 "좋은" 상품을 compare 하여 최종적으로 단 하나의 product의 url을 반환한다. 
 select_numbers=list(map(int,result.split(' ')))
@@ -146,8 +144,9 @@ for idx, url in enumerate(final_link_lst) :
 
 
 #########################################뒷단 연결#########################################
-final_link = final_link_lst[select_numbers-1]
+final_link = final_link_lst[int(result)-1]
 print(f"최종 선택 사이트 URL: {final_link}")
+print()
 print('상기 사이트의 ID, PW를 입력해주세요')
 login_id = input("ID:")
 login_pw = input("PW:")
