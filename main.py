@@ -5,10 +5,12 @@ from collections import Counter
 from scraping import NaverFinalUrl, Naver_selenium_scraper
 from openai import OpenAI
 from session import *
+import config
 
 
 #url scraping
-openai_api = input("openAI API:")
+# openai_api = input("openAI API:")
+# config.api_key = config.api_key
 keyword = input("Search KeyWord 입력:") #질기지 않은 1등급 무항생제 스테이크용 한우 안심을 사고 싶어.
 n_top = int(input("검색 상위 N값 입력:"))
 
@@ -18,7 +20,7 @@ input_keyword = [] #scraper 가 사용할 키워드
 decision_keyword = [] #decision agent가 사용할 키워드
 
 #TODO : Option 키워드 분리하는 작업 
-client = OpenAI(api_key=openai_api)
+client = OpenAI(api_key= config.api_key)
 
 #voting 구현
 n_select = 1
@@ -69,23 +71,7 @@ with open(url_path, "wb") as fw_url:
     pickle.dump(final_link_lst, fw_url)
 print("scraping 완료!!")
 print()
-# print(data_details)
-# print(data_reviews)
 
-
-#product detail_scraping
-# data_details = []
-# data_reviews = []
-# for idx,url in enumerate(final_link_lst):
-#     os.makedirs('./database', exist_ok=True)
-#     scrapped_data_path = os.path.join("database", "Naver_item_"+str(idx+1)+".bin")
-#     review_data_path = os.path.join("database", "Naver_item_review_"+str(idx+1)+".bin")
-#     # data_details.append(f"product number : {idx+1} ")
-#     result_detail, result_review = Naver_selenium_scraper(url, scrapped_data_path,review_data_path ) #dictionary 반환
-#     result_detail['product_number'] = idx+1 #product number 라는 key 값 추가
-#     result_review['product_number'] = idx+1
-#     data_details.append(result_detail) 
-#     data_reviews.append(result_review)
 
 #decision_agent : use gpt api
 #Step 1. select gpt 
@@ -157,8 +143,10 @@ final_link = final_link_lst[int(result)-1]
 print(f"최종 선택 사이트 URL: {final_link}")
 print()
 print('상기 사이트의 ID, PW를 입력해주세요')
-login_id = input("ID:")
-login_pw = input("PW:")
+login_id = config.naver_id
+login_pw = config.naver_pw
+# login_id = input("ID:")
+# login_pw = input("PW:")
 print()
 
 
