@@ -3,6 +3,74 @@ import pyperclip
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
+#계측적인지 단층적인지 옵션 종류 판단
+def OptionConfigCheck(driver,i):
+    '''
+    return 'A', opt_text_lst(해당 옵션 정보) : 계층적 옵션
+    return 'B, opt_text_lst(해당 옵션 정보): 단층적 옵션
+    return False : 선택이 안되는 옵션
+    '''
+    #옵션 버튼 클릭
+    
+    while True:
+        try:
+            opt_btn_lst =driver.find_elements(By.CSS_SELECTOR, '[data-shp-area-id*=opt]._nlog_impression_element')
+            opt_btn_lst[i].click()
+            driver.implicitly_wait(1)
+            break
+        except:
+            continue
+        
+    #옵션 항목 불러오기
+    opt_ele_lst =driver.find_elements(By.CSS_SELECTOR, 'a[role="option"]')
+    if not opt_ele_lst:
+        return False, []
+    
+    #오셥 항목 이름 불러오기
+    opt_text_lst = []    
+    for idx, e in enumerate(opt_ele_lst):
+        opt_text_lst.append((idx+1,e.text))
+    
+    for e in opt_ele_lst:
+        if '품절' in e.text:
+            continue
+        e.click()
+        driver.implicitly_wait(1)
+        total_price = driver.find_element(By.CSS_SELECTOR, "div.bd_3XvVU > strong > span.bd_32Qz_").text
+        break
+    else:
+        total_price = 10000000
+        opt_btn_lst[i].click()
+    #옵션 종류 구분
+    optino_type = 'B'
+    if total_price == "0":
+        optino_type = 'A'
+
+    return optino_type, opt_text_lst
+    
+
+#옵션 항목을 dictionary 형태로 가져오기
+def NaverOptionGet(driver, idx, option_info):
+    opt_btn_lst =driver.find_elements(By.CSS_SELECTOR, '[data-shp-area-id*=opt]._nlog_impression_element')
+    opt_e = opt_btn_lst[idx]
+    opt_name = opt_e.text
+    
+    #옵션 종류 체크, 옵션 항목 불러오기
+    option_type, opt_text_lst = OptionConfigCheck(driver, idx)
+    if option_type=='A':
+        option_info[opt_name] = dict()
+        for opt_idx, opt_text in enumerate(opt_text_lst):
+            opt_btn_lst[idx].click()
+            opt_ele_lst =driver.find_elements(By.CSS_SELECTOR, 'a[role="option"]')
+            opt_ele_lst[opt_idx].click()
+            option_info[opt_name][opt_text] =dict()
+            NaverOptionGet(driver, idx+1, option_info[opt_name][opt_text])
+    elif option_type=='B':
+        option_info[opt_name] = opt_text_lst
+        
+    return
+
+#backend에서 input을 받아 옵션을 선택하는 함수
 def NaverBtnOption(driver):
     opt_btn_lst =driver.find_elements(By.CSS_SELECTOR, '[data-shp-area-id*=opt]._nlog_impression_element')
     selected_opt = []

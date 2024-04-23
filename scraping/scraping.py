@@ -10,6 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from .item_scrapper import *
+from utils import NaverOptionGet
 import os
 
 
@@ -125,6 +126,15 @@ def NaverFinalUrl(keyword, n_top):
                 review_data_path = os.path.join("database", "Naver_item_review_"+str(count+1)+".bin")
                 result_detail, result_review = Naver_selenium_scraper(driver, scrapped_data_path, review_data_path)
                 result_detail['product_number'] = count+1 #product number 라는 key 값 추가
+                
+                #옵션 가져오기
+                opt_btn_lst =driver.find_elements(By.CSS_SELECTOR, '[data-shp-area-id*=opt]._nlog_impression_element')
+                option_info = {'options':dict()}
+                for i in range(len(opt_btn_lst)//2):
+                    NaverOptionGet(driver, i, option_info['options'])
+                
+                result_detail.update(option_info)
+                
                 result_review['product_number'] = count+1
                 result_review['Product name'] = result_detail['상품명']
                 result_review['Discount rate'] = result_detail['할인율']
