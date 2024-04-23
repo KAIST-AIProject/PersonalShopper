@@ -8,6 +8,7 @@ from session import *
 
 
 #url scraping
+openai_api = input("openAI API:")
 keyword = input("Search KeyWord 입력:") #질기지 않은 1등급 무항생제 스테이크용 한우 안심을 사고 싶어.
 n_top = int(input("검색 상위 N값 입력:"))
 
@@ -17,7 +18,7 @@ input_keyword = [] #scraper 가 사용할 키워드
 decision_keyword = [] #decision agent가 사용할 키워드
 
 #TODO : Option 키워드 분리하는 작업 
-client = OpenAI(api_key='')
+client = OpenAI(api_key=openai_api)
 
 #voting 구현
 n_select = 1
@@ -62,6 +63,7 @@ print('scraping 작업 실행')
 
 url_path = os.path.join("cache", "finalLink.pickle")
 
+###############scraping 결과################
 final_link_lst, data_details, data_reviews = NaverFinalUrl(input_keyword[0],n_top)
 with open(url_path, "wb") as fw_url:
     pickle.dump(final_link_lst, fw_url)
@@ -136,7 +138,9 @@ response = client.chat.completions.create(
 
 result = response.choices[0].message.content
 result, reason = result.split('@')
-print(reason)
+print()
+print(f"결정 이유 : {reason}")
+print()
 print(f"Final_Link_number:{result}번 링크")
 print()
 #TODO : gpt의 불확실성 때문에 하나의 숫자외에 다른게 output으로 나온다면, 오류 control 하는 코드
