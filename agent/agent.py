@@ -55,6 +55,25 @@ def price_rating(price_details) : #할인율, 할인 전 가격, 할인 후 가�
     return price_score
 
 #TODO : product name을 보고 brand 명성 점수를 내는 함수 (GPT 이용)
+def brand_rating(product_name) :
+    base_prompt_text = "Look at the product name and return the score from 0 to 100 to see how good the brand of the product is. (you can evaluate the brand based on its popularity, reputation, reliability, etc)  Don't ever print anything other than the score"
+    
+    
+    prompt_text = base_prompt_text + f"\nproduct name : {product_name}"
+    response = client.chat.completions.create(
+    model="gpt-4-turbo",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content":prompt_text},    
+    ],
+    temperature =0,
+    max_tokens=10
+    )
+
+    result = response.choices[0].message.content
+    print(f"brand 명성 점수 = {int(result)}")
+
+    return int(result)
 
 ############################Keyword Agent############################
 def KeywordAgentVoting(n_select, client, keyword):
@@ -99,6 +118,8 @@ def Select_numbers(data_details, decision_keyword) :
     select_list = []
     prompt_text = '''
     Among the products below, please return the product numbers that meet all the conditions of the user request according to the format.If there are multiple user requests, all conditions must be met. If the user request is None, return all products.
+    review_positivity_score : This score shows the positivity of the review content from 0 to 100 by looking at 10 reviews
+    brand_score : This score is a score that shows from 0 to 100 how good the brand of the product is. (reputability, popularity, reliability, etc.)
     For example, if product 3 and product 5 satisfy the conditions, print 3 5
     If none of the products meet the conditions, please return empty string and nothing else.
     ''' 
