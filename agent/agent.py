@@ -1,5 +1,7 @@
-from openai import OpenAI
 import config
+from openai import OpenAI
+from tqdm import tqdm
+
 
 client = OpenAI(api_key=config.api_key)
 

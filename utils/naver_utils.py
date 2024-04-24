@@ -86,7 +86,6 @@ def NaverOptionGet(driver, idx, deep_info, option_info):
             deep_info.pop()
     elif option_type=='B':
         option_info[opt_name] = opt_text_lst
-        print(option_info)      
     return
 
 #backend에서 input을 받아 옵션을 선택하는 함수
