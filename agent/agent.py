@@ -78,3 +78,65 @@ def KeywordAgentVoting(n_select, client, keyword):
         for dk in dc_keyword: 
             n_dc_lst.append(dk)
     return n_sh_lst, n_dc_lst
+
+############################Select Agent############################
+def SelectAgent(prompt) :
+    prompt_text = prompt
+    response = client.chat.completions.create(
+    model="gpt-4-turbo",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content":prompt_text},
+    
+    ],
+    temperature = 0,
+    max_tokens=50
+    )
+    result = response.choices[0].message.content
+    return result
+
+def Select_numbers(data_details, decision_keyword) :
+    select_list = []
+    prompt_text = '''
+    Among the products below, please return the product numbers that meet all the conditions of the user request according to the format.If there are multiple user requests, all conditions must be met. If the user request is None, return all products.
+    For example, if product 3 and product 5 satisfy the conditions, print 3 5
+    If none of the products meet the conditions, please return empty string and nothing else.
+    ''' 
+    
+    prompt_text = prompt_text + f"user_request : {','.join(decision_keyword)}\n "
+    prompt_text +=  '\n'.join(list(str(i) for i in data_details))
+
+    answer = SelectAgent(prompt_text)
+    print(f"select_agent answer : {answer}")
+    try : 
+        select_list=list(map(int,answer.split(' ')))
+    except :
+        prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 14."
+        answer = SelectAgent(prompt_text)
+        select_list=list(map(int,answer.split(' ')))
+    return select_list
+
+############################Compare Agent############################
+def CompareAgent(data_reviews,select_numbers) :
+    final_number = 0
+    prompt_text = "Among the products below, please recommend one of the best products that are cheap, high-quality, and have good reviews. and Print out the selected product number and the reason for selecting the product according to the format  If there is only 1 product, choose that one product. Don't print out anything other than the number and reason. Please return the string that connects the number and reason with @. For example, if product 3 is selected, print 3@reason."
+    
+    for idx, data in enumerate(data_reviews) :
+        if (idx + 1) in select_numbers : 
+            prompt_text += str(data)
+
+    response = client.chat.completions.create(
+    model="gpt-4-turbo",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content":prompt_text},
+        
+    ],
+    temperature =0,
+    max_tokens=50
+    )
+
+    result = response.choices[0].message.content
+    final_number, reason = result.split('@')
+
+    return final_number, reason

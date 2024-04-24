@@ -65,71 +65,29 @@ print()
 ######################################### Decision Agent 실행 #########################################
 #decision_agent : use gpt api
 #Step 1. select gpt 
-input_strings = '\n'.join(list(str(i) for i in data_details))
-prompt_text = '''
-Among the products below, please return the product numbers that meet all the conditions of the user request according to the format.If there are multiple user requests, all conditions must be met.
-For example, if product 3 and product 5 satisfy the conditions, print 3 5
-If none of the products meet the conditions, please return empty string and nothing else.
-'''
+select_numbers=Select_numbers(data_details, decision_keyword)
+print(f"select_numbers = {select_numbers}")
 #TODO : 현재 상태 : 만약 아무 상품도 조건을 만족하지 않는다면 empty string return됨. -> 이때 어떤 방식을 취할지 결정하고, 코드 만들기 (사용자에게 알리거나, 필터를 줄여서 다시 필터링 시도하거나....)
-prompt_text = prompt_text + f"user_request : {','.join(decision_keyword)}\n "
-prompt_text +=  '\n'.join(list(str(i) for i in data_details))
-# print(f"input_prompt = {prompt_text}")
-
-response = client.chat.completions.create(
-  model="gpt-4-turbo",
-  messages=[
-    {"role": "system", "content": "You are a helpful assistant."},
-    {"role": "user", "content":prompt_text},
-    
-  ],
-  temperature = 0,
-  max_tokens=50
-)
-
-result = response.choices[0].message.content
-#TODO : GPT의 불확실성 때문에 번호가 아닌 다른 말이 포함된다면, 오류 control 하는 코드 (지피티한테 다시 번호만 주라고 시키거나, 시스템 오류로 종료 메시지 넣기)
 
 #Step 2. compare gpt : 위의 select agent에서 선택된 number의 product들 중 가장 "좋은" 상품을 compare 하여 최종적으로 단 하나의 product의 url을 반환한다. 
-select_numbers=list(map(int,result.split(' ')))
-print(f"select_numbers = {select_numbers}")
+final_number, reason = CompareAgent(data_reviews, select_numbers)
 
-prompt_text = "Compare the products below and choose one of the best products and Print out the selected product number and the reason for selecting the product according to the format  If there is only 1 product, choose that one product. Don't print out anything other than the number and reason. Please return the string that connects the number and reason with @. For example, if product 3 is selected, print 3@reason."
-
-
-for idx, data in enumerate(data_reviews) :
-    if (idx + 1) in select_numbers : 
-        prompt_text += str(data)
-
-response = client.chat.completions.create(
-  model="gpt-4-turbo",
-  messages=[
-    {"role": "system", "content": "You are a helpful assistant."},
-    {"role": "user", "content":prompt_text},
-    
-  ],
-  temperature =0,
-  max_tokens=50
-)
-
-result = response.choices[0].message.content
-result, reason = result.split('@')
 print()
 print(f"결정 이유 : {reason}")
 print()
-print(f"Final_Link_number:{result}번 링크")
+print(f"Final_Link_number:{final_number}번 링크")
 print()
 #TODO : gpt의 불확실성 때문에 하나의 숫자외에 다른게 output으로 나온다면, 오류 control 하는 코드
 
-save_final_path = os.path.join("cache", "result_url.txt")
-for idx, url in enumerate(final_link_lst) :
-    if (idx + 1) == int(result) : 
-        with open(save_final_path, "w") as file :
-            file.write(url)
-
+#final url text file로 저장하는 코드
+# save_final_path = os.path.join("cache", "result_url.txt")
+# for idx, url in enumerate(final_link_lst) :
+#     if (idx + 1) == int(final_number) : 
+#         with open(save_final_path, "w") as file :
+#             file.write(url)
 
 ######################################### Back End #########################################
-final_link = final_link_lst[int(result)-1]
+final_link = final_link_lst[int(final_number)-1]
 print(f"최종 선택 사이트 URL: {final_link}")
 print()
 print('상기 사이트의 ID, PW를 입력해주세요')

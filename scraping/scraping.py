@@ -143,7 +143,7 @@ def NaverFinalUrl(keyword, n_top):
 
                 
                 #compare_information : compare agent에게 제공할 정보 : 이름, 가격, 할인율, 번호, 리뷰 평균 점수...
-                compare_information = {"product_number":count+1, "Product_name" : result_detail["상품명"], "discount_rate" : result_detail["할인율"], "price" : result_detail["현재 가격"], "review_positivity_score" : review_score }
+                compare_information = {"product_number":count+1, "Product_name" : result_detail["상품명"], "discount_rate" : result_detail["할인율"], "price" : result_detail["현재 가격"], "review_positivity_score" : review_score, 'number of reviews' : result_review['리뷰 수'], "Star rating" : result_review['총 평점'] }
 
                 data_details.append(result_detail) 
                 data_reviews.append(compare_information)
