@@ -53,3 +53,26 @@ def price_rating(price_details) : #할인율, 할인 전 가격, 할인 후 가�
     return price_score
 
 #TODO : product name을 보고 brand 명성 점수를 내는 함수 (GPT 이용)
+
+############################Keyword Agent############################
+def KeywordAgentVoting(n_select, client, keyword):
+    n_select = 1
+    n_sh_lst = []
+    n_dc_lst = []
+    print('Keyword 분류 작업 실행')
+    for i in tqdm(range(n_select), ascii=True):
+        completion = client.chat.completions.create(
+            model="ft:gpt-3.5-turbo-0125:personal-shopper-gpt::98le9oZL",#네이버 잘 안돼서 컬리 모델로 바꿈.
+            messages=[
+                {"role": "system", "content": "You are an agent that classifies input into words suitable for shopping searches "},
+                {"role": "user", "content": keyword}
+            ]
+            )
+        ret = completion.choices[0].message.content.split('\n')
+        sh_keyword = ret[0].split(':')[1].split(",")
+        dc_keyword = ret[1].split(':')[1].split(",")
+        for sk in sh_keyword:
+            n_sh_lst.append(sk)
+        for dk in dc_keyword: 
+            n_dc_lst.append(dk)
+    return n_sh_lst, n_dc_lst
