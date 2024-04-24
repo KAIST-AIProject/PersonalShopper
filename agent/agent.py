@@ -21,7 +21,7 @@ def review_rating_all(review_list) : #review의 positive-negative 정도를 0~10
     )
 
     result = response.choices[0].message.content
-    print(f"10개를 한 번에 본 결과 = {int(result)}")
+    print(f"10개의 리뷰를 한 번에 평가한 점수 = {int(result)}")
 
     return int(result)
 
@@ -44,7 +44,7 @@ def review_rating_one(review_list) : #review의 positive-negative 정도를 0~10
 
         result = response.choices[0].message.content
         review_score_list.append(int(result))
-    print(f"각각 한개씩 점수내서 평균 : {sum(review_score_list)/len(review_list)}")
+    print(f"리뷰를 한 개씩 평가해서 평균낸 점수 : {sum(review_score_list)/len(review_list)}")
     return int(result)/len(review_list)
 
 
@@ -111,6 +111,7 @@ def Select_numbers(data_details, decision_keyword) :
     try : 
         select_list=list(map(int,answer.split(' ')))
     except :
+        print(f"run select agent one more time")
         prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 14."
         answer = SelectAgent(prompt_text)
         select_list=list(map(int,answer.split(' ')))
