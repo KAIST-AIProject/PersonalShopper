@@ -11,8 +11,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from .item_scrapper import *
 from utils import NaverOptionGet
+from agent import *
 import os
-import rating
+
 import config
 
 ################쿠팡 HTML 불러오기################
@@ -104,7 +105,7 @@ def NaverFinalUrl(keyword, n_top):
     url_list = NaverLinkGet(keyword, 30)
     
     chrome_options = Options() ## 옵션 추가를 위한 준비
-    # chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
     # chrome_options.add_argument("headless")
     driver = webdriver.Chrome(options=chrome_options)
     n_top =n_top
@@ -132,13 +133,13 @@ def NaverFinalUrl(keyword, n_top):
                 opt_btn_lst =driver.find_elements(By.CSS_SELECTOR, '[data-shp-area-id*=opt]._nlog_impression_element')
                 option_info = {'options':dict()}
                 for i in range(len(opt_btn_lst)//2):
-                    NaverOptionGet(driver, i, option_info['options'])
-                
+                    NaverOptionGet(driver, i, [], option_info['options'])
+                    driver.refresh()
                 result_detail.update(option_info)
                 if config.review_compare_mode : #한 개씩 리뷰의 점수를 평가한 후 평균낸 점수
-                    review_score = rating.review_rating_one(result_review['리뷰']) # 리뷰들의 평균 점수 return
+                    review_score = review_rating_one(result_review['리뷰']) # 리뷰들의 평균 점수 return
                 else : #한 번에 10개의 리뷰를 모두 고려한 점수
-                    review_score = rating.review_rating_all(result_review['리뷰']) # 리뷰들의 평균 점수 return
+                    review_score = review_rating_all(result_review['리뷰']) # 리뷰들의 평균 점수 return
 
                 
                 #compare_information : compare agent에게 제공할 정보 : 이름, 가격, 할인율, 번호, 리뷰 평균 점수...
@@ -164,7 +165,7 @@ def KurlyLinkGet(url_kword, n_top=10):
     # 옵션 생성
     options = webdriver.ChromeOptions()
     # 창 숨기는 옵션 추가
-    options.add_argument("headless")
+    # options.add_argument("headless")
     options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
 
     driver = webdriver.Chrome(options=options)
