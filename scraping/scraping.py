@@ -12,7 +12,7 @@ from selenium.webdriver.chrome.options import Options
 from .item_scrapper import *
 from utils import NaverOptionGet
 import os
-import rating
+from agent import rating
 import config
 
 ################쿠팡 HTML 불러오기################
