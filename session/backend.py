@@ -105,26 +105,45 @@ def KurlySession(id, pw, url):
     kurly_id = id
     kurly_pw = pw
 
-    driver = webdriver.Chrome()
+    chrome_options = Options() ## 옵션 추가를 위한 준비
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+
+    # 크롬 드라이버 생성
+    driver = webdriver.Chrome(options=chrome_options)
     driver.get(url)
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(3) ## 연결 후 3초간 기다리
 
-    pyperclip.copy(kurly_id) # COMMAND+c가 된 상태
+
+    #옵션 불러오기
+    price = driver.find_element(By.CSS_SELECTOR, "#product-atf > section > div.css-1bp09d0.e17iylht1 > div.css-9y0nwt.e17iylht0 > div > div.css-yhijln.eebc7rx7 > span.css-x4cdgl.eebc7rx5").text
+
+    if price=="0":
+        selected_opt = KurlyClickOption(driver)
+
+    #장바구니 담기
+    cartin_btn = driver.find_element(By.CSS_SELECTOR, "button.cart-button.css-1qirdbn.e4nu7ef3")
+    cartin_btn.click()    
+        
+    #장바구니로 이동
+    cartgo_btn = driver.find_element(By.CSS_SELECTOR, "button.css-g25h97.e14oy6dx1")
+    cartgo_btn.click()
+            
+    #로그인 버튼 클릭
+    login_btn = driver.find_element(By.CSS_SELECTOR, "button.css-fwelhw.e4nu7ef3")
+    login_btn.click()
+
+    #로그인 시도
     e = driver.find_element(By.NAME, 'id')
-    e.send_keys(Keys.COMMAND, 'v') # COMMAND+v
-    time.sleep(2)
+    e.send_keys(kurly_id) # COMMAND+v
 
-    pyperclip.copy(kurly_pw) # COMMAND+c
     e = driver.find_element(By.NAME, 'password')
-    e.send_keys(Keys.COMMAND, 'v') # cCOMMAND+v
-    time.sleep(2)
+    e.send_keys(kurly_pw) # cCOMMAND+v
 
     driver.find_element(By.CSS_SELECTOR , 'button.css-qaxuc4.e4nu7ef3').click()
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(1)
 
-    # driver 종료
-    time.sleep(10)
-    driver.quit()
+    #주문하기 버튼 클릭
+    driver.find_element(By.CSS_SELECTOR, "button.css-fwelhw.e4nu7ef3").click()
     
 def GmarketSession(id, pw, url):
     gmarket_id = id
