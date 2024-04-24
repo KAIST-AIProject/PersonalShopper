@@ -13,7 +13,7 @@ from .item_scrapper import *
 from utils import NaverOptionGet
 from agent import *
 import os
-from agent import  rating
+from agent import *
 import config
 
 ################쿠팡 HTML 불러오기################
