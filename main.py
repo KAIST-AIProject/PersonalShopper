@@ -2,19 +2,20 @@ import pickle
 import os
 from tqdm import tqdm
 from collections import Counter
-from scraping import NaverFinalUrl, Naver_selenium_scraper
+from scraping import *
 from openai import OpenAI
 from session import *
+from agent import *
 import config
 
 
+######################################### 쇼핑 검색어 input 받기 #########################################
 #url scraping
-# openai_api = input("openAI API:")
-# config.api_key = config.api_key
 keyword = input("Search KeyWord 입력:") #질기지 않은 1등급 무항생제 스테이크용 한우 안심을 사고 싶어.
 n_top = int(input("검색 상위 N값 입력:"))
 
 
+######################################### Keyword Agent #########################################
 #keyword_agent
 input_keyword = [] #scraper 가 사용할 키워드
 decision_keyword = [] #decision agent가 사용할 키워드
@@ -24,24 +25,7 @@ client = OpenAI(api_key= config.api_key)
 
 #voting 구현
 n_select = 1
-n_sh_lst = []
-n_dc_lst = []
-print('Keyword 분류 작업 실행')
-for i in tqdm(range(n_select), ascii=True):
-  completion = client.chat.completions.create(
-      model="ft:gpt-3.5-turbo-0125:personal-shopper-gpt::98le9oZL",#네이버 잘 안돼서 컬리 모델로 바꿈.
-      messages=[
-        {"role": "system", "content": "You are an agent that classifies input into words suitable for shopping searches "},
-        {"role": "user", "content": keyword}
-      ]
-    )
-  ret = completion.choices[0].message.content.split('\n')
-  sh_keyword = ret[0].split(':')[1].split(",")
-  dc_keyword = ret[1].split(':')[1].split(",")
-  for sk in sh_keyword:
-    n_sh_lst.append(sk)
-  for dk in dc_keyword: 
-    n_dc_lst.append(dk)
+n_sh_lst, n_dc_lst = KeywordAgentVoting(n_select, client, keyword)
 
 
 #앙상블 중 가장 많이 나온 키워드만 추출
@@ -60,12 +44,17 @@ print(f"input_keyword:{input_keyword}")
 print(f"decision_keyword:{decision_keyword}")
 print()
 
+
+######################################### Scarping 실행 #########################################
 #분리된 키워드로 scraping 실행하기
 print('scraping 작업 실행')
 
 url_path = os.path.join("cache", "finalLink.pickle")
 
-###############scraping 결과################
+# func_arr = [NaverFinalUrl, KurlyLinkGet]
+# fina_link_lst = []
+
+#scraping 결과
 final_link_lst, data_details, data_reviews = NaverFinalUrl(input_keyword[0],n_top)
 with open(url_path, "wb") as fw_url:
     pickle.dump(final_link_lst, fw_url)
@@ -73,6 +62,7 @@ print("scraping 완료!!")
 print()
 
 
+######################################### Decision Agent 실행 #########################################
 #decision_agent : use gpt api
 #Step 1. select gpt 
 input_strings = '\n'.join(list(str(i) for i in data_details))
@@ -138,7 +128,7 @@ for idx, url in enumerate(final_link_lst) :
             file.write(url)
 
 
-#########################################뒷단 연결#########################################
+######################################### Back End #########################################
 final_link = final_link_lst[int(result)-1]
 print(f"최종 선택 사이트 URL: {final_link}")
 print()
