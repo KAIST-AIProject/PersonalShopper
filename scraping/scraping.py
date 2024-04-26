@@ -9,7 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
-from .item_scrapper import *
+from .naver_item_scrapper import *
 from utils import NaverOptionGet
 from agent import *
 import os
