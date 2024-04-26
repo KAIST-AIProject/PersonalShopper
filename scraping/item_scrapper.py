@@ -107,13 +107,52 @@ def naver_collect_reviews(driver, review_num):
     return review_list
 
 
+def Naver_image_url_scrapper(driver):
+    #SE-045e95f9-00a0-4c9d-94a9-b228e35fb938 > div > div > div > a
+    #SE-676d8e7e-22ea-4a72-ba94-8549108b1434 > div > div > div > a
+    scroll_down_to_end(driver)
+    button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable(
+                    (By.CSS_SELECTOR, f'#INTRODUCE > div > div._3osy73V_eD._1Hc_ju_IXp > button')
+                )
+            )
+    driver.execute_script("arguments[0].click();", button)
+    # print("button_Click")
+    scroll_down_to_end(driver)
+    driver.implicitly_wait(3)
+    #INTRODUCE > div > div._3osy73V_eD._1Hc_ju_IXp > button
+    # print("urlscrapper")
+    containers = driver.find_elements(By.CLASS_NAME, 'se-main-container')
+    # links_selector = driver.find_elements(By.CSS_SELECTOR, '#SE-045e95f9-00a0-4c9d-94a9-b228e35fb938 > div > div > div > a')
+    # print(links_selector)
+    # print(containers.text)
+    links = []
+    texts = ""
+    for container in containers:
+        texts = texts + container.text + "\n"
+        images = container.find_elements(By.CSS_SELECTOR, 'a')
+        # print(len(images))
+        
+        for image in images:
+            # print(images)
+            srcs = image.get_attribute("data-linkdata")
+            # print(srcs.split(","))
+            # print(srcs)
+            if srcs!=None:
+                src_link = srcs.split(",")[1][7:-1]
+            # print(src_link)
+                links.append(src_link)
+            
+
+        # print("주소2: ", link.get_attribute("data-src"))
+    return links, texts
+
 def Naver_selenium_scraper(driver, save_path_item, save_path_quality):
     # co = Options()
     # co.add_experimental_option('debuggerAddress', '127.0.0.1:9222')
     # driver = webdriver.Chrome()
     # driver.get(url)
     # driver.implicitly_wait(3) ## 연결 후 3초간 기다리기
-
 
     
     #문서 끝까지 스크롤
@@ -138,7 +177,11 @@ def Naver_selenium_scraper(driver, save_path_item, save_path_quality):
         if element != None:
             item_info[key] = element
         else:
-            item_info[key] = "정보 없음"
+            if key=="할인율":
+                item_info[key] = "0%"
+            else:
+                item_info[key] = "정보 없음"
+
     
     # driver.find_element(By.CSS_SELECTOR, '#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child(3) > a').send_keys(Keys.ENTER)
     # driver.implicitly_wait(3)
@@ -162,14 +205,25 @@ def Naver_selenium_scraper(driver, save_path_item, save_path_quality):
     quality_info['리뷰'] = naver_collect_reviews(driver, 10)
     # print(quality_info['리뷰'])
     # print(len(quality_info['리뷰']))
+    image_links, detail_texts = Naver_image_url_scrapper(driver)
+
+    print(detail_texts)
+    item_info['상세 정보 문구'] = detail_texts
+    print(item_info)
     with open(save_path_item,'wb') as item_file:
         pickle.dump(item_info, item_file, pickle.HIGHEST_PROTOCOL)
 
     with open(save_path_quality, 'wb') as quality_file:
         pickle.dump(quality_info, quality_file, pickle.HIGHEST_PROTOCOL )
+    
 
+    # detail_text = driver.find_element(By.CLASS_NAME, 'se-main-container').text
+    # print(detail_text)
+    
+    # print(image_links)
 
-    return item_info, quality_info
+    # Naver_image_url_scrapper(driver)
+    return item_info, quality_info, image_links
 
 
 
@@ -248,7 +302,29 @@ def kurly_collect_reviews(driver, review_num):
     return review_list
 
 
+def kurly_image_url_scrapper(driver):
+    scroll_down_to_end(driver)
+    #INTRODUCE > div > div._3osy73V_eD._1Hc_ju_IXp > button
+    # print("urlscrapper")
+    containers = driver.find_elements(By.ID, 'description')
+    # links_selector = driver.find_elements(By.CSS_SELECTOR, '#SE-045e95f9-00a0-4c9d-94a9-b228e35fb938 > div > div > div > a')
+    # print(links_selector)
+    links = []
+    texts = ""
+    for container in containers:
+        words = container.find_elements(By.CLASS_NAME, 'words')
+        for word in words:
+            texts = texts + word.text + "\n"
+        images = container.find_elements(By.CLASS_NAME, 'pic > img')
+        # print(len(images))
+        for image in images:
+            # print(images)
+            srcs = image.get_attribute("src")
+            links.append(srcs)
+            
 
+        # print("주소2: ", link.get_attribute("data-src"))
+    return links, texts
 
 
 def kurly_selenium_scraper(driver, save_path_item, save_path_quality):
@@ -274,7 +350,10 @@ def kurly_selenium_scraper(driver, save_path_item, save_path_quality):
         if element != None:
             item_info[key] = element
         else:
-            item_info[key] = "정보 없음"
+            if key=="할인율":
+                item_info[key] = "0%"
+            else:
+                item_info[key] = "정보 없음"
     
     quality_info = dict()
 
@@ -287,6 +366,12 @@ def kurly_selenium_scraper(driver, save_path_item, save_path_quality):
     # print(len(quality_info['리뷰']))
     # print(item_info)
     # print(quality_info)
+    image_links, detail_texts = kurly_image_url_scrapper(driver)
+    print(len(image_links))
+    print(detail_texts)
+    item_info['상세 정보 문구'] = detail_texts
+
+
 
     with open(save_path_item,'wb') as item_file:
         pickle.dump(item_info, item_file, pickle.HIGHEST_PROTOCOL)
@@ -295,25 +380,25 @@ def kurly_selenium_scraper(driver, save_path_item, save_path_quality):
         pickle.dump(quality_info, quality_file, pickle.HIGHEST_PROTOCOL )
 
 
-    return item_info, quality_info
+    return item_info, quality_info, image_links
 
 
 
 if __name__ == '__main__':
-    #naver
-    # urls = ["https://smartstore.naver.com/mewansungmall/products/8206341003?n_campaign_type=50&NaPm=ci%3D4jC48doklFQQ2CKfPdWeProg%7Ctr%3Dgfa%7Cct%3Dlv6ghqy6%7Chk%3Dff2fd71e460cf9db0bfa394d84768f9ab846ff12",
-            # "https://smartstore.naver.com/authentico/products/5909442580?",
-            # "https://smartstore.naver.com/itemrepublic/products/5411669555?NaPm=ct%3Dlv94l0ko%7Cci%3Ddd64ace6c3287f4a30440f867f36bbdbc11e6607%7Ctr%3Dslsl%7Csn%3D1241781%7Chk%3D731e5f74f10852cdd48540fbc4bc5853bec0a6c4",
-            # "https://smartstore.naver.com/beaubebe/products/4868991834?NaPm=ct%3Dlv9birbc%7Cci%3D4550ced922c6169bfce233f1deffa37740841b81%7Ctr%3Dslsl%7Csn%3D442246%7Chk%3D2450f1cf0f9cfff6677a243810f44d2e00a8853b,",
-            # "https://smartstore.naver.com/eurokitchen/products/7230084092?NaPm=ct%3Dlv9bis34%7Cci%3D16b732ad5d5e22683148397251d5ed4ac272277c%7Ctr%3Dslsl%7Csn%3D294174%7Chk%3D5098f02d03938342eed308565106d887c0ea44da",
-            # "https://smartstore.naver.com/kongkong2_kim/products/4958118823?NaPm=ct%3Dlv9bisuw%7Cci%3Dee2d850ee311284b34e147f9804fdcea0567d857%7Ctr%3Dslsl%7Csn%3D732111%7Chk%3D78870f37ce9d5b5013149b9c36facb3d66325e16",
-            # "https://smartstore.naver.com/roshrosh/products/8120763063?NaPm=ct%3Dlv9biueg%7Cci%3D9c55242d68cdd5c2b6b490dae2c9c74c16e1b6f9%7Ctr%3Dslsl%7Csn%3D3150621%7Chk%3D952d955a38b06e3eb2d76870db06fd5d340b274a"
-        #    ]
+    # naver
+    urls = ["https://smartstore.naver.com/mewansungmall/products/8206341003?n_campaign_type=50&NaPm=ci%3D4jC48doklFQQ2CKfPdWeProg%7Ctr%3Dgfa%7Cct%3Dlv6ghqy6%7Chk%3Dff2fd71e460cf9db0bfa394d84768f9ab846ff12",
+            "https://smartstore.naver.com/authentico/products/5909442580?",
+            "https://smartstore.naver.com/itemrepublic/products/5411669555?NaPm=ct%3Dlv94l0ko%7Cci%3Ddd64ace6c3287f4a30440f867f36bbdbc11e6607%7Ctr%3Dslsl%7Csn%3D1241781%7Chk%3D731e5f74f10852cdd48540fbc4bc5853bec0a6c4",
+            "https://smartstore.naver.com/beaubebe/products/4868991834?NaPm=ct%3Dlv9birbc%7Cci%3D4550ced922c6169bfce233f1deffa37740841b81%7Ctr%3Dslsl%7Csn%3D442246%7Chk%3D2450f1cf0f9cfff6677a243810f44d2e00a8853b,",
+            "https://smartstore.naver.com/eurokitchen/products/7230084092?NaPm=ct%3Dlv9bis34%7Cci%3D16b732ad5d5e22683148397251d5ed4ac272277c%7Ctr%3Dslsl%7Csn%3D294174%7Chk%3D5098f02d03938342eed308565106d887c0ea44da",
+            "https://smartstore.naver.com/kongkong2_kim/products/4958118823?NaPm=ct%3Dlv9bisuw%7Cci%3Dee2d850ee311284b34e147f9804fdcea0567d857%7Ctr%3Dslsl%7Csn%3D732111%7Chk%3D78870f37ce9d5b5013149b9c36facb3d66325e16",
+            "https://smartstore.naver.com/roshrosh/products/8120763063?NaPm=ct%3Dlv9biueg%7Cci%3D9c55242d68cdd5c2b6b490dae2c9c74c16e1b6f9%7Ctr%3Dslsl%7Csn%3D3150621%7Chk%3D952d955a38b06e3eb2d76870db06fd5d340b274a"
+           ]
     # kurly
-    urls = ['https://www.kurly.com/goods/1000441195',
-             "https://www.kurly.com/goods/1000125253",
-             "https://www.kurly.com/goods/1000316128"
-             ]
+    # urls = ['https://www.kurly.com/goods/1000441195',
+    #          "https://www.kurly.com/goods/1000125253",
+    #          "https://www.kurly.com/goods/1000316128"
+    #          ]
 
     driver = webdriver.Chrome()
     for url in urls: 
@@ -322,4 +407,4 @@ if __name__ == '__main__':
         save_path_item = "kurly_item1.bin"
         save_path_quality = "kurly_item1_review.bin"
         print(url)
-        kurly_selenium_scraper(driver, save_path_item, save_path_quality)
+        Naver_selenium_scraper(driver, save_path_item, save_path_quality)
