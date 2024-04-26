@@ -119,9 +119,9 @@ def kurly_selenium_scraper(driver, save_path_item, save_path_quality):
 
     info_list = dict()
     info_list['상품명'] = '#product-atf > section > div.css-1qy9c46.ezpe9l12'
-    info_list['할인율'] = '#product-atf > section > h2 > span.css-5nirzt.e1q8tigr3'
-    info_list['할인 전 가격'] = '#product-atf > section > span > span'
     info_list['현재 가격'] = '#product-atf > section > h2 > span.css-9pf1ze.e1q8tigr2'
+    info_list['할인 전 가격'] = '#product-atf > section > span > span'
+    info_list['할인율'] = '#product-atf > section > h2 > span.css-5nirzt.e1q8tigr3'
     info_list['배송 정보'] = '#product-atf > section > ul > li:nth-child(1) > dd'
     info_list['상품 정보 1'] = '#product-atf > section > p'
     info_list['상품 정보 2'] = '#product-atf > section > ul'
@@ -138,6 +138,7 @@ def kurly_selenium_scraper(driver, save_path_item, save_path_quality):
         else:
             if key=="할인율":
                 item_info[key] = "0%"
+                item_info['할인 전 가격'] = item_info['현재 가격']
             else:
                 item_info[key] = "정보 없음"
     
@@ -150,7 +151,7 @@ def kurly_selenium_scraper(driver, save_path_item, save_path_quality):
     
     quality_info['리뷰'] = kurly_collect_reviews(driver, 10)
     # print(len(quality_info['리뷰']))
-    # print(item_info)
+    print(item_info)
     # print(quality_info)
     image_links, detail_texts = kurly_image_url_scrapper(driver)
     # print(len(image_links))

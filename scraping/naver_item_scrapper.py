@@ -133,9 +133,9 @@ def Naver_selenium_scraper(driver, save_path_item, save_path_quality):
 
     info_list = dict()
     info_list['상품명'] = '#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._3k440DUKzy > div._1eddO7u4UC > h3'
-    info_list['할인율'] = '#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._3k440DUKzy > div.WrkQhIlUY0 > span'
-    info_list['할인 전 가격'] = '#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._3k440DUKzy > div.WrkQhIlUY0 > div > del > span._1LY7DqCnwR'
     info_list['현재 가격'] = '#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._3k440DUKzy > div.WrkQhIlUY0 > div > strong > span._1LY7DqCnwR'
+    info_list['할인 전 가격'] = '#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._3k440DUKzy > div.WrkQhIlUY0 > div > del > span._1LY7DqCnwR'
+    info_list['할인율'] = '#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div._3k440DUKzy > div.WrkQhIlUY0 > span'
     info_list['배송 정보'] = '#INTRODUCE > div > div.bd_2UeeQ'
     info_list['상품 정보 1'] = '#INTRODUCE > div > div.attribute_wrapper > div > div._2E4i2Scsp4._copyable > table > tbody'
     info_list['상품 정보 2'] = '#INTRODUCE > div > div.attribute_wrapper > div > div.detail_attributes > div > table > tbody'
@@ -151,6 +151,7 @@ def Naver_selenium_scraper(driver, save_path_item, save_path_quality):
         else:
             if key=="할인율":
                 item_info[key] = "0%"
+                item_info['할인 전 가격'] = item_info['현재 가격']
             else:
                 item_info[key] = "정보 없음"
 
@@ -179,7 +180,7 @@ def Naver_selenium_scraper(driver, save_path_item, save_path_quality):
     # print(len(quality_info['리뷰']))
     image_links, detail_texts = Naver_image_url_scrapper(driver)
 
-    print(detail_texts)
+    # print(detail_texts)
     item_info['상세 정보 문구'] = detail_texts
     print(item_info)
     with open(save_path_item,'wb') as item_file:
