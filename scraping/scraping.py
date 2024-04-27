@@ -36,74 +36,50 @@ def CoupangLinkGet(url_kword, n_top=10,):
     return coupang_ntop_url
 
 ################네이버 JSON으로 상품정보 불러오기################
-def NaverLinkGet(keyword, n_top=10):
-    cookies = {
-        'NNB': 'ESR5XBYFS3EWK',
-        'NaverSuggestUse': 'use%26unuse',
-        'ba.uuid': '9adcad84-733c-4d75-ba08-eca11ac2f99f',
-        'SHP_BUCKET_ID': '8',
-        'ASID': '7d8348d20000018e4ed4c1b500000044',
-        'nid_inf': '681918093',
-        'NID_AUT': 'LggIIkHiBVYi8m+B3B5US8s0hCgcaDnq1dUvX/j7Pi/b3xufMZcNy6CFaKkA9V7M',
-        'NID_JKL': 'olBG2UWLCzvlsOzgnUsqtbp7MfoHPQC1FecUifcOAM8=',
-        '_fwb': '52sfFMFCjkeuzFDts5zf8v.1711078526612',
-        'page_uid': 'iQ9/qwqo1fssst0CUmwsssssscZ-350591',
-        'spage_uid': 'iQ9%2Fqwqo1fssst0CUmwsssssscZ-350591',
-        'NID_SES': 'AAABp5aKU1Dx/9njC0kZkcUNIMS2sZUWBSXJeDz+L2GrUDdHDQABfhaAIuQ+ngQPngeFn+mhASDETX5bta7hhUsQ2rD0kjMazIbl5pxaYTH0o6EtntpFP2OCNw1M2LKz+PGxGoIMovHjQUHjC4sR5yA1ZHytm4askuWsBIBorP92EKyiGSzY7LpGy5XXjoS7MV0uUnIXeaLklIKDH7Gws+cFGpw40Dw4aoEj+s/4KO6D0gQQ2mKpp72V081LUr4HtickbKgrxQE1t3cxm+FGpsUPCZcw4BcVsu1mgx5IvwXqGkrwLQp7rdiZ1h4BUjVhTqDOucieeULFV9ulv65K7IJg+RX/Q3z6O0aE7z5u6hu0u2/1P072IUddyCahDLQuLcQCa31jZpNcsPhGPQv0tMmUGm+zXh5ZYKgyKW2cUi5OP34MYjXkHKRGxeArtOLBl4xPCMHvxlFIVc7pUizU6J2XN+9IzG38fzJuN8kvSRbpnINphRrayKC84nHteeHOCO3LZWvL+TnZsgnjgc7zPqLSk8pQVD5HCqBpXXw8r+xHbz70MFvnpzTpvheIXzL2rc+h/w==',
-        'ncpa': '10649105|lu4ubre8|420007bd90e02cacee49ff8e941e54edf04f5934|s_82adb61b9957|03302ec774b93adea1b4fd3cf258d33ad9875bcb:95694|lu4uzwzs|97df903bf2c74e33331584f7db0d6cef340ee66e|95694|81c6b5666b88d6353ad6df668d8298d1641b4fcf',
-    }
+def NaverLinkGet(keyword, driver, n_top=10,):
+    
+    url= 'https://search.shopping.naver.com'
+    chrome_options = Options() ## 옵션 추가를 위한 준비
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
 
-    headers = {
-        'authority': 'search.shopping.naver.com',
-        'accept': 'application/json, text/plain, */*',
-        'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-        'logic': 'PART',
-        'referer': 'https://search.shopping.naver.com/search/all?adQuery=%EA%B3%BC%EC%9E%90&origQuery=%EA%B3%BC%EC%9E%90&pagingIndex=1&pagingSize=40&productSet=total&query=%EA%B3%BC%EC%9E%90&sort=rel&timestamp=&viewType=list',
-        'sbth': '174c1dee39685f585269b5c6212d77176cac147635352267fec659d028fa7ec2bb28d53c7b95642bce426a8c5fd8519e',
-        'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
-        'sec-ch-ua-arch': '"arm"',
-        'sec-ch-ua-bitness': '"64"',
-        'sec-ch-ua-full-version-list': '"Chromium";v="122.0.6261.129", "Not(A:Brand";v="24.0.0.0", "Google Chrome";v="122.0.6261.129"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-model': '""',
-        'sec-ch-ua-platform': '"macOS"',
-        'sec-ch-ua-platform-version': '"14.4.0"',
-        'sec-ch-ua-wow64': '?0',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-    }
+    # 크롬 드라이버 생성
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.get(url)
+    driver.implicitly_wait(3) ## 연결 후 3초간 기다리
 
-    params = {
-        'adQuery': f'{keyword}',
-        'eq': '',
-        'iq': '',
-        'origQuery': f'{keyword}',
-        'pagingIndex': '1',
-        'pagingSize': '40',
-        'productSet': 'checkout',
-        'query': f'{keyword}',
-        'sort': 'review_rel',
-        'viewType': 'list',
-        'xq': '',
-    }
+    try:
+        pop_e = driver.find_element(By.CSS_SELECTOR, "div._buttonArea_button_area_2o-U6 > button._buttonArea_button_1jZae")
+        pop_e.click()
+    except:
+        pass
 
-    response = requests.get('https://search.shopping.naver.com/api/search/all', params=params, cookies=cookies, headers=headers)
+    search_e = driver.find_element(By.CSS_SELECTOR, "input._searchInput_search_text_3CUDs")
 
-    data = json.loads(response.text)
-    itemlist = data['shoppingResult']['products']  
+    search_e.send_keys(keyword)
+
+    search_btn_e = driver.find_element(By.CSS_SELECTOR, "button._searchInput_button_search_1n1aw")
+    search_btn_e.click()
+    driver.implicitly_wait(1)
+
+    filter_e = driver.find_elements(By.CSS_SELECTOR, "a.subFilter_sort__lhuHl")
+    filter_e[4].click()
+    driver.implicitly_wait(1)
+    
+    naverpay_e = driver.find_element(By.CSS_SELECTOR, "ul.subFilter_seller_filter__snFam > li:nth-child(3) > a.subFilter_filter___O_rt")
+    naverpay_e.click()
+
+    scroll_down_to_end(driver)
+
+    link_e = driver.find_elements(By.CSS_SELECTOR, 'a[rel=noopener].product_link__TrAac.linkAnchor')
+
     naver_ntop_url = []
-
     for i in range(n_top):
-        naver_ntop_url.append(itemlist[i]['crUrl'])
+        naver_ntop_url.append(link_e[i].get_attribute('href'))
+    
     return naver_ntop_url
 
-################네이버 URL 체크하기 불러오기################
+################네이버 direct link에서 정보 불러오기################
 def NaverFinalUrl(keyword, n_top):
-
-    url_list = NaverLinkGet(keyword, 30)
-    
     chrome_options = Options() ## 옵션 추가를 위한 준비
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
     # chrome_options.add_argument("headless")
@@ -112,6 +88,7 @@ def NaverFinalUrl(keyword, n_top):
     count = 0
     naver_url_lst = []
     
+    url_list = NaverLinkGet(keyword, driver, 30)
 
     data_details = []
     data_reviews = []
@@ -183,9 +160,32 @@ def KurlyLinkGet(url_kword, n_top=10):
     kurly_ntop_url = []
 
     qurey_arr = soup.select('div.css-11kh0cw a')
-    for i in range(min(len(qurey_arr),n_top)):
+    len_link = min(len(qurey_arr),n_top)
+    if len_link < n_top:
+        print(f"컬리에서 해당 검색어로 검색되는 최대 상품 수가 {len_link}개 입니다")
+    
+    for i in range(len_link):
         kurly_ntop_url.append(root+qurey_arr[i]['href'])
     return kurly_ntop_url
+
+################컬리 direct link에서 정보 불러오기################
+def KurlyFinalUrl(keyword, n_top):
+    kurly_url_list = KurlyLinkGet(keyword, n_top)
+
+    # 웹드라이버 옵션 생성
+    options = webdriver.ChromeOptions()
+    # 창 숨기는 옵션 추가
+    # options.add_argument("headless")
+    options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    driver = webdriver.Chrome(options=options)
+    
+    # 해당 link별로 정보 가져오기
+    for url in tqdm(kurly_url_list, ascii=True):
+        driver.get(url)
+        
+        
+
+
 
 ################Gmarket HTML 불러오기################
 def GmarketLinkGet(url_kword, n_top=10):
