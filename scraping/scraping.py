@@ -126,7 +126,7 @@ def NaverFinalUrl(keyword, n_top):
             if driver.find_elements(By.CSS_SELECTOR, "a._3C8i4VFUIv._3SXdE7K-MC.N\=a\:GNB\.shopping._nlog_click"):
                 scrapped_data_path = os.path.join("database", "Naver_item_"+str(count+1)+".bin")
                 review_data_path = os.path.join("database", "Naver_item_review_"+str(count+1)+".bin")
-                result_detail, result_review = Naver_selenium_scraper(driver, scrapped_data_path, review_data_path)
+                result_detail, result_review, result_image_url = Naver_selenium_scraper(driver, scrapped_data_path, review_data_path)
                 result_detail['product_number'] = count+1 #product number 라는 key 값 추가
                 
                 #옵션 가져오기
