@@ -180,4 +180,28 @@ def vision_gpt(result_image_url) :
     messages= _messages,
     max_tokens=200,
     )
-    return response
+    return 
+
+def rating_keyword_agent(input_keyword, decision_keyword):
+    feature = ''
+    for k in decision_keyword:
+        feature+=k+', '
+    
+    prompt_text = f'''
+    온라인 쇼핑몰에서 {input_keyword}을 구매하려고 하는데 구매 시 중요하게 고려해야 할 요소 3가지를 알려주세요. 이때 {feature} 등을 구매에 고려해야 합니다. 혹시 가격이나 디자인 요소가 있다면 그것 외에 다른 것을 선택해주세요. 예시로 도시락통을 구매해야 한다고 하면 '안정성,재질,용량'만을 반환해주세요. 다른 말은 하지 말아주세요 제발.
+    '''
+    response = client.chat.completions.create(
+    model="gpt-4-turbo",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content":prompt_text},    
+    ],
+    temperature =0,
+    max_tokens=50
+    )
+
+    result = response.choices[0].message.content
+    
+    return result.split(',')
+
+    
