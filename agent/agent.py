@@ -9,7 +9,7 @@ def rating_keyword_sorting(review_list, rating_keyword_lst) :
     keyword.append(rating_keyword_lst)
     print(f"input _ review_list : {review_list}")
 
-    base_prompt = " rating keywords는 5가지의 평가 기준이고, product information은  한 상품의 가격 정보와 10개의 리뷰들이야. 상품 정보와 리뷰를 고려해서 각각의 rating keyword에 대한 점수를 0부터 100까지의 값을 @로 구분해서 return 해줘. 출력 예시 1 : '100@90@95@55@66' , 출력 예시 2 : '88@90@79@95@100'  그리고 이런 다섯개의 점수 외엔 절대 아무것도 출력하면 안돼. Please!   "
+    base_prompt = " rating keywords는 5가지의 평가 기준이고, product information은  한 상품의 가격 정보와 10개의 리뷰들이야. 상품 정보와 리뷰를 고려해서 각각의 rating keyword에 대한 점수를 0부터 100까지의 값을 @로 구분해서 return 해줘. 예를 들어, 다섯개 항목의 점수가 100,90,85,90,77라면, '100@90@85@90@77' 를 return 해줘. 이런 return 형식을 꼭 지켜줘.  "
     prompt_text = base_prompt + f"rating_keywords = {' '.join(rating_keyword_lst)}, product_reviews = {review_list}"
     response = client.chat.completions.create(
     model="gpt-4-turbo",
@@ -17,7 +17,7 @@ def rating_keyword_sorting(review_list, rating_keyword_lst) :
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content":prompt_text},    
     ],
-    temperature =0,
+    temperature =50,
     max_tokens=10
     )
     result = response.choices[0].message.content
