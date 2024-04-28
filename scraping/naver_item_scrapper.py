@@ -112,14 +112,12 @@ def Naver_image_url_scrapper(driver):
             # print()
             # print(srcs)
             if srcs!=None:
-                src_link_split = srcs.split(",")[1].split(':')
-                src_link = (src_link_split[1]+':'+src_link_split[2]).strip()[1:-1]
-                # print(src_link)
-            # print(src_link)
-                if ("jpg" in src_link) or ("png" in src_link) or ("JPEG" in src_link):
-                    links.append(src_link)
+                src_link_split = srcs.split('"')
+                for src in src_link_split:
+                    if "jpg" in src or "png" in src or "JPEG" in src:
+                        links.append(src)
             
-        # print(links)
+        print(links)
         # print("주소2: ", link.get_attribute("data-src"))
     return links, texts
 
