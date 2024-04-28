@@ -9,7 +9,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 import pickle
 from bs4 import BeautifulSoup
-from scrapper_utils import *
+from .scrapper_utils import *
 
 
 
@@ -151,7 +151,7 @@ def kurly_selenium_scraper(driver, save_path_item, save_path_quality):
     
     quality_info['리뷰'] = kurly_collect_reviews(driver, 10)
     # print(len(quality_info['리뷰']))
-    print(item_info)
+    # print(item_info)
     # print(quality_info)
     image_links, detail_texts = kurly_image_url_scrapper(driver)
     # print(len(image_links))
