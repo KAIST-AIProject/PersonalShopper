@@ -41,7 +41,7 @@ def NaverLinkGet(keyword, driver, n_top=10,):
     
     url= 'https://search.shopping.naver.com'
     chrome_options = Options() ## 옵션 추가를 위한 준비
-    # chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
 
     # 크롬 드라이버 생성
     driver = webdriver.Chrome(options=chrome_options)
@@ -80,9 +80,9 @@ def NaverLinkGet(keyword, driver, n_top=10,):
     return naver_ntop_url
 
 ################네이버 direct link에서 정보 불러오기################
-def NaverFinalUrl(keyword, n_top, rating_keyword_lst):
+def NaverFinalUrl(keyword, n_top):
     chrome_options = Options() ## 옵션 추가를 위한 준비
-    # chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
     # chrome_options.add_argument("headless")
     driver = webdriver.Chrome(options=chrome_options)
     n_top =n_top
@@ -116,7 +116,7 @@ def NaverFinalUrl(keyword, n_top, rating_keyword_lst):
                 result_detail.update(option_info)
 
                 #vision_gpt 
-                print(f"result_image_url = {result_image_url}")
+                # print(f"result_image_url = {result_image_url}")
                 vision_info = vision_gpt(result_image_url)
                 result_detail['product detail form images'] = vision_info
                 #review rating 
@@ -167,7 +167,6 @@ def KurlyLinkGet(keyword, driver, n_top=10):
             break
         else:
             print("html을 불러오지 못했습니다. 다시 시도하겠습니다.")
-            driver.refresh()
             
     len_link = min(len(qurey_arr),n_top)
     root = 'https://www.kurly.com'
@@ -186,7 +185,7 @@ def KurlyFinalUrl(keyword, n_top):
     count = 0
     # 창 숨기는 옵션 추가
     # options.add_argument("headless")
-    # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(options=options)
     
     url_list = KurlyLinkGet(keyword,driver, n_top)
@@ -211,15 +210,16 @@ def KurlyFinalUrl(keyword, n_top):
             vision_info = vision_gpt(result_image_url)
             result_detail['product detail form images'] = vision_info
 
-            if config.review_compare_mode : #한 개씩 리뷰의 점수를 평가한 후 평균낸 점수
-                review_score = review_rating_one(result_review['리뷰']) # 리뷰들의 평균 점수 return
-            else : #한 번에 10개의 리뷰를 모두 고려한 점수
-                review_score = review_rating_all(result_review['리뷰']) # 리뷰들의 평균 점수 return
+            #review positivity score
+            # if config.review_compare_mode : #한 개씩 리뷰의 점수를 평가한 후 평균낸 점수
+            #     review_score = review_rating_one(result_review['리뷰']) # 리뷰들의 평균 점수 return
+            # else : #한 번에 10개의 리뷰를 모두 고려한 점수
+            #     review_score = review_rating_all(result_review['리뷰']) # 리뷰들의 평균 점수 return
             
             
             #compare_information : compare agent에게 제공할 정보 : 이름, 가격, 할인율, 번호, 리뷰 평균 점수...
-            compare_information = {"product_number":count+1, "Product_name" : result_detail["상품명"], "discount_rate" : result_detail["할인율"], "price" : result_detail["현재 가격"], "review_positivity_score" : review_score, 'number of reviews' : result_review['리뷰 수'], "Star rating" : result_review['총 평점'] }
-
+            compare_information = {"Product_name" : result_detail["상품명"], "discount_rate" : result_detail["할인율"], "price" : result_detail["현재 가격"], 'number of reviews' : result_review['리뷰 수'], "Star rating" : result_review['총 평점'], "reviews" : result_review['리뷰'] }
+                
             data_details.append(result_detail)
             data_reviews.append(compare_information)
             images_urls.append(result_image_url)

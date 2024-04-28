@@ -146,7 +146,7 @@ def kurly_selenium_scraper(driver, save_path_item, save_path_quality):
 
     while check_exists_element_and_return_text(driver, "#top > div.css-n48rgu.ex9g73v0 > div.css-16c0d8l.e1brqtzw0 > nav > ul > li:nth-child(3)") == False:
         scroll_down_to_end(driver)
-    # quality_info['총 평점'] = check_exists_element_and_return_text(driver, "#REVIEW > div > div._1f93qA0ngZ > div._7sK3cGXIH0._2tbImjE0Ih > div > div._3vokcktRs0._29BVF0J3DO > div")
+    quality_info['총 평점'] = check_exists_element_and_return_text(driver, "#REVIEW > div > div._1f93qA0ngZ > div._7sK3cGXIH0._2tbImjE0Ih > div > div._3vokcktRs0._29BVF0J3DO > div")
     quality_info['리뷰 수'] = check_exists_element_and_return_text(driver, '#top > div.css-n48rgu.ex9g73v0 > div.css-16c0d8l.e1brqtzw0 > nav > ul > li:nth-child(3) > a > span.count')
     
     quality_info['리뷰'] = kurly_collect_reviews(driver, 10)

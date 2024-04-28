@@ -85,6 +85,7 @@ print()
 ######################################### Decision Agent 실행 #########################################
 #decision_agent : use gpt api
 #Step 1. select gpt 
+print(f"전체 data_details : {data_details}")
 select_numbers=Select_numbers(data_details, decision_keyword)
 print(f"select_numbers = {select_numbers}")
 #TODO : 현재 상태 : 만약 아무 상품도 조건을 만족하지 않는다면 empty string return됨. -> 이때 어떤 방식을 취할지 결정하고, 코드 만들기 (사용자에게 알리거나, 필터를 줄여서 다시 필터링 시도하거나....)
@@ -93,7 +94,7 @@ print(f"select_numbers = {select_numbers}")
 final_score = []
 for i in range(len(data_reviews)) :
     if i+1 in select_numbers :
-      scores = rating_keyword_sorting(data_reviews, rating_keyword_lst) 
+      scores = rating_keyword_sorting(data_reviews[i], rating_keyword_lst) 
       final_score.append([round(sum(scores)/5,2), i+1, scores])
 
 final_score.sort( reverse = True)

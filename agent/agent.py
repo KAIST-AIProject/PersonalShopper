@@ -204,7 +204,7 @@ def vision_gpt(result_image_url) :
     max_tokens=200,
     )
     result = response.choices[0]
-    print(result)
+    # print(result)
     return result
 
 def rating_keyword_agent(input_keyword, decision_keyword):
