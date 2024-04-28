@@ -117,7 +117,7 @@ def Naver_image_url_scrapper(driver):
                     if "jpg" in src or "png" in src or "JPEG" in src:
                         links.append(src)
             
-        print(links)
+        
         # print("주소2: ", link.get_attribute("data-src"))
     return links, texts
 
