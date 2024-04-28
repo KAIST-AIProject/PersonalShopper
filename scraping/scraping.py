@@ -10,7 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from .naver_item_scrapper import *
-from utils import NaverOptionGet
+from utils import *
 from agent import *
 import os
 from agent import *
@@ -140,33 +140,31 @@ def NaverFinalUrl(keyword, n_top):
 
 ################컬리 HTML 불러오기################
 #컬리는 CSR 방식이라 Selenium을 통해 접근 한 후 HTML 불러와야함
-def KurlyLinkGet(url_kword, n_top=10):
+def KurlyLinkGet(keyword, driver, n_top=10):
+    url_kword = parse.quote(keyword)
     url_query = "https://www.kurly.com/search?sword="
     url_tail1 = '&page=1&per_page=96&sorted_type=4'
     url = url_query+url_kword+url_tail1
 
-    # 옵션 생성
-    options = webdriver.ChromeOptions()
-    # 창 숨기는 옵션 추가
-    # options.add_argument("headless")
-    options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
-
-    driver = webdriver.Chrome(options=options)
     driver.get(url)
-    driver.implicitly_wait(5)
+    driver.implicitly_wait(2)
+    
+    while True:
+        html = driver.page_source
 
-    html = driver.page_source
+        #html parsing
+        soup = BeautifulSoup(html, 'html.parser')
+        
+        kurly_ntop_url = []
 
-    # driver 종료
-    driver.quit()
-
-    #html parsing
-    soup = BeautifulSoup(html, 'html.parser')
-    root = 'https://www.kurly.com'
-    kurly_ntop_url = []
-
-    qurey_arr = soup.select('div.css-11kh0cw a')
+        qurey_arr = soup.select('div.css-11kh0cw a')
+        if qurey_arr:
+            break
+        else:
+            print("html을 불러오지 못했습니다. 다시 시도하겠습니다.")
+        
     len_link = min(len(qurey_arr),n_top)
+    root = 'https://www.kurly.com'
     if len_link < n_top:
         print(f"컬리에서 해당 검색어로 검색되는 최대 상품 수가 {len_link}개 입니다")
     
@@ -176,7 +174,6 @@ def KurlyLinkGet(url_kword, n_top=10):
 
 ################컬리 direct link에서 정보 불러오기################
 def KurlyFinalUrl(keyword, n_top):
-    kurly_url_list = KurlyLinkGet(keyword, n_top)
 
     # 웹드라이버 옵션 생성
     options = webdriver.ChromeOptions()
@@ -185,9 +182,14 @@ def KurlyFinalUrl(keyword, n_top):
     options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(options=options)
     
+    kurly_url_list = KurlyLinkGet(keyword,driver, n_top)
+    
     # 해당 link별로 정보 가져오기
     for url in tqdm(kurly_url_list, ascii=True):
         driver.get(url)
+        option_info = {'options':dict()}
+        KurlyOptionGet(driver, option_info)
+        print(option_info)
         
         
 
