@@ -184,17 +184,6 @@ def KurlyFinalUrl(keyword, n_top):
     options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(options=options)
     
-<<<<<<< HEAD
-    kurly_url_list = KurlyLinkGet(keyword,driver, n_top)
-    
-    # 해당 link별로 정보 가져오기
-    for url in tqdm(kurly_url_list, ascii=True):
-        driver.get(url)
-        option_info = {'options':dict()}
-        KurlyOptionGet(driver, option_info)
-        print(option_info)
-              
-=======
     url_list = KurlyLinkGet(keyword,driver, n_top)
     kurly_url_lst = []
 
@@ -236,7 +225,6 @@ def KurlyFinalUrl(keyword, n_top):
     driver.quit()
     return kurly_url_lst, data_details, data_reviews
 
->>>>>>> origin/HEAD
 
 ################Gmarket HTML 불러오기################
 def GmarketLinkGet(url_kword, n_top=10):
