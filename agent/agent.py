@@ -170,12 +170,6 @@ def vision_gpt(result_image_url) :
             "type": "text",
             "text": " I will give you several images with detailed information of a product, but ignore the photos without text information. Please organize meaningful information that users can refer to for purchase among photos with text information. It doesn't matter if you tell me in words without telling me in perfect sentences. ex) Microwaveable, made of premium silicone, hard exterior, convenient cleaning, antibiotic-free use, etc.  Don't say anything other than information",
             },
-            {
-            "type": "image_url",
-            "image_url": {
-                "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
-            },
-            },
         ],
         }
     ]
