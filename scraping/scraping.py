@@ -165,8 +165,8 @@ def KurlyLinkGet(keyword, driver, n_top=10):
         qurey_arr = soup.select('div.css-11kh0cw a')
         if qurey_arr:
             break
-        else:
-            print("html을 불러오지 못했습니다. 다시 시도하겠습니다.")
+        # else:
+        #     print("html을 불러오지 못했습니다. 다시 시도하겠습니다.")
             
     len_link = min(len(qurey_arr),n_top)
     root = 'https://www.kurly.com'

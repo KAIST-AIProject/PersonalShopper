@@ -62,7 +62,12 @@ def KurlyOptionGet(driver, option_info):
             opt_idx = str(i+1)+'번 옵션'
             option_info['options'][opt_idx] = opt_text_lst
     else:
-        option_name =  driver.find_element(By.CSS_SELECTOR, "div.css-1qdyvok.e1bjklo16 > span").text
-        opt_idx = '단일 옵션'
-        option_info['options'][opt_idx] = [option_name]
+        try:
+            option_name =  driver.find_element(By.CSS_SELECTOR, "div.css-1qdyvok.e1bjklo16 > span").text
+            opt_idx = '단일 옵션'
+            option_info['options'][opt_idx] = [option_name]
+        except:
+            opt_idx = '단일 옵션'
+            option_info['options'][opt_idx] = ['None']
+            
         

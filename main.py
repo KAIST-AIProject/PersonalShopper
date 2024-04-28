@@ -132,12 +132,10 @@ print()
 final_link = final_link_lst[int(final_number)-1]
 print(f"최종 선택 사이트 URL: {final_link}")
 print()
-print('상기 사이트의 ID, PW를 입력해주세요')
 login_id = config.naver_id
 login_pw = config.naver_pw
 # login_id = input("ID:")
 # login_pw = input("PW:")
-print()
 
 
 NaverSession(login_id, login_pw, final_link)
