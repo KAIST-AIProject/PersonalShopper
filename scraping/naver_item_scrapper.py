@@ -112,13 +112,12 @@ def Naver_image_url_scrapper(driver):
             # print()
             # print(srcs)
             if srcs!=None:
-                src_link_split = srcs.split(",")[1].split(':')
-                src_link = (src_link_split[1]+':'+src_link_split[2]).strip()[1:-1]
-                # print(src_link)
-            # print(src_link)
-                links.append(src_link)
+                src_link_split = srcs.split('"')
+                for src in src_link_split:
+                    if "jpg" in src or "png" in src or "JPEG" in src:
+                        links.append(src)
             
-
+        print(links)
         # print("주소2: ", link.get_attribute("data-src"))
     return links, texts
 
@@ -208,7 +207,7 @@ if __name__ == '__main__':
         # "https://smartstore.naver.com/mewansungmall/products/8206341003?n_campaign_type=50&NaPm=ci%3D4jC48doklFQQ2CKfPdWeProg%7Ctr%3Dgfa%7Cct%3Dlv6ghqy6%7Chk%3Dff2fd71e460cf9db0bfa394d84768f9ab846ff12",
             # "https://smartstore.naver.com/authentico/products/5909442580?",
             "https://smartstore.naver.com/itemrepublic/products/5411669555?NaPm=ct%3Dlv94l0ko%7Cci%3Ddd64ace6c3287f4a30440f867f36bbdbc11e6607%7Ctr%3Dslsl%7Csn%3D1241781%7Chk%3D731e5f74f10852cdd48540fbc4bc5853bec0a6c4",
-            # "https://smartstore.naver.com/beaubebe/products/4868991834?NaPm=ct%3Dlv9birbc%7Cci%3D4550ced922c6169bfce233f1deffa37740841b81%7Ctr%3Dslsl%7Csn%3D442246%7Chk%3D2450f1cf0f9cfff6677a243810f44d2e00a8853b,",
+            "https://smartstore.naver.com/beaubebe/products/4868991834?NaPm=ct%3Dlv9birbc%7Cci%3D4550ced922c6169bfce233f1deffa37740841b81%7Ctr%3Dslsl%7Csn%3D442246%7Chk%3D2450f1cf0f9cfff6677a243810f44d2e00a8853b,",
             # "https://smartstore.naver.com/eurokitchen/products/7230084092?NaPm=ct%3Dlv9bis34%7Cci%3D16b732ad5d5e22683148397251d5ed4ac272277c%7Ctr%3Dslsl%7Csn%3D294174%7Chk%3D5098f02d03938342eed308565106d887c0ea44da",
             # "https://smartstore.naver.com/kongkong2_kim/products/4958118823?NaPm=ct%3Dlv9bisuw%7Cci%3Dee2d850ee311284b34e147f9804fdcea0567d857%7Ctr%3Dslsl%7Csn%3D732111%7Chk%3D78870f37ce9d5b5013149b9c36facb3d66325e16",
             # "https://smartstore.naver.com/roshrosh/products/8120763063?NaPm=ct%3Dlv9biueg%7Cci%3D9c55242d68cdd5c2b6b490dae2c9c74c16e1b6f9%7Ctr%3Dslsl%7Csn%3D3150621%7Chk%3D952d955a38b06e3eb2d76870db06fd5d340b274a"
