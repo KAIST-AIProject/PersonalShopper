@@ -55,9 +55,28 @@ url_path = os.path.join("cache", "finalLink.pickle")
 # fina_link_lst = []
 
 #scraping 결과
-final_link_lst, data_details, data_reviews = NaverFinalUrl(input_keyword[0],n_top)
+final_link_lst = []
+data_details = []
+data_reviews = []
+
+
+final_link_lst_naver, data_details_naver, data_reviews_naver = NaverFinalUrl(input_keyword[0],n_top)
+final_link_lst.append(final_link_lst_naver)
+data_details.append(data_details_naver)
+data_reviews.append(data_reviews_naver)
+
+final_link_lst_kurly, data_details_kurly, data_reviews_kurly = KurlyFinalUrl(input_keyword[0], n_top)
+final_link_lst.append(final_link_lst_kurly)
+data_details.append(data_details_kurly)
+data_reviews.append(data_reviews_kurly)
+
 with open(url_path, "wb") as fw_url:
     pickle.dump(final_link_lst, fw_url)
+
+
+
+
+
 print("scraping 완료!!")
 print()
 

@@ -10,6 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from .naver_item_scrapper import *
+from .kurly_item_scrapper import *
 from utils import *
 from agent import *
 import os
@@ -177,22 +178,52 @@ def KurlyFinalUrl(keyword, n_top):
 
     # 웹드라이버 옵션 생성
     options = webdriver.ChromeOptions()
+    count = 0
     # 창 숨기는 옵션 추가
     # options.add_argument("headless")
     options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(options=options)
     
-    kurly_url_list = KurlyLinkGet(keyword,driver, n_top)
-    
-    # 해당 link별로 정보 가져오기
-    for url in tqdm(kurly_url_list, ascii=True):
-        driver.get(url)
-        option_info = {'options':dict()}
-        KurlyOptionGet(driver, option_info)
-        print(option_info)
-        
-        
+    url_list = KurlyLinkGet(keyword,driver, n_top)
+    kurly_url_lst = []
 
+    data_details = []
+    data_reviews = []
+    images_urls = []
+
+
+    with tqdm(total=n_top, ascii=True) as pbar:
+        for url in url_list:
+            driver.get(url)
+            option_info = {'options':dict()}
+            KurlyOptionGet(driver, option_info)
+            scrapped_data_path = os.path.join("database", "Kurly_item_"+str(count+1)+".bin")
+            review_data_path = os.path.join("database", "Kurly_item_review_"+str(count+1)+".bin")
+            result_detail, result_review, result_image_url = kurly_selenium_scraper(driver, scrapped_data_path, review_data_path)
+            result_detail.update(option_info)
+            count+=1
+
+            vision_info = vision_gpt(result_image_url)
+            result_detail['product detail form images'] = vision_info
+
+            if config.review_compare_mode : #한 개씩 리뷰의 점수를 평가한 후 평균낸 점수
+                review_score = review_rating_one(result_review['리뷰']) # 리뷰들의 평균 점수 return
+            else : #한 번에 10개의 리뷰를 모두 고려한 점수
+                review_score = review_rating_all(result_review['리뷰']) # 리뷰들의 평균 점수 return
+            
+            
+            #compare_information : compare agent에게 제공할 정보 : 이름, 가격, 할인율, 번호, 리뷰 평균 점수...
+            compare_information = {"product_number":count+1, "Product_name" : result_detail["상품명"], "discount_rate" : result_detail["할인율"], "price" : result_detail["현재 가격"], "review_positivity_score" : review_score, 'number of reviews' : result_review['리뷰 수'], "Star rating" : result_review['총 평점'] }
+
+            data_details.append(result_detail)
+            data_reviews.append(compare_information)
+            images_urls.append(result_image_url)
+            kurly_url_lst.append(url)
+            count+=1
+            pbar.update(1)
+
+    driver.quit()
+    return kurly_url_lst, data_details, data_reviews
 
 
 ################Gmarket HTML 불러오기################
