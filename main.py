@@ -51,7 +51,7 @@ print(rating_keyword_lst)
 # #분리된 키워드로 scraping 실행하기
 # print('scraping 작업 실행')
 
-# url_path = os.path.join("cache", "finalLink.pickle")
+url_path = os.path.join("cache", "finalLink.pickle")
 
 # # func_arr = [NaverFinalUrl, KurlyLinkGet]
 # # fina_link_lst = []
