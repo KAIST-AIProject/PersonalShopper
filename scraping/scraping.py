@@ -190,10 +190,7 @@ def KurlyFinalUrl(keyword, n_top):
         option_info = {'options':dict()}
         KurlyOptionGet(driver, option_info)
         print(option_info)
-        
-        
-
-
+              
 
 ################Gmarket HTML 불러오기################
 def GmarketLinkGet(url_kword, n_top=10):
