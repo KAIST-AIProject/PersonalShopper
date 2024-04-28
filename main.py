@@ -42,9 +42,10 @@ print(f"decision_keyword:{decision_keyword}")
 print()
 
 #TODO:#### Scarping 실행 #### 
+print('평가 기준 추출 작업 실행')
 rating_keyword_lst =  rating_keyword_agent(input_keyword, decision_keyword)
-print(f" rating_keyword list : {rating_keyword_lst}")
-
+print(f'평가 기준: {rating_keyword_lst}')
+print()
 
 
 ######################################### Scarping 실행 #########################################
@@ -52,14 +53,31 @@ print(f" rating_keyword list : {rating_keyword_lst}")
 print('scraping 작업 실행')
 
 url_path = os.path.join("cache", "finalLink.pickle")
+website_name  = ['naver', 'kurly', 'coupang', 'gmarket']
+func_arr = [NaverFinalUrl, KurlyFinalUrl]
 
-# func_arr = [NaverFinalUrl, KurlyLinkGet]
-# fina_link_lst = []
+
+final_link_dict = dict()
+data_details_dict = dict()
+data_reviews_dict = dict()
+
 
 #scraping 결과
-final_link_lst, data_details, data_reviews = NaverFinalUrl(input_keyword[0],n_top,rating_keyword_lst)
+final_link_lst = []
+data_details = []
+data_reviews = []
+
+for idx, f in enumerate(func_arr):
+  final_link_dict[idx], data_details_dict[idx], data_reviews_dict[idx] = f(input_keyword[0],n_top)
+  final_link_lst+=final_link_dict[idx]
+  data_details+=data_details_dict[idx]
+  data_reviews+=data_reviews_dict[idx]
+
+print(final_link_lst)
+
 with open(url_path, "wb") as fw_url:
     pickle.dump(final_link_lst, fw_url)
+
 print("scraping 완료!!")
 print()
 
