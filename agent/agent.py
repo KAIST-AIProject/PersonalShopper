@@ -97,24 +97,39 @@ def SelectAgent(prompt) :
 
 def Select_numbers(data_details, decision_keyword) :
     select_list = []
-    prompt_text = '''
+    N = 5  #한 번에 select agent가 고려할 상품의 개수 
+    L = len(data_details)
+    _prompt_text = '''
     Among the products below, please return the product numbers that meet all the conditions of the user request according to the format.If there are multiple user requests, all conditions must be met. If the user request is None, return all products.
     For example, if product 3 and product 5 satisfy the conditions, print 3 5
     If none of the products meet the conditions, please return empty string and nothing else.
     ''' 
     
-    prompt_text = prompt_text + f"user_request : {','.join(decision_keyword)}\n "
-    prompt_text +=  '\n'.join(list(str(i) for i in data_details))
+    _prompt_text = _prompt_text + f"user_request : {','.join(decision_keyword)}\n "
 
-    answer = SelectAgent(prompt_text)
-    print(f"select_agent answer : {answer}")
-    try : 
-        select_list=list(map(int,answer.split(' ')))
-    except :
-        print(f"run select agent one more time")
-        prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 14."
+    for i in range(L//N) :    
+        data_details_N =  '\n'.join(list(str(i) for i in data_details[i*N:2*i*N]))
+        prompt_text = _prompt_text + data_details_N
         answer = SelectAgent(prompt_text)
-        select_list=list(map(int,answer.split(' ')))
+        try : 
+            select_list.extend(list(map(int,answer.split(' '))))
+        except :
+            print(f"run select agent one more time")
+            prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 14."
+            answer = SelectAgent(prompt_text)
+            select_list.extend(list(map(int,answer.split(' '))))
+    if L%N != 0 :
+        data_details_N = '\n'.join(list(str(i) for i in data_details[(L//N)*N:]))
+        prompt_text = _prompt_text + data_details_N
+        answer = SelectAgent(prompt_text)
+        try : 
+                select_list.extend(list(map(int,answer.split(' '))))
+        except :
+            print(f"run select agent one more time")
+            prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 14."
+            answer = SelectAgent(prompt_text)
+            select_list.extend(list(map(int,answer.split(' '))))
+    print(f"select_agent answer : {select_list}")
     return select_list
 
 ############################Compare Agent############################
