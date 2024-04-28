@@ -4,8 +4,31 @@ from tqdm import tqdm
 
 
 client = OpenAI(api_key=config.api_key)
+def rating_keyword_sorting(review_list, rating_keyword_lst) :
+    keyword = ['price', 'review positivity' ] 
+    keyword.append(rating_keyword_lst)
+    print(f"input _ review_list : {review_list}")
 
-def review_rating_all(review_list) : #review의 positive-negative 정도를 0~100 사이의 값을 가지는 점수로 변환해서 평균 내는 함수
+    base_prompt = " rating keywords는 5가지의 평가 기준이고, product information은  한 상품의 가격 정보와 10개의 리뷰들이야. 상품 정보와 리뷰를 고려해서 각각의 rating keyword에 대한 점수를 0부터 100까지의 값을 @로 구분해서 return 해줘. 출력 예시 1 : '100@90@95@55@66' , 출력 예시 2 : '88@90@79@95@100'  그리고 이런 다섯개의 점수 외엔 절대 아무것도 출력하면 안돼. Please!   "
+    prompt_text = base_prompt + f"rating_keywords = {' '.join(rating_keyword_lst)}, product_reviews = {review_list}"
+    response = client.chat.completions.create(
+    model="gpt-4-turbo",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content":prompt_text},    
+    ],
+    temperature =0,
+    max_tokens=10
+    )
+    result = response.choices[0].message.content
+    scores = result.split("@")
+    scores = [int(s) for s in scores]
+    print(f"rating_keywords = {' '.join(rating_keyword_lst)}, score = {scores}")
+
+    return scores
+
+
+def review_rating_all(review_list,rating_keyword_lst ) : #review의 positive-negative 정도를 0~100 사이의 값을 가지는 점수로 변환해서 평균 내는 함수
     base_prompt_text = "Score the positive level of the review by an integer from 0 to 100. Don't ever print anything other than the score"
     
     
@@ -26,7 +49,7 @@ def review_rating_all(review_list) : #review의 positive-negative 정도를 0~10
     return int(result)
 
 
-def review_rating_one(review_list) : #review의 positive-negative 정도를 0~100 사이의 값을 가지는 점수로 변환해서 평균 내는 함수
+def review_rating_one(review_list, rating_keyword_lst) : #review의 positive-negative 정도를 0~100 사이의 값을 가지는 점수로 변환해서 평균 내는 함수
     base_prompt_text = "Score the positive level of the review by an integer from 0 to 100. Don't ever print anything other than the score"
 
     review_score_list = []
@@ -173,14 +196,16 @@ def vision_gpt(result_image_url) :
         ],
         }
     ]
-    for i in range(len(result_image_url)) :    
+    for i in range(len(result_image_url[:3])) :    
         _messages[0]['content'].append({"type" : "image_url", "image_url" : {"url" : result_image_url[i]}})
     response = client.chat.completions.create(
     model="gpt-4-vision-preview",
     messages= _messages,
     max_tokens=200,
     )
-    return 
+    result = response.choices[0]
+    print(result)
+    return result
 
 def rating_keyword_agent(input_keyword, decision_keyword):
     feature = ''
@@ -201,7 +226,6 @@ def rating_keyword_agent(input_keyword, decision_keyword):
     )
 
     result = response.choices[0].message.content
-    
     return result.split(',')
 
     

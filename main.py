@@ -89,6 +89,27 @@ select_numbers=Select_numbers(data_details, decision_keyword)
 print(f"select_numbers = {select_numbers}")
 #TODO : 현재 상태 : 만약 아무 상품도 조건을 만족하지 않는다면 empty string return됨. -> 이때 어떤 방식을 취할지 결정하고, 코드 만들기 (사용자에게 알리거나, 필터를 줄여서 다시 필터링 시도하거나....)
 
+#rating 점수로 순위 매기기 
+final_score = []
+for i in range(len(data_reviews)) :
+    if i+1 in select_numbers :
+      scores = rating_keyword_sorting(data_reviews, rating_keyword_lst) 
+      final_score.append([round(sum(scores)/5,2), i+1, scores])
+
+final_score.sort( reverse = True)
+
+#최종 순위 출력
+final_num=5
+if len(final_score)<5:
+   final_num=len(final_score)
+print(f"rating keyword : price, review positivity, {rating_keyword_lst[0]}, {rating_keyword_lst[1]}, {rating_keyword_lst[2]}")
+for i in range(final_num) :
+  print(f"{i+1}순위 : {final_score[i][1]}번 product , scores = {final_score[i][2]}, 평균 점수 : {final_score[i][0]} ")
+
+    
+       
+
+
 #Step 2. compare gpt : 위의 select agent에서 선택된 number의 product들 중 가장 "좋은" 상품을 compare 하여 최종적으로 단 하나의 product의 url을 반환한다. 
 final_number, reason = CompareAgent(data_reviews, select_numbers)
 
