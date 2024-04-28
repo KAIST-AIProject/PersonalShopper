@@ -17,7 +17,7 @@ def rating_keyword_sorting(review_list, rating_keyword_lst) :
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content":prompt_text},    
     ],
-    temperature =50,
+    temperature =0.5,
     max_tokens=10
     )
     result = response.choices[0].message.content
