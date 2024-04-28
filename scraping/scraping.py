@@ -163,7 +163,8 @@ def KurlyLinkGet(keyword, driver, n_top=10):
             break
         else:
             print("html을 불러오지 못했습니다. 다시 시도하겠습니다.")
-        
+            driver.refresh()
+            
     len_link = min(len(qurey_arr),n_top)
     root = 'https://www.kurly.com'
     if len_link < n_top:

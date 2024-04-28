@@ -53,23 +53,27 @@ print()
 print('scraping 작업 실행')
 
 url_path = os.path.join("cache", "finalLink.pickle")
+website_name  = ['naver', 'kurly', 'coupang', 'gmarket']
+func_arr = [NaverFinalUrl, KurlyFinalUrl]
 
-# func_arr = [NaverFinalUrl, KurlyLinkGet]
-# fina_link_lst = []
+
+final_link_dict = dict()
+data_details_dict = dict()
+data_reviews_dict = dict()
+
+
 #scraping 결과
 final_link_lst = []
 data_details = []
 data_reviews = []
 
-final_link_lst_naver, data_details_naver, data_reviews_naver = NaverFinalUrl(input_keyword[0],n_top)
-final_link_lst.append(final_link_lst_naver)
-data_details.append(data_details_naver)
-data_reviews.append(data_reviews_naver)
+for idx, f in enumerate(func_arr):
+  final_link_dict[idx], data_details_dict[idx], data_reviews_dict[idx] = f(input_keyword[0],n_top)
+  final_link_lst+=final_link_dict[idx]
+  data_details+=data_details_dict[idx]
+  data_reviews+=data_reviews_dict[idx]
 
-final_link_lst_kurly, data_details_kurly, data_reviews_kurly = KurlyFinalUrl(input_keyword[0], n_top)
-final_link_lst.append(final_link_lst_kurly)
-data_details.append(data_details_kurly)
-data_reviews.append(data_reviews_kurly)
+print(final_link_lst)
 
 with open(url_path, "wb") as fw_url:
     pickle.dump(final_link_lst, fw_url)
