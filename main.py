@@ -86,7 +86,10 @@ print()
 #decision_agent : use gpt api
 #Step 1. select gpt 
 print(f"전체 data_details : {data_details}")
-select_numbers=Select_numbers(data_details, decision_keyword)
+if decision_keyword[0] == "None" :
+   select_numbers = [i+1 for i in range(len(data_details))]
+else :
+      select_numbers=Select_numbers(data_details, decision_keyword)
 print(f"select_numbers = {select_numbers}")
 #TODO : 현재 상태 : 만약 아무 상품도 조건을 만족하지 않는다면 empty string return됨. -> 이때 어떤 방식을 취할지 결정하고, 코드 만들기 (사용자에게 알리거나, 필터를 줄여서 다시 필터링 시도하거나....)
 
