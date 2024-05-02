@@ -42,12 +42,10 @@ def gmarket_collect_reviews(driver, review_num):
             driver.get(driver.current_url)
             scroll_down_to_end(driver, 5000)
     scroll_down_to_end(driver, 2000)
-    while review_num>0: 
-       #premium-wrapper > table > tbody > tr:nth-child(1) > td.comment-content > a
-       #premium-wrapper > table > tbody > tr:nth-child(2) > td.comment-content
-       #premium-wrapper > table > tbody > tr:nth-child({str(review_number)}) > td.comment-content > a > p.con
+    while review_num>0:
+        scroll_down_to_end(driver, 3000)
         try: 
-            for review_number in range(1, 5+1):  #리뷰 1페이지 당 최대 10개dml 리뷰가 있음
+            for review_number in range(1, 5+1):  
                 review = driver.find_element(By.CSS_SELECTOR, f'#premium-wrapper > table > tbody > tr:nth-child({str(review_number)}) > td.comment-content > a > p.con').text
 
                 review_list.append(review)
@@ -62,8 +60,6 @@ def gmarket_collect_reviews(driver, review_num):
             review_num = -1
             break
         try: 
-#premium-pagenation-wrap > div.board_pagenation > ul > li:nth-child(2)
-            scroll_down_to_end(driver, 3000)
             if next_page_num<=10:
                 # print(next_page_num)
                 button = WebDriverWait(driver, 10).until(
@@ -96,48 +92,52 @@ def gmarket_collect_reviews(driver, review_num):
 def gmarket_image_url_scrapper(driver):
     #SE-045e95f9-00a0-4c9d-94a9-b228e35fb938 > div > div > div > a
     #SE-676d8e7e-22ea-4a72-ba94-8549108b1434 > div > div > div > a
-    button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable(
-                    (By.CSS_SELECTOR, f'#container > div.vip-tabwrap.uxetabs > div.vip-tabnavi.uxeposfix.fixed > ul > li.uxetabs_menu > a')
+    
+    try:
+        button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable(
+                        (By.CSS_SELECTOR, f'#container > div.vip-tabwrap.uxetabs > div.vip-tabnavi.uxeposfix.fixed > ul > li.uxetabs_menu > a')
+                    )
                 )
-            )
-    driver.execute_script("arguments[0].click();", button)
-    scroll_down_to_end(driver, 4000)
+        driver.execute_script("arguments[0].click();", button)
+        scroll_down_to_end(driver, 4000)
 
-    button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable(
-                    (By.CSS_SELECTOR, '#vip-tab_detail > div.box__detail-view.js-toggle-content > div.box__detail-more > button')
+        button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable(
+                        (By.CSS_SELECTOR, '#vip-tab_detail > div.box__detail-view.js-toggle-content > div.box__detail-more > button')
+                    )
                 )
-            )
-    driver.execute_script("arguments[0].click();", button)
-    scroll_down_to_end(driver)
+        driver.execute_script("arguments[0].click();", button)
+        scroll_down_to_end(driver)
+    except: 
+        print("button not found")
 
+    
+    driver.switch_to.frame('detail1')
     container = driver.find_element(By.ID, 'basic_detail_html')
-    scroll_down_to_end(driver, 2000)
+    scroll_down_to_end(driver)
     # container = container_.find_element(By.ID, 'basic_detail_html')
     # links_selector = driver.find_elements(By.CSS_SELECTOR, '#SE-045e95f9-00a0-4c9d-94a9-b228e35fb938 > div > div > div > a')
     #basic_detail_html > img:nth-child(1)
     #skip-item-detail
     # print(links_selector)
     # print(containers.text)
-    print(container.get_attribute('innerHTML'))
+    # print(container.get_attribute('innerHTML'))
     links = []
-    texts = ""
     images = container.find_elements(By.CSS_SELECTOR, 'img')
-    print(len(images))
-    # print(len(containers))
-    # for container in containers:
-    #     texts = texts + container.text + "\n"
-    #     images = container.find_elements(By.CSS_SELECTOR, 'img')
-    #     for image in images:
-    #         srcs = image.get_attribute("src")
+    # print(len(images))
+    texts = container.text
+    print(texts)
+    for image in images:
+        srcs = image.get_attribute("src")
+        if srcs!=None:
+            src_link_split = srcs.split('"')
+            for src in src_link_split:
+                if "jpg" in src:
+                    links.append(src)
+                    # print(src)
 
-    #         if srcs!=None:
-    #             src_link_split = srcs.split('"')
-    #             for src in src_link_split:
-    #                 if "jpg" in src:
-    #                     links.append(src)
-    #                     print(src)
+
             
         
         # print("주소2: ", link.get_attribute("data-src"))
@@ -184,20 +184,23 @@ def gmarket_selenium_scraper(driver, save_path_item, save_path_quality):
 
     # while check_exists_element_and_return_text(driver, "#container > div.vip-tabwrap.uxetabs > div.vip-tabnavi.uxeposfix.fixed > ul > li.uxetabs_menu.on") == False:
     #     scroll_down_to_end(driver, 4000)
-    # quality_info['총 평점'] = check_exists_element_and_return_text(driver, "#REVIEW > div > div._1f93qA0ngZ > div._7sK3cGXIH0._2tbImjE0Ih > div > div._3vokcktRs0._29BVF0J3DO > div")
-    # quality_info['리뷰 수'] = check_exists_element_and_return_text(driver, '#top > div.css-n48rgu.ex9g73v0 > div.css-16c0d8l.e1brqtzw0 > nav > ul > li:nth-child(3) > a > span.count')
+    quality_info['총 평점'] = check_exists_element_and_return_text(driver, "#itemcase_basic > div.box__item-title > div.box__rating-information > div > span")
+    quality_info['리뷰 수'] = check_exists_element_and_return_text(driver, '#txtReviewTotalCount')
     
     quality_info['리뷰'] = gmarket_collect_reviews(driver, 30)
 
-    print(len(quality_info['리뷰']))
+    # print(len(quality_info['리뷰']))
     # # print(item_info)
-    print(quality_info)
-    image_links, detail_texts = [],[]
+    # print(quality_info)
+    image_links, detail_texts = gmarket_image_url_scrapper(driver)
     
     # # print(len(image_links))
     # # print(detail_texts)
     item_info['상세 정보 문구'] = detail_texts
 
+    print(item_info)
+    print(quality_info)
+    print(image_links)
 
 
     with open(save_path_item,'wb') as item_file:
@@ -216,8 +219,9 @@ if __name__ == '__main__':
     # kurly
     urls = [
         'https://item.gmarket.co.kr/Item?goodscode=2080799823&ver=20240502',
-        # 'https://item.gmarket.co.kr/Item?goodscode=3419825675&ver=20240502',
-        # 'https://item.gmarket.co.kr/Item?goodscode=3257659996&ver=20240502'
+        'https://item.gmarket.co.kr/Item?goodscode=3419825675&ver=20240502',
+        'https://item.gmarket.co.kr/Item?goodscode=3257659996&ver=20240502',
+        'https://item.gmarket.co.kr/item?goodscode=3684952203&gate_id=8651FC2C-5EAE-4905-83BD-BD6D9B0815C5'
              ]
 
     driver = webdriver.Chrome()
