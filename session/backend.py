@@ -9,9 +9,10 @@ from utils import *
 #debugging mode 실행 터미널 명령어
 #/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir="/Users/Woo/Applications/Google Chrome.app/
  
-def NaverSession(id, pw, url):
+def NaverSession(id, pw, url, debug_mode=True):
     chrome_options = Options() ## 옵션 추가를 위한 준비
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+    if debug_mode:
+        chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
 
     # 크롬 드라이버 생성
     driver = webdriver.Chrome(options=chrome_options)
@@ -100,13 +101,14 @@ def CoupangSession(id, pw, url):
     driver.quit()
     
     
-def KurlySession(id, pw, url):
+def KurlySession(id, pw, url, debug_mode=True):
     #url은 구매 가능한 상세페이지로 시작, 추후 작업 진행
     kurly_id = id
     kurly_pw = pw
 
     chrome_options = Options() ## 옵션 추가를 위한 준비
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+    if debug_mode:
+        chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
 
     # 크롬 드라이버 생성
     driver = webdriver.Chrome(options=chrome_options)
@@ -145,11 +147,15 @@ def KurlySession(id, pw, url):
     #주문하기 버튼 클릭
     driver.find_element(By.CSS_SELECTOR, "button.css-fwelhw.e4nu7ef3").click()
     
-def GmarketSession(id, pw, url):
+def GmarketSession(id, pw, url, debug_mode=True):
     gmarket_id = id
     gmarket_pw = pw
+    
+    chrome_options = Options() ## 옵션 추가를 위한 준비
+    if debug_mode:
+        chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
 
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(options=chrome_options)
     driver.get(url)
     driver.implicitly_wait(10)
 
