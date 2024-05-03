@@ -150,11 +150,13 @@ def NaverClickOption(driver):
         print("*"*20)
         while True:
             try:
-                s_opt = int(input("위 옵션 중 번호를 선택해주세요"))
+                s_opt = input("위 옵션 중 번호를 선택해주세요:")
+                s_opt = int(s_opt)
             except:
+                if s_opt == "":
+                    break
                 print("정수형태의 번호로 다시 입력해주세요")
                 continue
-                
             if 1<=s_opt<=len(opt_text_lst):
                 break
             else:

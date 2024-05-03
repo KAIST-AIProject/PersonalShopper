@@ -37,11 +37,12 @@ def CoupangLinkGet(url_kword, n_top=10,):
     return coupang_ntop_url
 
 ################네이버 JSON으로 상품정보 불러오기################
-def NaverLinkGet(keyword, driver, n_top=10,):
+def NaverLinkGet(keyword, driver, n_top=10, debug_mode=True):
     
     url= 'https://search.shopping.naver.com'
     chrome_options = Options() ## 옵션 추가를 위한 준비
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+    if debug_mode:
+        chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
 
     # 크롬 드라이버 생성
     driver = webdriver.Chrome(options=chrome_options)
@@ -80,9 +81,10 @@ def NaverLinkGet(keyword, driver, n_top=10,):
     return naver_ntop_url
 
 ################네이버 direct link에서 정보 불러오기################
-def NaverFinalUrl(keyword, n_top):
+def NaverFinalUrl(keyword, n_top, debug_mode=True):
     chrome_options = Options() ## 옵션 추가를 위한 준비
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+    if debug_mode:
+        chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
     # chrome_options.add_argument("headless")
     driver = webdriver.Chrome(options=chrome_options)
     n_top =n_top
@@ -178,16 +180,17 @@ def KurlyLinkGet(keyword, driver, n_top=10):
     return kurly_ntop_url
 
 ################컬리 direct link에서 정보 불러오기################
-def KurlyFinalUrl(keyword, n_top):
+def KurlyFinalUrl(keyword, n_top, debug_mode=True):
 
     # 웹드라이버 옵션 생성
     options = webdriver.ChromeOptions()
     count = 0
     # 창 숨기는 옵션 추가
     # options.add_argument("headless")
-    options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-    driver = webdriver.Chrome(options=options)
+    if debug_mode:
+        options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     
+    driver = webdriver.Chrome(options=options)
     url_list = KurlyLinkGet(keyword,driver, n_top)
     kurly_url_lst = []
 
