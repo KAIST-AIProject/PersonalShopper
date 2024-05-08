@@ -159,22 +159,26 @@ def GmarketSession(id, pw, url, debug_mode=True):
     driver.get(url)
     driver.implicitly_wait(10)
 
-    pyperclip.copy(gmarket_id) # COMMAND+c가 된 상태
-    e = driver.find_element(By.CSS_SELECTOR, 'input#typeMemberInputId')
-    e.send_keys(Keys.COMMAND, 'v') # COMMAND+v
-    time.sleep(2)
+    GmarketClickOption(driver)
 
-    pyperclip.copy(gmarket_pw) # COMMAND+c
+    #구매버튼 클릭
+    driver.find_element(By.CSS_SELECTOR, "#coreInsOrderBtn").click()
+    driver.implicitly_wait(1)
+
+    #login
+    e = driver.find_element(By.CSS_SELECTOR, 'input#typeMemberInputId')
+    for c in gmarket_id:
+        e.send_keys(c)
+    driver.implicitly_wait(1)
+
     e = driver.find_element(By.CSS_SELECTOR, 'input#typeMemberInputPassword')
-    e.send_keys(Keys.COMMAND, 'v') # cCOMMAND+v
-    time.sleep(2)
+    for c in gmarket_pw:
+        e.send_keys(c)
+    driver.implicitly_wait(1)
 
     driver.find_element(By.CSS_SELECTOR , 'button#btn_memberLogin').click()
-    driver.implicitly_wait(10)
 
-    # driver 종료
-    time.sleep(10)
-    driver.quit()
+
 
 
 if __name__ == "__main__":
