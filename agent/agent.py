@@ -7,9 +7,9 @@ client = OpenAI(api_key=config.api_key)
 def rating_keyword_sorting(review_list, rating_keyword_lst) :
     keyword = ['price', 'review positivity' ] 
     keyword.append(rating_keyword_lst)
-    print(f"input _ review_list : {review_list}")
+    print(f"input product : {review_list['Product_name']}")
 
-    base_prompt = " rating keywords는 5가지의 평가 기준이고, product information은  한 상품의 가격 정보와 10개의 리뷰들이야. 상품 정보와 리뷰를 고려해서 각각의 rating keyword에 대한 점수를 0부터 100까지의 값을 @로 구분해서 return 해줘. 예를 들어, 다섯개 항목의 점수가 100,90,85,90,77라면, '100@90@85@90@77' 를 return 해줘. 이런 return 형식을 꼭 지켜줘. 점수가 아닌 다른 말은 하지 말아줘.  "
+    base_prompt = " Look at the product_information and give a score between 0 and 100 for each of the 5 rating_keywords. In the return format, five scores are splited by @.  For example, if each score is 100,90,80,70,60, please return '100@90@80@70@60'. Please don't print anything except the score and @.  " 
     prompt_text = base_prompt + f"rating_keywords = {' '.join(rating_keyword_lst)}, product_reviews = {review_list}"
     response = client.chat.completions.create(
     model="gpt-4-turbo",
