@@ -144,18 +144,6 @@ def gmarket_image_url_scrapper(driver):
     return links, texts
 
 
-def cal_sale(currcost_s, precost_s):
-    if ',' in currcost_s:
-        currcost_s=currcost_s.replace(',', '')
-    if ',' in precost_s:
-        precost_s=precost_s.replace(',', '')
-    currcost = int(currcost_s[:-1])
-    precost = int(precost_s[:-1])
-
-    sale = str((precost-currcost)/precost*100) + "%"
-    return sale
-
-
 def gmarket_selenium_scraper(driver, save_path_item, save_path_quality):
     scroll_down_to_end(driver, 1000)
     button = WebDriverWait(driver, 10).until(
@@ -188,8 +176,11 @@ def gmarket_selenium_scraper(driver, save_path_item, save_path_quality):
                 item_info[key] = item_info['현재 가격']
             else:
                 item_info[key] = "정보 없음"
-    # print(item_info)
-    if item_info['현재 가격']!='정보 없음':
+    # print(item_info)    
+    if item_info['할인 전 가격']!="정보 없음":
+        item_info['할인 전 가격'] = cost_only_number(item_info['할인 전 가격']) 
+    if item_info['현재 가격']!="정보 없음":
+        item_info['현재 가격'] = cost_only_number(item_info['현재 가격'])
         item_info['할인율'] = cal_sale(item_info['현재 가격'], item_info['할인 전 가격'])
     
     # print(item_info)

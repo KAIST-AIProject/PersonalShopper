@@ -157,6 +157,10 @@ def Naver_selenium_scraper(driver, save_path_item, save_path_quality):
             else:
                 item_info[key] = "정보 없음"
 
+    if item_info['현재 가격']!="정보 없음":
+        item_info['현재 가격'] = cost_only_number(item_info['현재 가격'])
+    if item_info['할인 전 가격']!="정보 없음":
+        item_info['할인 전 가격'] = cost_only_number(item_info['할인 전 가격']) 
     
     # driver.find_element(By.CSS_SELECTOR, '#_productFloatingTab > div > div._27jmWaPaKy._1dDHKD1iiX > ul > li:nth-child(3) > a').send_keys(Keys.ENTER)
     # driver.implicitly_wait(3)

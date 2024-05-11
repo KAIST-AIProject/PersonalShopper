@@ -9,6 +9,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 import pickle
 from bs4 import BeautifulSoup
+import re
 
 
 def check_exists_element_and_return_text(driver, selector):
@@ -39,3 +40,14 @@ def scroll_down_to_end(driver, height = -1):
     
     if height!=-1:
         driver.execute_script("window.scrollTo(0, {})".format(last_height-height))
+
+def cost_only_number(cost_s):
+    cost_num = re.sub(pattern=r'\D',repl='', string=cost_s)
+    return cost_num
+
+def cal_sale(currcost_s, precost_s):
+    currcost = int(currcost_s)
+    precost = int(precost_s)
+
+    sale = str((precost-currcost)/precost*100) + "%"
+    return sale
