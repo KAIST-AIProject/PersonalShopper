@@ -16,6 +16,7 @@ from agent import *
 import os
 from agent import *
 import config
+from .image_download import image_for_gpt
 
 ################쿠팡 HTML 불러오기################
 def CoupangLinkGet(url_kword, n_top=10,):
@@ -209,8 +210,14 @@ def KurlyFinalUrl(keyword, n_top, debug_mode=True):
             result_detail, result_review, result_image_url = kurly_selenium_scraper(driver, scrapped_data_path, review_data_path)
             result_detail.update(option_info)
             count+=1
+            
+            #local로 이미지 다운로드
+            local_image_url= image_for_gpt(4, result_image_url, "database")
+            print(local_image_url)
 
-            vision_info = vision_gpt(result_image_url)
+            # vision_info = vision_gpt(result_image_url)
+            vision_info = local_vision_gpt(local_image_url)
+            print(f"vision_info = {vision_info}")
             result_detail['product detail form images'] = vision_info
 
             #review positivity score

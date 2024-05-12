@@ -54,8 +54,8 @@ print('scraping 작업 실행')
 
 url_path = os.path.join("cache", "finalLink.pickle")
 website_name  = ['naver', 'kurly', 'coupang', 'gmarket']
-func_arr = [NaverFinalUrl, KurlyFinalUrl]
-
+# func_arr = [NaverFinalUrl, KurlyFinalUrl]
+func_arr = [ KurlyFinalUrl]
 
 
 final_link_dict = dict()
@@ -86,7 +86,7 @@ print()
 ######################################### Decision Agent 실행 #########################################
 #decision_agent : use gpt api
 #Step 1. select gpt 
-print(f"전체 data_details : {data_details}")
+# print(f"전체 data_details : {data_details}")
 if decision_keyword[0] == "None" :
    select_numbers = [i+1 for i in range(len(data_details))]
 else :
@@ -98,7 +98,9 @@ print(f"select_numbers = {select_numbers}")
 
 costs =[] 
 for i in range(len(data_reviews)):
+    print(data_details[i]['상품명'], data_details[i]['현재 가격'], data_details[i]['할인 전 가격'])
     costs.append(float(int(data_details[i]['현재 가격'])))
+
 cost_min = min(costs)
 cost_max = max(costs)
 for i in range(len(data_reviews)):

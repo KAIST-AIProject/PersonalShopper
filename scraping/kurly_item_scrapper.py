@@ -145,7 +145,8 @@ def kurly_selenium_scraper(driver, save_path_item, save_path_quality):
         item_info['현재 가격'] = cost_only_number(item_info['현재 가격'])
     if item_info['할인 전 가격']!="정보 없음":
         item_info['할인 전 가격'] = cost_only_number(item_info['할인 전 가격']) 
-        
+    # print(item_info['현재 가격'])
+    # print(item_info['할인 전 가격'])
     quality_info = dict()
 
     while check_exists_element_and_return_text(driver, "#top > div.css-n48rgu.ex9g73v0 > div.css-16c0d8l.e1brqtzw0 > nav > ul > li:nth-child(3)") == False:
