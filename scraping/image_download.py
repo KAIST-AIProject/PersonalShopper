@@ -13,10 +13,7 @@ def download_image(image_url, image_path):
     except:    
         return False
 
-if __name__ == '__main__':
-    image_url = 'http://allienco.img9.kr/yumbox/yumbox_large.jpg'
-    image_path = './image_data/test.jpg'
-    download_image(image_url, image_path)
+
 
 
 
@@ -25,12 +22,26 @@ def image_for_gpt(img_num, img_url, path):
     img_count=1
     img_list = []
     while img_count<=img_num:
+        if img_count>len(img_url):
+            break
         save_path = os.path.join(path, f"{img_count}.jpg")
         result = download_image(img_url[img_count-1], save_path)
         if result==True:
             memory = os.path.getsize(save_path)
-            if memory<2**7:
+            if memory<pow(2, 20)*10:
                 img_count+=1
                 img_list.append(save_path)
 
     return img_list
+
+if __name__ == '__main__':
+    image_url = ['http://allienco.img9.kr/yumbox/yumbox_large.jpg',
+                 'http://allienco.img9.kr/yumbox/yumbox_large.jpg',
+                 'http://allienco.img9.kr/yumbox/yumbox_large.jpg',
+                 'http://allienco.img9.kr/yumbox/yumbox_large.jpg',
+                 'http://allienco.img9.kr/yumbox/yumbox_large.jpg',
+                 'http://allienco.img9.kr/yumbox/yumbox_large.jpg'
+    ] 
+    image_path = "image"
+    # download_image(image_url, image_path)
+    print(image_for_gpt(10, image_url, image_path))
