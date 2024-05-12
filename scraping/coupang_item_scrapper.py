@@ -9,7 +9,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 import pickle
 from bs4 import BeautifulSoup
-from scrapper_utils import *
+from .scrapper_utils import *
 
 
 def coupang_collect_reviews(driver, review_num):

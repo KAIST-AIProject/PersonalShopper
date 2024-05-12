@@ -56,6 +56,7 @@ url_path = os.path.join("cache", "finalLink.pickle")
 website_name  = ['naver', 'kurly', 'coupang', 'gmarket']
 func_arr = [NaverFinalUrl, KurlyFinalUrl]
 
+
 ######################################### Multi-threading #########################################
 thread = [MyThread(f, input_keyword[0], n_top) for f in func_arr]
 
@@ -100,11 +101,23 @@ else :
 print(f"select_numbers = {select_numbers}")
 #TODO : 현재 상태 : 만약 아무 상품도 조건을 만족하지 않는다면 empty string return됨. -> 이때 어떤 방식을 취할지 결정하고, 코드 만들기 (사용자에게 알리거나, 필터를 줄여서 다시 필터링 시도하거나....)
 
+
+
+costs =[] 
+for i in range(len(data_reviews)):
+    costs.append(float(int(data_details[i]['현재 가격'])))
+cost_min = min(costs)
+cost_max = max(costs)
+for i in range(len(data_reviews)):
+   costs[i] = 5-5*(costs[i]-cost_min)/(cost_max-cost_min)
 #rating 점수로 순위 매기기 
+
+
 final_score = []
 for i in range(len(data_reviews)) :
     if i+1 in select_numbers :
       scores = rating_keyword_sorting(data_reviews[i], rating_keyword_lst) 
+      scores.append(costs[i])
       final_score.append([round(sum(scores)/5,2), i+1, scores])
 
 final_score.sort( reverse = True)
