@@ -48,3 +48,23 @@ def KurlyClickOption(driver):
     print("*"*20)
     
     return selected_opt
+
+def KurlyOptionGet(driver, option_info):
+    opt_btn_lst = driver.find_elements(By.CSS_SELECTOR, "#product-atf > section > div.css-1bp09d0.e17iylht1 > div.css-2lvxh7.e1qy0s5w0 > li > dd > div > div > div > div > div")
+    
+    if opt_btn_lst:
+        for i in range(len(opt_btn_lst)):
+            opt_btn_lst[i].click()
+            opt_name_lst = driver.find_elements(By.CSS_SELECTOR, "span.css-19h9nlb.e12wapb64")
+            opt_price_lst = driver.find_elements(By.CSS_SELECTOR, "div.css-1fvrsoi.e12wapb60")
+            opt_text_lst = []
+            for idx, (e_n, e_p) in enumerate(zip(opt_name_lst, opt_price_lst)):
+                option_name = e_n.text + "(가격: " + e_p.text + ")"
+                opt_text_lst.append((idx+1, option_name))
+            opt_idx = str(i+1)+'번 옵션'
+            option_info['options'][opt_idx] = opt_text_lst
+    else:
+        option_name =  driver.find_element(By.CSS_SELECTOR, "div.css-1qdyvok.e1bjklo16 > span").text
+        opt_idx = '단일 옵션'
+        option_info['options'][opt_idx] = [option_name]
+        
