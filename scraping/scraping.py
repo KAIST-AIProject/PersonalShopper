@@ -37,32 +37,33 @@ def CoupangLinkGet(url_kword, n_top=10,):
     return coupang_ntop_url
 
 ################네이버 JSON으로 상품정보 불러오기################
-def NaverLinkGet(keyword, driver, n_top=10, debug_mode=True):
+def NaverLinkGet(keyword, driver, n_top=10, debug_mode=False):
     
     url= 'https://search.shopping.naver.com'
-    chrome_options = Options() ## 옵션 추가를 위한 준비
-    if debug_mode:
-        chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
-
-    # 크롬 드라이버 생성
-    driver = webdriver.Chrome(options=chrome_options)
     driver.get(url)
-    driver.implicitly_wait(3) ## 연결 후 3초간 기다리
+    driver.implicitly_wait(3)
+    
+    width = 1200
+    height = 968
+    driver.set_window_size(width, height)
 
     try:
         pop_e = driver.find_element(By.CSS_SELECTOR, "div._buttonArea_button_area_2o-U6 > button._buttonArea_button_1jZae")
         pop_e.click()
     except:
         pass
-
+    
     search_e = driver.find_element(By.CSS_SELECTOR, "input._searchInput_search_text_3CUDs")
-
     search_e.send_keys(keyword)
-
+    
     search_btn_e = driver.find_element(By.CSS_SELECTOR, "button._searchInput_button_search_1n1aw")
     search_btn_e.click()
     driver.implicitly_wait(1)
 
+    #네이버페이로 필터링
+    driver.find_element(By.CSS_SELECTOR, "#content > div.style_content__xWg5l > div.seller_filter_area > ul > li:nth-child(3) > a.subFilter_filter___O_rt").click()
+
+    #리뷰 좋은 순으로 필터링
     filter_e = driver.find_elements(By.CSS_SELECTOR, "a.subFilter_sort__lhuHl")
     filter_e[4].click()
     driver.implicitly_wait(1)
@@ -86,6 +87,7 @@ def NaverFinalUrl(keyword, n_top, debug_mode=True):
     if debug_mode:
         chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
     # chrome_options.add_argument("headless")
+    
     driver = webdriver.Chrome(options=chrome_options)
     n_top =n_top
     count = 0
@@ -97,7 +99,7 @@ def NaverFinalUrl(keyword, n_top, debug_mode=True):
     data_reviews = []
     images_urls = [] 
     
-    with tqdm(total=n_top, ascii=True) as pbar:
+    with tqdm(total=n_top, desc='Naver', ascii=True) as pbar:
         for url in url_list:
             if count==n_top:
                 break
@@ -188,7 +190,7 @@ def KurlyFinalUrl(keyword, n_top, debug_mode=True):
     # 창 숨기는 옵션 추가
     # options.add_argument("headless")
     if debug_mode:
-        options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+        options.add_experimental_option("debuggerAddress", "127.0.0.1:9223")
     
     driver = webdriver.Chrome(options=options)
     url_list = KurlyLinkGet(keyword,driver, n_top)
@@ -199,7 +201,7 @@ def KurlyFinalUrl(keyword, n_top, debug_mode=True):
     images_urls = []
 
 
-    with tqdm(total=n_top, ascii=True) as pbar:
+    with tqdm(total=n_top, desc='Kurly', ascii=True) as pbar:
         for url in url_list:
             driver.get(url)
             option_info = {'options':dict()}
