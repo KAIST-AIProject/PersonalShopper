@@ -130,9 +130,6 @@ print(f"rating keyword : price, review positivity, {rating_keyword_lst[0]}, {rat
 for i in range(final_num) :
   print(f"{i+1}순위 : {final_score[i][1]}번 product , scores = {final_score[i][2]}, 평균 점수 : {final_score[i][0]} ")
 
-    
-       
-
 
 #Step 2. compare gpt : 위의 select agent에서 선택된 number의 product들 중 가장 "좋은" 상품을 compare 하여 최종적으로 단 하나의 product의 url을 반환한다. 
 final_number, reason = CompareAgent(data_reviews, select_numbers)
@@ -164,7 +161,7 @@ flag = input("구매 진행하시겠습니까? (Y/N):")
 
 while True:
   if flag.upper() == 'Y': 
-    NaverSession(login_id, login_pw, final_link)
+    purchase_process(final_link)
   elif flag.upper() == 'N':
     print("구매를 종료합니다.")
     break
