@@ -8,7 +8,7 @@ def download_image(image_url, image_path):
     # time check
     # curl 요청
     try: 
-        os.system("curl -s" + url + " > " + image_path)
+        os.system("curl " + url + " > " + image_path)
         return True
     except:    
         return False

@@ -1,7 +1,8 @@
 import config
 from openai import OpenAI
 from tqdm import tqdm
-
+import base64
+import requests
 
 client = OpenAI(api_key=config.api_key)
 def rating_keyword_sorting(review_list, rating_keyword_lst) :
@@ -210,6 +211,56 @@ def vision_gpt(result_image_url) :
     result = response.choices[0]
     # print(result)
     return result
+
+def encode_image(image_path):
+  with open(image_path, "rb") as image_file:
+    return base64.b64encode(image_file.read()).decode('utf-8')
+
+def local_vision_gpt(image_path) :
+    # Getting the base64 string
+    base64_image = list(encode_image(path) for path in image_path)
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {config.api_key}"
+    }
+    messages = [
+        {
+            "role": "user",
+            "content": [
+            {
+                "type": "text",
+                "text":  " I will give you several images with detailed information of a product, but ignore the photos without text information. Please organize meaningful information that users can refer to for purchase among photos with text information. It doesn't matter if you tell me in words without telling me in perfect sentences. ex) Microwaveable, made of premium silicone, hard exterior, convenient cleaning, antibiotic-free use, etc.  Don't say anything other than information"
+            }
+            ]
+        }
+        
+    ]
+
+    #image 추가
+    for i in range(len(base64_image)) :
+        messages[0]["content"].append(
+            {
+                "type": "image_url",
+                "image_url": {
+                "url": f"data:image/jpeg;base64,{base64_image[i]}"
+                }
+            }
+        )
+
+
+
+    payload = {
+        "model": "gpt-4-turbo",
+        "messages": messages,
+        "max_tokens": 300
+    }
+
+    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+
+    # Extracting the content from the response
+    content = response.json().get('choices')[0]['message']['content']
+    return content
+
 
 def rating_keyword_agent(input_keyword, decision_keyword):
     feature = ''
