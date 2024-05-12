@@ -19,3 +19,18 @@ if __name__ == '__main__':
     download_image(image_url, image_path)
 
 
+
+
+def image_for_gpt(img_num, img_url, path):
+    img_count=1
+    img_list = []
+    while img_count<=img_num:
+        save_path = os.path.join(path, f"{img_count}.jpg")
+        result = download_image(img_url[img_count-1], save_path)
+        if result==True:
+            memory = os.path.getsize(save_path)
+            if memory<2**7:
+                img_count+=1
+                img_list.append(save_path)
+
+    return img_list
