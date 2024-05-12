@@ -21,7 +21,7 @@ def NaverSession(id, pw, url, debug_mode=True):
     
     #########################################################    
     #옵션 선택
-    if driver.find_elements(By.CSS_SELECTOR, "fieldset > div > div:nth-child(1) > div > div > button:nth-child(1)"):
+    if driver.find_elements(By.CSS_SELECTOR, "#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div.bd_1jsdQ > div:nth-child(1) > div > div > button"):
         select_opt = NaverClickOption(driver)
     else:
         if driver.find_elements(By.CSS_SELECTOR, "fieldset > div > ul > li > div > div > div > input"):
@@ -47,13 +47,16 @@ def NaverSession(id, pw, url, debug_mode=True):
         
     driver.implicitly_wait(3)
     #이부분 나중에 데이터베이스 연결
-    ID = id
-    PW = pw
-    ret = NaverLogin(ID, PW, driver, main_handle)
+    # ID = id
+    # PW = pw
+    # try:
+    #     ret = NaverLogin(ID, PW, driver, main_handle)
+    # except:
+    #     pass
     #########################################################
     #구매진행
-    if ret:
-        NaverAddressCheck(driver,main_handle)
+    
+    NaverAddressCheck(driver,main_handle)
 
 
 def CoupangSession(id, pw, url):

@@ -57,19 +57,26 @@ website_name  = ['naver', 'kurly', 'coupang', 'gmarket']
 # func_arr = [NaverFinalUrl, KurlyFinalUrl]
 func_arr = [ KurlyFinalUrl]
 
+######################################### Multi-threading #########################################
+thread = [MyThread(f, input_keyword[0], n_top) for f in func_arr]
 
+for t in thread:
+  t.start()  
+
+for t in thread:
+  t.join()
+  
+#scraping 결과 저장
 final_link_dict = dict()
 data_details_dict = dict()
 data_reviews_dict = dict()
 
-
-#scraping 결과
 final_link_lst = []
 data_details = []
 data_reviews = []
 
-for idx, f in enumerate(func_arr):
-  final_link_dict[idx], data_details_dict[idx], data_reviews_dict[idx] = f(input_keyword[0],n_top)
+for idx, thr_ret in enumerate(thread):
+  final_link_dict[idx], data_details_dict[idx], data_reviews_dict[idx] = thr_ret.get_result()
   final_link_lst+=final_link_dict[idx]
   data_details+=data_details_dict[idx]
   data_reviews+=data_reviews_dict[idx]
@@ -125,9 +132,6 @@ print(f"rating keyword : price, review positivity, {rating_keyword_lst[0]}, {rat
 for i in range(final_num) :
   print(f"{i+1}순위 : {final_score[i][1]}번 product , scores = {final_score[i][2]}, 평균 점수 : {final_score[i][0]} ")
 
-    
-       
-
 
 #Step 2. compare gpt : 위의 select agent에서 선택된 number의 product들 중 가장 "좋은" 상품을 compare 하여 최종적으로 단 하나의 product의 url을 반환한다. 
 final_number, reason = CompareAgent(data_reviews, select_numbers)
@@ -155,5 +159,13 @@ login_pw = config.naver_pw
 # login_id = input("ID:")
 # login_pw = input("PW:")
 
+flag = input("구매 진행하시겠습니까? (Y/N):")
 
-NaverSession(login_id, login_pw, final_link)
+while True:
+  if flag.upper() == 'Y': 
+    purchase_process(final_link)
+  elif flag.upper() == 'N':
+    print("구매를 종료합니다.")
+    break
+  else:
+    print("입력이 잘못되었습니다. 다시 입력해주세요.")
