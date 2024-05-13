@@ -129,8 +129,10 @@ def Select_numbers(data_details, decision_keyword) :
     L = len(data_details)
     _prompt_text = '''
     Among the products below, please return the product numbers that meet all the conditions of the user request according to the format.If there are multiple user requests, all conditions must be met. If the user request is None, return all products.
-    For example, if product 3 and product 5 satisfy the conditions, print 3 5
+    if there are multiple product numbers to return, then return the numbers with a character '@' between them. 
+    For example, if product 3 and product 5 satisfy the conditions, print '3@5'
     If none of the products meet the conditions, please return empty string and nothing else.
+    please dont say anything other than specific format. 
     ''' 
     
     _prompt_text = _prompt_text + f"user_request : {','.join(decision_keyword)}\n "
@@ -156,7 +158,7 @@ def Select_numbers(data_details, decision_keyword) :
             print(f"run select agent one more time")
             prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 14."
             answer = SelectAgent(prompt_text)
-            select_list.extend(list(map(int,answer.split(' '))))
+            select_list.extend(list(map(int,answer.split('@'))))
     print(f"select_agent answer : {select_list}")
     return select_list
 
@@ -185,11 +187,143 @@ def CompareAgent(data_reviews,select_numbers) :
 
     return final_number, reason
 
+############################Rating Agent############################
+def rating(review_list, rating_keyword_lst) :
+    # print(f"input product : {review_list['Product_name']}")
+    base_prompt = " Look at the product_information and give a score between 1 and 5 for each of the 4 rating_keywords. In the return format, four scores are splited by @. The higher score indicates better quality of the product.  For example, if each score is 2,3,1,5 please return '2@3@1@5'. Please don't print anything except the score and @ and please always give all four scores. " 
+    prompt_text = base_prompt + f"rating_keywords = {' '.join(rating_keyword_lst)}, product_reviews = {review_list}"
+    response = client.chat.completions.create(
+    model="gpt-4-turbo",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content":prompt_text},    
+    ],
+    temperature =0.5,
+    max_tokens=10
+    )
+    result = response.choices[0].message.content
+    try : 
+        scores = result.split("@")
+        scores = [int(s) for s in scores]
+        
+    except :
+        print(f"rating error : {result}")
+    
 
+    return scores
+
+def feedback_rating(review, key_dict) :
+        """
+        rating 결과를 받아 feedback을 반환하는 함수
+        """
+        base_prompt = "Each element of key_dics represents the evaluation criteria, the score that the product received, and the reason why it received this score. Refer to the product review information in product_info, determine whether it is reasonable for the product to receive the corresponding score and explain why. Each score is a number from 1 to 5. The higher the number, the more positive the evaluation is. Look at each key_dics pair, tell me if the score on each keyword is reasonable with True or False, and also tell me why you thought so. dont say anything other than True or False and the reason. Connect the four reasons with the letter @. Example : 'True@reason@False@reason@True@reason@False@reason'."
+        prompt_text = base_prompt + f"key_dicts = {key_dict}, product_info = {review}"
+        response = client.chat.completions.create(
+        model="gpt-4-turbo",
+        messages=[
+            {"role": "system", "content": "You are a teacher who checks that scores are reasonably scored for each category."},
+            {"role": "user", "content":prompt_text},    
+        ],
+        temperature =1,
+        max_tokens=1000
+        )
+        result = response.choices[0].message.content
+    
+        # print(f"feedback_result = {result}")
+        return result.split("@")
+
+def re_rating(review, feedback_dict) :
+    """
+    feedback 결과를 받아서 False인 경우에 대해 다시 rating을 받는 함수
+    """
+
+    base_prompt = "product_info contains information including the price and review of the product. feedback_dict is each evaluation criterion, the score of the evaluation criterion, and the result of a True/False test to see if the score is correct, and the reason for the test. The score ranges from 1 to 5, and the higher the score, the better. If the test result is true, return the score as it is, and if it is false, refer to the product info and feedback to score a new score. Please split the new score to '@' according to each inspection standard and return it. example : '4@3@5@5' Please don't print anything other than the set format."
+    prompt_text = base_prompt + f"product_info = {review}, feedback_dict = {feedback_dict}"
+    response = client.chat.completions.create(
+        model="gpt-4-turbo",
+        messages=[
+            {"role": "system", "content": "You are a teacher who checks that scores are reasonably scored for each category."},
+            {"role": "user", "content":prompt_text},    
+        ],
+        temperature =1,
+        max_tokens=1000
+        )
+    result = response.choices[0].message.content
+    # print(f"re_rating_result = {result}")
+    return result.split("@")
+
+def scoring_agent(product_info, keyword_lst) :
+    """
+    product_info와 keyword_lst를 받아서 각 keyword에 대한 점수를 반환하는 함수
+    """
+    keyword = ["review positivity"]
+    keyword.extend(keyword_lst)
+
+    # 개별 product에 대해. 
+    
+    score = rating(product_info, keyword) #rating score 받아오기
+    print(f"## 최초 score = {score}")
+    key_dict = {}
+    for key, s in zip(keyword, score) :
+        key_dict[key] = s
+    feedback = feedback_rating(product_info, score) #rating score에 대한 feedback 받아오기
+    feedback_dict = {}
+    for key, j in zip(keyword, range(len(keyword))) :
+        feedback_dict[key] = [score[j], feedback[j*2], feedback[j*2+1]] # key : 판단 기준 keyword, value : [score, True/False, reason(feedback)]
+    print(f"## 최초 feedback = {feedback_dict}")
+    check = [] #feedback 결과가 모두 True인지 확인
+    for key in keyword :
+        check.append(feedback_dict[key][1])
+    print(f"## check = {check}")
+    #모두 True가 될 때까지 feedback - rating loop 
+    loop_num = 0 #loop 횟수
+    if "False" in check :
+        print(f"===========1개 이상의 False가 있기 때문에 feedback loop를 시작합니다.==============")
+    while 'False' in check and loop_num < 5:
+        false_keyword = []
+        false_dict = {}
+        #전체 키워드 중에서, False를 받은 키워드에 대해서만 false dict와 false keyword 만들기.
+        for j in range(len(keyword)) :
+            if check[j] == 'False' : 
+                false_keyword.append(keyword[j])
+                false_dict[keyword[j]] = feedback_dict[keyword[j]]
+        
+        loop_num += 1
+        
+        new_score = re_rating(product_info, false_dict) 
+        # length = len(false_keyword)  #false keyword 개수
+        
+        score_dict  = {} #feedback의 input으로 들어갈 score dict. 각 키워드에 대한 score를 넣어줌.
+
+        for key, s in zip(false_keyword, new_score) :
+            score_dict[key] = s
+        # print(f"new_score = {score_dict}")
+        feedback = feedback_rating(product_info, score_dict)         
+        #feedback_dict 업데이트
+        for j, key in zip(range(len(false_keyword)), false_keyword) :
+            feedback_dict[key] = [score_dict[key], feedback[j*2], feedback[j*2+1]]
+        #check 업데이트
+        for j in range(len(keyword)) :
+            check[j] = feedback_dict[keyword[j]][1]
+        print(f"## {loop_num} 번째 loop를 통해 변경된 score= {score_dict}, feedback = {feedback_dict}")
+    #모두 True가 되거나, loop가 5번 이상 돌았을 경우
+    score = []
+    for j in range(len(keyword)) :
+        score.append(int(feedback_dict[keyword[j]][0])) #i 번째 product의 최종 score를 int list로 반환. 
+    if loop_num != 0 : #loop를 돌았을 경우
+        print()
+        print("==========================================================================")
+        print(f"## 총 {loop_num}번의 feedback loop 를 돌고 난 후 최종 score = {score}, 최종 feedback = {feedback_dict}")
+    else :
+        print(f"## 처음 부터 모두 True를 받았기 때문에, score는 변하지 않고 {score}로 최종 결정되었음.")
+    return  score
 
 
 ########################### Vision GPT ###########################
 def vision_gpt(result_image_url) :
+    """
+    image url을 받아서 vision gpt를 이용하여 상품의 상세 정보를 추출하는 함수
+    """
     _messages=[
         {
         "role": "user",
@@ -217,6 +351,9 @@ def encode_image(image_path):
     return base64.b64encode(image_file.read()).decode('utf-8')
 
 def local_vision_gpt(image_path) :
+    """
+    local에 저장된 image path를 받아서 vision gpt를 이용하여 상품의 상세 정보를 추출하는 함수
+    """
     # Getting the base64 string
     base64_image = list(encode_image(path) for path in image_path)
     headers = {
