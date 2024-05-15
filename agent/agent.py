@@ -124,6 +124,7 @@ def SelectAgent(prompt) :
     return result
 
 def Select_numbers(data_details, decision_keyword) :
+    
     select_list = []
     N = 5  #한 번에 select agent가 고려할 상품의 개수 
     L = len(data_details)
@@ -137,26 +138,26 @@ def Select_numbers(data_details, decision_keyword) :
     
     _prompt_text = _prompt_text + f"user_request : {','.join(decision_keyword)}\n "
 
-    for i in range(L//N) :    
+    for i in range(L//N) :   #한 번에 N개씩 select agent에 넣어서 선택 
         data_details_N =  '\n'.join(list(str(i) for i in data_details[i*N:2*i*N]))
         prompt_text = _prompt_text + data_details_N
         answer = SelectAgent(prompt_text)
         try : 
-            select_list.extend(list(map(int,answer.split(' '))))
+            select_list.extend(list(map(int,answer.split('@'))))
         except :
             print(f"run select agent one more time")
-            prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 14."
+            prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 1@4."
             answer = SelectAgent(prompt_text)
             select_list.extend(list(map(int,answer.split(' '))))
-    if L%N != 0 :
+    if L%N != 0 : #N개씩 처리한 후 나머지 처리
         data_details_N = '\n'.join(list(str(i) for i in data_details[(L//N)*N:]))
         prompt_text = _prompt_text + data_details_N
         answer = SelectAgent(prompt_text)
         try : 
-                select_list.extend(list(map(int,answer.split(' '))))
+                select_list.extend(list(map(int,answer.split('@'))))
         except :
             print(f"run select agent one more time")
-            prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 14."
+            prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 1@4."
             answer = SelectAgent(prompt_text)
             select_list.extend(list(map(int,answer.split('@'))))
     print(f"select_agent answer : {select_list}")

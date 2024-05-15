@@ -122,17 +122,12 @@ def NaverFinalUrl(keyword, n_top, debug_mode=True):
 
                 #vision_gpt 
                 # print(f"result_image_url = {result_image_url}")
-                vision_info = vision_gpt(result_image_url)
+
+                local_image_url = image_for_gpt(4, result_image_url, "database")
+                print(local_image_url)
+
+                vision_info = local_vision_gpt(local_image_url)
                 result_detail['product detail form images'] = vision_info
-                #review rating 
-                # if config.review_compare_mode : #한 개씩 리뷰의 점수를 평가한 후 평균낸 점수
-                #     review_score = review_rating_one(result_review,rating_keyword_lst) # 리뷰들의 평균 점수 return
-                # else : #한 번에 10개의 리뷰를 모두 고려한 점수
-                #     review_score = review_rating_all(result_review,rating_keyword_lst) # 리뷰들의 평균 점수 return
-                
-                #rating_keyword_scores 
-                # scores = rating_keyword_sorting(result_review, rating_keyword_lst) 
-                
 
                 #compare_information : compare agent에게 제공할 정보 : 이름, 가격, 할인율, 번호, 리뷰 평균 점수...
                 compare_information = {"Product_name" : result_detail["상품명"], "discount_rate" : result_detail["할인율"], "price" : result_detail["현재 가격"], 'number of reviews' : result_review['리뷰 수'], "Star rating" : result_review['총 평점'], "reviews" : result_review['리뷰'] }

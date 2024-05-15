@@ -118,7 +118,7 @@ for i in range(len(data_reviews)) :
       print()
       print(f"==============================={i+1} 번째 product scoring 계산 중...================================")
       scores = scoring_agent(data_reviews[i], rating_keyword_lst) 
-      scores.append(round(costs[i]),3)
+      scores.append(round(costs[i],3))
       final_score.append([round(sum(scores)/5,2), i+1, scores]) 
 
 final_score.sort( reverse = True)
