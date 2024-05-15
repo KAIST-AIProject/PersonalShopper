@@ -11,6 +11,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from .naver_item_scrapper import *
 from .kurly_item_scrapper import *
+from .gmarket_item_scrapper import *
+
 from utils import *
 from agent import *
 import os
@@ -186,7 +188,7 @@ def KurlyFinalUrl(keyword, n_top, debug_mode=True):
     # 창 숨기는 옵션 추가
     # options.add_argument("headless")
     if debug_mode:
-        options.add_experimental_option("debuggerAddress", "127.0.0.1:9223")
+        options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     
     driver = webdriver.Chrome(options=options)
     url_list = KurlyLinkGet(keyword,driver, n_top)
@@ -256,6 +258,69 @@ def GmarketLinkGet(url_kword, n_top=10):
     for i in range(n_top):
         gmarket_ntop_url.append(qurey_arr[i]['href'])
     return gmarket_ntop_url
+
+
+
+################컬리 direct link에서 정보 불러오기################
+def GmarketFinalUrl(keyword, n_top, debug_mode=True):
+
+    # 웹드라이버 옵션 생성
+    options = webdriver.ChromeOptions()
+    count = 0
+    # 창 숨기는 옵션 추가
+    # options.add_argument("headless")
+    if debug_mode:
+        options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    
+    driver = webdriver.Chrome(options=options)
+    url_list = GmarketLinkGet(keyword, n_top)
+    gmarket_url_lst = []
+
+    data_details = []
+    data_reviews = []
+    images_urls = []
+
+
+    with tqdm(total=n_top, desc='Gmarket', ascii=True) as pbar:
+        for url in url_list:
+            driver.get(url)
+            option_info = {'options':dict()}
+            # GmarketOptionGet(driver, option_info)
+            scrapped_data_path = os.path.join("database", "Gmarket_item_"+str(count+1)+".bin")
+            review_data_path = os.path.join("database", "Gmarket_item_review_"+str(count+1)+".bin")
+            result_detail, result_review, result_image_url = gmarket_selenium_scraper(driver, scrapped_data_path, review_data_path)
+            result_detail.update(option_info)
+            count+=1
+            
+            #local로 이미지 다운로드
+            local_image_url= image_for_gpt(4, result_image_url, "database")
+            print(local_image_url)
+
+            # vision_info = vision_gpt(result_image_url)
+            vision_info = local_vision_gpt(local_image_url)
+            print(f"vision_info = {vision_info}")
+            result_detail['product detail form images'] = vision_info
+
+            #review positivity score
+            # if config.review_compare_mode : #한 개씩 리뷰의 점수를 평가한 후 평균낸 점수
+            #     review_score = review_rating_one(result_review['리뷰']) # 리뷰들의 평균 점수 return
+            # else : #한 번에 10개의 리뷰를 모두 고려한 점수
+            #     review_score = review_rating_all(result_review['리뷰']) # 리뷰들의 평균 점수 return
+            
+            
+            #compare_information : compare agent에게 제공할 정보 : 이름, 가격, 할인율, 번호, 리뷰 평균 점수...
+            compare_information = {"Product_name" : result_detail["상품명"], "discount_rate" : result_detail["할인율"], "price" : result_detail["현재 가격"], 'number of reviews' : result_review['리뷰 수'], "Star rating" : result_review['총 평점'], "reviews" : result_review['리뷰'] }
+                
+            data_details.append(result_detail)
+            data_reviews.append(compare_information)
+            images_urls.append(result_image_url)
+            gmarket_url_lst.append(url)
+            count+=1
+            pbar.update(1)
+
+    driver.quit()
+    return gmarket_url_lst, data_details, data_reviews
+
 
 
 if __name__ == '__main__':
