@@ -64,7 +64,7 @@ def CoupangSession(id, pw, url, debug_mode=True):
     #옵션 선택
     radio_opt_lst = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-radio")
     if radio_opt_lst:
-        selected_opt = CoupangRaidoOption(driver)
+        selected_opt = CoupangRadioOption(driver)
     else:
         selected_opt = CoupangClickOption(driver)
 

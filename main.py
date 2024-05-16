@@ -7,7 +7,6 @@ from openai import OpenAI
 from session import *
 from agent import *
 import config
-from utils import purchase_process
 
 
 ######################################### 쇼핑 검색어 input 받기 #########################################
@@ -57,7 +56,6 @@ url_path = os.path.join("cache", "finalLink.pickle")
 website_name  = ['naver', 'kurly', 'coupang', 'gmarket']
 func_arr = [NaverFinalUrl, KurlyFinalUrl]
 
-
 ######################################### Multi-threading #########################################
 thread = [MyThread(f, input_keyword[0], n_top) for f in func_arr]
 
@@ -76,12 +74,14 @@ final_link_lst = []
 data_details = []
 data_reviews = []
 
+
 for idx, thr_ret in enumerate(thread):
   final_link_dict[idx], data_details_dict[idx], data_reviews_dict[idx] = thr_ret.get_result()
   final_link_lst+=final_link_dict[idx]
   data_details+=data_details_dict[idx]
   data_reviews+=data_reviews_dict[idx]
 
+print(data_details)
 print(final_link_lst)
 
 with open(url_path, "wb") as fw_url:
