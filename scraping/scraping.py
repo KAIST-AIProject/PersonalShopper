@@ -43,7 +43,7 @@ def CoupangLinkGet(url_kword, n_top=10,):
 def CoupangFinalUrl(keyword, n_top, debug_mode=True):
 
     # 웹드라이버 옵션 생성
-    options = webdriver.ChromeOptions()
+    options = Options()
     count = 0
     # 창 숨기는 옵션 추가
     # options.add_argument("headless")
@@ -51,7 +51,7 @@ def CoupangFinalUrl(keyword, n_top, debug_mode=True):
         options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     
     driver = webdriver.Chrome(options=options)
-    url_list = CoupangLinkGet(keyword,driver, n_top)
+    url_list = CoupangLinkGet(keyword, n_top)
     coupang_url_lst = []
 
     data_details = []
@@ -63,7 +63,7 @@ def CoupangFinalUrl(keyword, n_top, debug_mode=True):
         for url in url_list:
             driver.get(url)
             option_info = {'options':dict()}
-            # CoupangOptionGet(driver, option_info)
+            CoupangOptionGet(driver, option_info)
             scrapped_data_path = os.path.join("database", "Coupang_item_"+str(count+1)+".bin")
             review_data_path = os.path.join("database", "Coupang_item_review_"+str(count+1)+".bin")
             result_detail, result_review, result_image_url = Coupang_selenium_scraper(driver, scrapped_data_path, review_data_path)
@@ -87,7 +87,6 @@ def CoupangFinalUrl(keyword, n_top, debug_mode=True):
             coupang_url_lst.append(url)
             count+=1
             pbar.update(1)
-
     driver.quit()
     return coupang_url_lst, data_details, data_reviews
 

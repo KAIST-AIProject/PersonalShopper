@@ -23,11 +23,9 @@ def CoupangClickOption(driver):
         
         if len(opt_text_lst) == 1:
             opt_text_lst = [s_e.text for s_e in selec_opt_lst if s_e.text]
-            if driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-radio"):
-                opt_text_lst = [' '.join(opt_text_lst)]
-            
             if not opt_text_lst:
-                break       
+                print("옵션이 없습니다.")
+                return []  
         
         for idx, opt in enumerate(opt_text_lst):
             print(f"{idx+1}번 옵션: {opt}")
@@ -58,7 +56,7 @@ def CoupangClickOption(driver):
     return selected_opt
 
 
-def CoupangRaidoOption(driver):
+def CoupangRadioOption(driver):
     opt_btn_lst = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-radio")
     option_name = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-name")
     option_price = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-price")
@@ -94,3 +92,51 @@ def CoupangRaidoOption(driver):
     
     return selected_opt
         
+        
+############################################# Option Scraping #############################################
+def CoupangContainerOptionGet(driver, option_info):
+    opt_btn_lst = driver.find_elements(By.CSS_SELECTOR, "div.prod-option__selected-container > button.prod-option__selected.multiple")
+    if not opt_btn_lst:
+        opt_btn_lst = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option")    
+    iter_num = len(opt_btn_lst)
+
+    for i in range(iter_num):
+        #옵션 버튼 클릭하면서 세션이 새롭게 열림. 다시 선택해야함
+        opt_btn_lst = driver.find_elements(By.CSS_SELECTOR, "div.prod-option__selected-container > button.prod-option__selected.multiple")
+        if not opt_btn_lst:
+            opt_btn_lst = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option")
+        e = opt_btn_lst[i]
+        e.click()
+        opt_name = e.find_element(By.CSS_SELECTOR, "span.title").text 
+        selec_opt_lst = driver.find_elements(By.CSS_SELECTOR, "li.prod-option-dropdown-item")
+        
+        opt_lst = []
+        for s_e in selec_opt_lst:
+            if not s_e.text:
+                continue
+            opt_lst.append(s_e.text)
+        e.click()
+        
+        option_info['options'][opt_name] = opt_lst
+
+
+def CoupangRadioOptionGet(driver, option_info):
+    option_name = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-name")
+    option_price = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-price")
+
+    #옵션 종류 이름 
+    opt_type_name = driver.find_element(By.CSS_SELECTOR, "span.tab-selector__header-title").text
+
+    opt_lst = []
+    for n,p in zip(option_name, option_price):
+        opt_lst.append(n.text + "(가격: " + p.text + ")")
+        
+    option_info['options'][opt_type_name] = opt_lst
+    
+
+def CoupangOptionGet(driver, option_info):
+    radio_opt_lst = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-radio")
+    if radio_opt_lst:
+        CoupangRadioOptionGet(driver,option_info)
+    else:
+        CoupangContainerOptionGet(driver,option_info)
