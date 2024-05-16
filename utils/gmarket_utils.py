@@ -116,7 +116,7 @@ def OptionConfigCheck(driver, i, deep_info):
     #선택된 옵션 삭제             
     while True:
         try:
-            driver.find_element(By.CSS_SELECTOR, "li > div.choose_result > button.close.sp_vipgroup").click()
+            driver.find_element(By.CSS_SELECTOR, "button.close.sp_vipgroup").click()
             driver.implicitly_wait(1)
             break
         except:

@@ -316,7 +316,7 @@ def GmarketLinkGet(url_kword, n_top=10):
 def GmarketFinalUrl(keyword, n_top, debug_mode=True):
 
     # 웹드라이버 옵션 생성
-    options = webdriver.ChromeOptions()
+    options = Options()
     count = 0
     # 창 숨기는 옵션 추가
     # options.add_argument("headless")
@@ -335,11 +335,17 @@ def GmarketFinalUrl(keyword, n_top, debug_mode=True):
     with tqdm(total=n_top, desc='Gmarket', ascii=True) as pbar:
         for url in url_list:
             driver.get(url)
-            option_info = {'options':dict()}
-            # GmarketOptionGet(driver, option_info)
+         
             scrapped_data_path = os.path.join("database", "Gmarket_item_"+str(count+1)+".bin")
             review_data_path = os.path.join("database", "Gmarket_item_review_"+str(count+1)+".bin")
             result_detail, result_review, result_image_url = gmarket_selenium_scraper(driver, scrapped_data_path, review_data_path)
+            
+            opt_btn_lst = driver.find_elements(By.CSS_SELECTOR, "button.select-item_option") 
+            option_info = {'options':dict()}
+            for i in range(len(opt_btn_lst)//2):
+                GmarketOptionGet(driver, i, [], option_info['options'])
+                driver.refresh()
+            print(option_info)  
             result_detail.update(option_info)
             count+=1
             
