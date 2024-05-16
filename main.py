@@ -7,6 +7,7 @@ from openai import OpenAI
 from session import *
 from agent import *
 import config
+from utils import purchase_process
 
 
 ######################################### 쇼핑 검색어 input 받기 #########################################
@@ -142,10 +143,6 @@ print()
 final_link = final_link_lst[user_select_num-1]
 print(f"최종 선택 사이트 URL: {final_link}")
 print()
-login_id = config.naver_id
-login_pw = config.naver_pw
-# login_id = input("ID:")
-# login_pw = input("PW:")
 
 flag = input("구매 진행하시겠습니까? (Y/N):")
 
