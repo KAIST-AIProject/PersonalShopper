@@ -46,62 +46,46 @@ def NaverSession(id, pw, url, debug_mode=True):
         print("로그인을 진행하겠습니다.")
         
     driver.implicitly_wait(3)
-    #이부분 나중에 데이터베이스 연결
-    # ID = id
-    # PW = pw
-    # try:
-    #     ret = NaverLogin(ID, PW, driver, main_handle)
-    # except:
-    #     pass
-    #########################################################
-    #구매진행
     
+    #배송지 선택    
     NaverAddressCheck(driver,main_handle)
 
 
-def CoupangSession(id, pw, url):
-    #url은 구매 가능한 상세페이지로 시작, 추후 작업 진행
-    user_agent = "'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-    
-    coupang_id = id
-    coupang_pw = pw
-    
-    # 옵션 생성
-    options = webdriver.ChromeOptions()
-    # user-agent 설정
-    options.add_argument(f"--user-agent={user_agent}")
-    
-    #URL 접근
-    driver = webdriver.Chrome(options=options)
+def CoupangSession(id, pw, url, debug_mode=True):    
+    chrome_options = Options() ## 옵션 추가를 위한 준비
+    if debug_mode:
+        chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
+   
+    # 크롬 드라이버 생성
+    driver = webdriver.Chrome(options=chrome_options)
     driver.get(url)
-    time.sleep(2)
-    driver.implicitly_wait(20)
+    driver.implicitly_wait(3) ## 연결 후 3초간 기다리기
     
-    #로그인 버튼 누르기
-    driver.find_element(By.CSS_SELECTOR , 'div.clearFix > ul > li.my-coupang.more > a').click()
-    time.sleep(3)
+    #옵션 선택
+    radio_opt_lst = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-radio")
+    if radio_opt_lst:
+        selected_opt = CoupangRaidoOption(driver)
+    else:
+        selected_opt = CoupangClickOption(driver)
+
+    #구매 버튼 선택
+    driver.find_element(By.CSS_SELECTOR, "button.prod-buy-btn").click()
+
+    #로그인 시도
+    coupang_id = config.coupang_id
+    coupang_pw = config.coupang_pw
 
     e = driver.find_element(By.CSS_SELECTOR, 'input[type=email]')
     p = driver.find_element(By.CSS_SELECTOR, 'input[type=password]')
-    while e.get_attribute('value')=='' and p.get_attribute('value')=='' :
-        pyperclip.copy(coupang_id) # COMMAND+c가 된 상태
-        e.send_keys(Keys.COMMAND, 'v') # COMMAND+v
-        time.sleep(4)
-        pyperclip.copy(coupang_pw) # COMMAND+c
-        p.send_keys(Keys.COMMAND, 'v') # cCOMMAND+v
-        time.sleep(2)
+
+    e.send_keys(coupang_id) 
+    driver.implicitly_wait(1)
+        
+    p.send_keys(coupang_pw)
+    driver.implicitly_wait(1)
 
     driver.find_element(By.CSS_SELECTOR , 'button.login__button.login__button--submit').click()
-    driver.implicitly_wait(10)
-    time.sleep(3)
-
-    #url 재접근
-    driver.get(url)
-    driver.implicitly_wait(10)
-    
-    # driver 종료
-    time.sleep(10)
-    driver.quit()
+    driver.implicitly_wait(3)
     
     
 def KurlySession(id, pw, url, debug_mode=True):
