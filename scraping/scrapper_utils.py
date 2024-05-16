@@ -17,7 +17,7 @@ def check_exists_element_and_return_text(driver, selector):
         element = driver.find_element(By.CSS_SELECTOR, selector)
     except NoSuchElementException:
         return None
-    return element.text
+    return element.get_attribute("textContent")
 
 def scroll_down_to_end(driver, height = -1):
     SCROLL_PAUSE_TIME = 0.7

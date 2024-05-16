@@ -28,6 +28,8 @@ def image_for_gpt(img_num, img_url, path):
         result = download_image(img_url[img_count-1], save_path)
         if result==True:
             memory = os.path.getsize(save_path)
+            if memory <5:
+                continue
             if memory<pow(2, 20)*10:
                 img_count+=1
                 img_list.append(save_path)

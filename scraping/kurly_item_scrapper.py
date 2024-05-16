@@ -171,7 +171,6 @@ def kurly_selenium_scraper(driver, save_path_item, save_path_quality):
     with open(save_path_quality, 'wb') as quality_file:
         pickle.dump(quality_info, quality_file, pickle.HIGHEST_PROTOCOL )
 
-
     return item_info, quality_info, image_links
 
 
