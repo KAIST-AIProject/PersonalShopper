@@ -124,24 +124,28 @@ def SelectAgent(prompt) :
     return result
 
 def Select_numbers(data_details, decision_keyword) :
+    print(f"==============================Select Agent 실행==============================")
     
     select_list = []
     N = 5  #한 번에 select agent가 고려할 상품의 개수 
     L = len(data_details)
     _prompt_text = '''
-    Among the products below, please return the product numbers that meet all the conditions of the user request according to the format.If there are multiple user requests, all conditions must be met. If the user request is None, return all products.
+    The data_details contain the number of each product and the detailed information of the product. The user request key word is a condition that the product must be satisfied.
+    Among the products below, please return the product numbers that meet all the conditions of the user request keyword according to the format.If there are multiple user requests keyword, all conditions must be met. If the user request keyword is None, return all products numbers.
     if there are multiple product numbers to return, then return the numbers with a character '@' between them. 
-    For example, if product 3 and product 5 satisfy the conditions, print '3@5'
-    If none of the products meet the conditions, please return empty string and nothing else.
+    For example, if product 3 and product 5 satisfy the conditions, return '3@5'
+    If none of the products meet the conditions, please return empty string and nothing else. You should not print out the product numbers that are not in the input.
     please dont say anything other than specific format. 
     ''' 
     
-    _prompt_text = _prompt_text + f"user_request : {','.join(decision_keyword)}\n "
-
+    _prompt_text = _prompt_text + f"user_request  : {','.join(decision_keyword)}\n "
+    
     for i in range(L//N) :   #한 번에 N개씩 select agent에 넣어서 선택 
         data_details_N =  '\n'.join(list(str(i) for i in data_details[i*N:2*i*N]))
-        prompt_text = _prompt_text + data_details_N
+        prompt_text = _prompt_text + "/n data_details : " + data_details_N
         answer = SelectAgent(prompt_text)
+        print(f"##########{i}번째 select_agent prompt : {prompt_text}")
+        print(f"select_agent answer {i} : {answer}")
         try : 
             select_list.extend(list(map(int,answer.split('@'))))
         except :
@@ -151,8 +155,10 @@ def Select_numbers(data_details, decision_keyword) :
             select_list.extend(list(map(int,answer.split(' '))))
     if L%N != 0 : #N개씩 처리한 후 나머지 처리
         data_details_N = '\n'.join(list(str(i) for i in data_details[(L//N)*N:]))
-        prompt_text = _prompt_text + data_details_N
+        prompt_text = _prompt_text + "/n data_details :"+ data_details_N
         answer = SelectAgent(prompt_text)
+        print(f"##########{i}번째 (나머지 처리) select_agent prompt : {prompt_text}")
+        print(f"select_agent answer {i+1} : {answer}")
         try : 
                 select_list.extend(list(map(int,answer.split('@'))))
         except :
@@ -160,7 +166,7 @@ def Select_numbers(data_details, decision_keyword) :
             prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 1@4."
             answer = SelectAgent(prompt_text)
             select_list.extend(list(map(int,answer.split('@'))))
-    print(f"select_agent answer : {select_list}")
+    print(f"최종 select_agent result : {select_list}")
     return select_list
 
 ############################Compare Agent############################
