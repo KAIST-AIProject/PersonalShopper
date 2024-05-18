@@ -73,7 +73,7 @@ def CoupangFinalUrl(keyword, n_top, debug_mode=True):
             
             #local로 이미지 다운로드
             local_image_url= image_for_gpt(4, result_image_url, "database")
-            print(local_image_url)
+            # print(local_image_url)
 
             vision_info = local_vision_gpt(local_image_url)
             print(f"vision_info = {vision_info}")
@@ -178,9 +178,11 @@ def NaverFinalUrl(keyword, n_top, debug_mode=True):
                 # print(f"result_image_url = {result_image_url}")
 
                 local_image_url = image_for_gpt(4, result_image_url, "database")
-                print(local_image_url)
+                # print(local_image_url)
+                
 
                 vision_info = local_vision_gpt(local_image_url)
+                print(f"vision_info = {vision_info}")
                 result_detail['product detail form images'] = vision_info
 
                 #compare_information : compare agent에게 제공할 정보 : 이름, 가격, 할인율, 번호, 리뷰 평균 점수...
@@ -264,7 +266,7 @@ def KurlyFinalUrl(keyword, n_top, debug_mode=True):
             
             #local로 이미지 다운로드
             local_image_url= image_for_gpt(4, result_image_url, "database")
-            print(local_image_url)
+            # print(local_image_url)
 
             # vision_info = vision_gpt(result_image_url)
             vision_info = local_vision_gpt(local_image_url)
@@ -356,7 +358,7 @@ def GmarketFinalUrl(keyword, n_top, debug_mode=True):
             
             #local로 이미지 다운로드
             local_image_url= image_for_gpt(4, result_image_url, "database")
-            print(local_image_url)
+            # print(local_image_url)
  
             # vision_info = vision_gpt(result_image_url)
             vision_info = local_vision_gpt(local_image_url)

@@ -134,18 +134,18 @@ def Select_numbers(data_details, decision_keyword) :
     Among the products below, please return the product numbers that meet all the conditions of the user request keyword according to the format.If there are multiple user requests keyword, all conditions must be met. If the user request keyword is None, return all products numbers.
     if there are multiple product numbers to return, then return the numbers with a character '@' between them. 
     For example, if product 3 and product 5 satisfy the conditions, return '3@5'
-    If none of the products meet the conditions, please return empty string and nothing else. You should not print out the product numbers that are not in the input.
+    If none of the products meet the conditions, please return empty string and nothing else. You should not print out the product numbers that are not in the product_info.
     please dont say anything other than specific format. 
     ''' 
     
     _prompt_text = _prompt_text + f"user_request  : {','.join(decision_keyword)}\n "
     
-    for i in range(L//N) :   #한 번에 N개씩 select agent에 넣어서 선택 
-        data_details_N =  '\n'.join(list(str(i) for i in data_details[i*N:2*i*N]))
+    for s in range(L//N) :   #한 번에 N개씩 select agent에 넣어서 선택 
+        data_details_N =  '\n'.join(list(str(d) for d in data_details[s*N:2*s*N]))
         prompt_text = _prompt_text + "/n data_details : " + data_details_N
         answer = SelectAgent(prompt_text)
-        print(f"##########{i}번째 select_agent prompt : {prompt_text}")
-        print(f"select_agent answer {i} : {answer}")
+        # print(f"##########{s}번째 select_agent prompt : {prompt_text}")
+        print(f"select_agent answer {s+1} : {answer}")
         try : 
             select_list.extend(list(map(int,answer.split('@'))))
         except :
@@ -157,8 +157,8 @@ def Select_numbers(data_details, decision_keyword) :
         data_details_N = '\n'.join(list(str(i) for i in data_details[(L//N)*N:]))
         prompt_text = _prompt_text + "/n data_details :"+ data_details_N
         answer = SelectAgent(prompt_text)
-        print(f"##########{i}번째 (나머지 처리) select_agent prompt : {prompt_text}")
-        print(f"select_agent answer {i+1} : {answer}")
+        # print(f"##########나머지 처리 select_agent prompt : {prompt_text}")
+        print(f"나머지 select_agent answer: {answer}")
         try : 
                 select_list.extend(list(map(int,answer.split('@'))))
         except :
@@ -197,7 +197,7 @@ def CompareAgent(data_reviews,select_numbers) :
 ############################Rating Agent############################
 def rating(review_list, rating_keyword_lst) :
     # print(f"input product : {review_list['Product_name']}")
-    base_prompt = " Look at the product_information and give a score between 1 and 5 for each of the 4 rating_keywords. In the return format, four scores are splited by @. The higher score indicates better quality of the product.  For example, if each score is 2,3,1,5 please return '2@3@1@5'. Please don't print anything except the score and @ and please always give all four scores. " 
+    base_prompt = " Look at the product_information and give a score between 1 and 5 for each of the 4 rating_keywords. (score type : integer)In the return format, four scores are splited by @. The higher score indicates better quality of the product.  For example, if each score is 2,3,1,5 please return '2@3@1@5'. Please don't print anything except the score and @ and please always give all four scores. " 
     prompt_text = base_prompt + f"rating_keywords = {' '.join(rating_keyword_lst)}, product_reviews = {review_list}"
     response = client.chat.completions.create(
     model="gpt-4-turbo",
@@ -244,7 +244,7 @@ def re_rating(review, feedback_dict) :
     feedback 결과를 받아서 False인 경우에 대해 다시 rating을 받는 함수
     """
 
-    base_prompt = "product_info contains information including the price and review of the product. feedback_dict is each evaluation criterion, the score of the evaluation criterion, and the result of a True/False test to see if the score is correct, and the reason for the test. The score ranges from 1 to 5, and the higher the score, the better. If the test result is true, return the score as it is, and if it is false, refer to the product info and feedback to score a new score. Please split the new score to '@' according to each inspection standard and return it. example : '4@3@5@5' Please don't print anything other than the set format."
+    base_prompt = "product_info contains information including the price and review of the product. feedback_dict is each evaluation criterion, the score of the evaluation criterion, and the result of a True/False test to see if the score is correct, and the reason for the test. The score ranges from 1 to 5, and the higher the score, the better. score type : integer. If the test result is true, return the score as it is, and if it is false, refer to the product info and feedback to score a new score. Please split the new score to '@' according to each inspection standard and return it. example : '4@3@5@5' Please don't print anything other than the set format."
     prompt_text = base_prompt + f"product_info = {review}, feedback_dict = {feedback_dict}"
     response = client.chat.completions.create(
         model="gpt-4-turbo",
@@ -316,7 +316,7 @@ def scoring_agent(product_info, keyword_lst) :
     #모두 True가 되거나, loop가 5번 이상 돌았을 경우
     score = []
     for j in range(len(keyword)) :
-        score.append(int(feedback_dict[keyword[j]][0])) #i 번째 product의 최종 score를 int list로 반환. 
+        score.append(float(feedback_dict[keyword[j]][0])) #i 번째 product의 최종 score를 float list로 반환. 
     if loop_num != 0 : #loop를 돌았을 경우
         print()
         print("==========================================================================")
