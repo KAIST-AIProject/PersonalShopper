@@ -117,6 +117,11 @@ def GmarketClickOption(driver):
         print(f"내가 선택한 {idx+1}옵션: {opt}")
     print("*"*20)
 
+    try:
+        driver.find_element(By.CSS_SELECTOR, "button.bt_select").click()
+    except:
+        pass
+    
     return selected_opt
 
 
