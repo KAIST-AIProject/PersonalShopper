@@ -64,6 +64,7 @@ def CoupangFinalUrl(keyword, n_top, debug_mode=True):
             driver.get(url)
             option_info = {'options':dict()}
             CoupangOptionGet(driver, option_info)
+            print(option_info)
             scrapped_data_path = os.path.join("database", "Coupang_item_"+str(count+1)+".bin")
             review_data_path = os.path.join("database", "Coupang_item_review_"+str(count+1)+".bin")
             result_detail, result_review, result_image_url = Coupang_selenium_scraper(driver, scrapped_data_path, review_data_path)
@@ -340,19 +341,23 @@ def GmarketFinalUrl(keyword, n_top, debug_mode=True):
             review_data_path = os.path.join("database", "Gmarket_item_review_"+str(count+1)+".bin")
             result_detail, result_review, result_image_url = gmarket_selenium_scraper(driver, scrapped_data_path, review_data_path)
             
-            opt_btn_lst = driver.find_elements(By.CSS_SELECTOR, "button.select-item_option") 
+            #화면이 맨 밑으로 내려가 있어서 옵션을 가져오지 못할 때
+            driver.refresh()
+            driver.implicitly_wait(1)
+            scroll_up_to_end(driver)
+            
+            #옵션 가져오기       
             option_info = {'options':dict()}
-            for i in range(len(opt_btn_lst)//2):
-                GmarketOptionGet(driver, i, [], option_info['options'])
-                driver.refresh()
+            GmarketOptionGet(driver, option_info)    
             print(option_info)  
+            
             result_detail.update(option_info)
             count+=1
             
             #local로 이미지 다운로드
             local_image_url= image_for_gpt(4, result_image_url, "database")
             print(local_image_url)
-
+ 
             # vision_info = vision_gpt(result_image_url)
             vision_info = local_vision_gpt(local_image_url)
             print(f"vision_info = {vision_info}")

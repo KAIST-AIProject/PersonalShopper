@@ -103,7 +103,6 @@ def OptionConfigCheck(driver, i, deep_info):
     #첫번째 옵션 선택
     opt_name_lst[selected_opt[0]].click()
     driver.implicitly_wait(1)
-    scroll_up_to_end(driver)
     
     #옵션 종류 구분
     optino_type = 'B'
@@ -128,37 +127,71 @@ def OptionConfigCheck(driver, i, deep_info):
     
 
 #옵션 항목을 dictionary 형태로 가져오기
-def GmarketOptionGet(driver, idx, deep_info, option_info):
-    opt_btn_lst = driver.find_elements(By.CSS_SELECTOR, "button.select-item_option") 
-    opt_name = opt_btn_lst[idx].find_element(By.CSS_SELECTOR, "span.txt").text
+def GmarketOptionGet(driver, option_info):
+
+    if driver.find_elements(By.CSS_SELECTOR, "div.thumb img"):
+        opt_btn_img_lst = driver.find_elements(By.CSS_SELECTOR, "div.section_now_selected button.select-item_option")
+        for i in range(len(opt_btn_img_lst)//2):
+            opt_btn_img_lst[i].click()
+            opt_name_lst = driver.find_elements(By.CSS_SELECTOR, "div.info span.item_tit")
+            opt_price_lst = driver.find_elements(By.CSS_SELECTOR, "li span.item_price")
+            
+            opt_text_lst = []
+            selected_n_opt = []
+            selected_p_opt = []
+            for idx, e_n in enumerate(opt_name_lst):
+                if not e_n.text:
+                    continue
+                selected_n_opt.append((e_n.text, idx))
+            
+            for e_p in opt_price_lst:
+                if not e_p.text:
+                    continue
+                selected_p_opt.append(e_p.text)
+            
+            for e_n, e_p in zip(selected_n_opt, selected_p_opt):
+                option_name = e_n[0] + "(가격: " + e_p + ")"
+                opt_text_lst.append(option_name)
+            option_info['options'][f'이미지 선택 옵션'] = opt_text_lst
+            opt_name_lst[selected_n_opt[0][1]].click()
+
+    opt_btn_lst = driver.find_elements(By.CSS_SELECTOR, "div.section_option_area button.select-item_option")
+    for i in range(len(opt_btn_lst)//2):
+        opt_btn_lst[i].click()
+        #옵션 항목 불러오기
+        opt_name_lst = driver.find_elements(By.CSS_SELECTOR, "ul.select-itemoption-list > li > a")
+        opt_price_lst = driver.find_elements(By.CSS_SELECTOR, "li span.text__price")
+        opt_name = opt_btn_lst[i].find_element(By.CSS_SELECTOR, "span.txt").text
+        
+        opt_text_lst = []
+        selected_n_opt = []
+        selected_p_opt = []
+        for idx, e_n in enumerate(opt_name_lst):
+            if not e_n.text:
+                continue
+            selected_n_opt.append((e_n.text, idx))
+        
+        if not selected_n_opt:
+            opt_btn_lst[i].click()
+            break
+        
+        for e_p in opt_price_lst:
+            if not e_p.text:
+                continue
+            selected_p_opt.append(e_p.text)
+        
+        if selected_p_opt:
+            for e_n, e_p in zip(selected_n_opt, selected_p_opt):
+                option_name = e_n[0] + "(가격: " + e_p + ")"
+                opt_text_lst.append(option_name)
+        else:
+            for e_n in selected_n_opt:
+                option_name = e_n[0]
+                opt_text_lst.append(option_name)
+            
+        option_info['options'][f'{opt_name}'] = opt_text_lst
+        opt_name_lst[selected_n_opt[0][1]].click()    
     
-    #옵션 종류 체크, 옵션 항목 불러오기
-    option_type, opt_text_lst, select_opt = OptionConfigCheck(driver, idx, deep_info)
-    scroll_up_to_end(driver)
-    if option_type=='A':
-        option_info[opt_name] = dict()
-        for opt_idx, opt_text in enumerate(opt_text_lst):
-            if deep_info: 
-                for oi, ii in deep_info:
-                    opt_btn_lst[oi].click()
-                    driver.implicitly_wait(1)        
-                    opt_ele_lst =driver.find_elements(By.CSS_SELECTOR, "a > span.text__name")
-                    opt_ele_lst[ii].click()
-                    driver.implicitly_wait(1)
-            opt_btn_lst =driver.find_elements(By.CSS_SELECTOR, "button.select-item_option")
-            opt_btn_lst[idx].click()
-            driver.implicitly_wait(1)
-            opt_ele_lst =driver.find_elements(By.CSS_SELECTOR, "a > span.text__name")
-            opt_ele_lst[select_opt[opt_idx]].click()
-            driver.implicitly_wait(1)
-            scroll_up_to_end(driver)
-            option_info[opt_name][opt_text] =dict()
-            deep_info.append((idx, select_opt[opt_idx]))
-            GmarketOptionGet(driver, idx+1, deep_info[:], option_info[opt_name][opt_text])
-            deep_info.pop()
-    elif option_type=='B':
-        option_info[opt_name] = opt_text_lst
-        scroll_up_to_end(driver)
     return
 
 

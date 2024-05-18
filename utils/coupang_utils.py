@@ -134,9 +134,25 @@ def CoupangRadioOptionGet(driver, option_info):
     option_info['options'][opt_type_name] = opt_lst
     
 
+def CoupangImgOptinoGet(driver, option_info):
+    option_name= driver.find_elements(By.CSS_SELECTOR, "div.tab-selector__tab-image-title")
+
+    #옵션 종류 이름 
+    opt_type_name = driver.find_element(By.CSS_SELECTOR, "span.tab-selector__header-title").text
+    opt_lst = []
+    for i in range(len(option_name)):
+        opt_lst.append(option_name[i].text )
+        
+    option_info['options'][opt_type_name] = opt_lst
+
+
 def CoupangOptionGet(driver, option_info):
     radio_opt_lst = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-radio")
-    if radio_opt_lst:
-        CoupangRadioOptionGet(driver,option_info)
+    img_opt_lst = driver.find_elements(By.CSS_SELECTOR, "div.tab-selector__tab-image-title")    
+    if img_opt_lst:
+        CoupangImgOptinoGet(driver,option_info)
     else:
-        CoupangContainerOptionGet(driver,option_info)
+        if radio_opt_lst:
+            CoupangRadioOptionGet(driver,option_info)
+        else: 
+            CoupangContainerOptionGet(driver,option_info)
