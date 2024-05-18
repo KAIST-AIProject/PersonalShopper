@@ -144,26 +144,25 @@ def GmarketSession(id, pw, url, debug_mode=True):
 
     driver = webdriver.Chrome(options=chrome_options)
     driver.get(url)
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(3)
 
-    GmarketClickOption(driver)
-
-    #구매버튼 클릭
-    driver.find_element(By.CSS_SELECTOR, "#coreInsOrderBtn").click()
-    driver.implicitly_wait(1)
-
-    #login
-    e = driver.find_element(By.CSS_SELECTOR, 'input#typeMemberInputId')
-    for c in gmarket_id:
-        e.send_keys(c)
-    driver.implicitly_wait(1)
-
-    e = driver.find_element(By.CSS_SELECTOR, 'input#typeMemberInputPassword')
-    for c in gmarket_pw:
-        e.send_keys(c)
-    driver.implicitly_wait(1)
-
-    driver.find_element(By.CSS_SELECTOR , 'button#btn_memberLogin').click()
+    while True:
+        GmarketClickOption(driver)
+        driver.implicitly_wait(3)
+    
+        #구매버튼 클릭
+        driver.find_element(By.CSS_SELECTOR, "#coreInsOrderBtn").click()
+        driver.implicitly_wait(1)
+    
+        try:
+            driver.switch_to.alert.accept()
+            print("구매에 제한이 있는 상품입니다. 구매 시 인증이 필요하기 때문에 다른 상품을 선택해주세요.")
+            driver.get(url)
+            driver.implicitly_wait(3)
+        except:
+            break
+        
+    GmarketLogin(gmarket_id, gmarket_pw, driver)
 
 from session import *
 

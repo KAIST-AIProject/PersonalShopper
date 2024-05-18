@@ -55,6 +55,7 @@ print('scraping 작업 실행')
 url_path = os.path.join("cache", "finalLink.pickle")
 website_name  = ['naver', 'kurly', 'coupang', 'gmarket']
 func_arr = [NaverFinalUrl, KurlyFinalUrl]
+func_arr = [GmarketFinalUrl]
 
 ######################################### Multi-threading #########################################
 thread = [MyThread(f, input_keyword[0], n_top) for f in func_arr]

@@ -47,7 +47,7 @@ def CoupangClickOption(driver):
             
                 
         selected_opt.append(opt_text_lst[s_opt-1])
-        selec_opt_lst[s_opt-1].click()
+        selec_opt_lst[s_opt].click()
 
     for idx, opt in enumerate(selected_opt):
         print(f"내가 선택한 {idx+1}옵션: {opt}")
