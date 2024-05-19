@@ -171,36 +171,13 @@ def NaverClickOption(driver):
     return selected_opt
 
 
-def NaverLogin(ID, PW, driver, main_handle):
+def NaverLogin(ID, PW, driver):
     
-    #windows check
-    driver.implicitly_wait(10)
-    while True:
-        if len(driver.window_handles)==1:
-            continue
-        else:
-            break
-    
-    #창 전환
-    for w in driver.window_handles:
-        if w != main_handle:
-            driver.switch_to.window(w)
-            break
-    
-    while True:
-        try:
-            e = driver.find_element(By.NAME, 'id')
-            break
-        except:
-            for w in driver.window_handles:
-                if w != main_handle:
-                    driver.switch_to.window(w)
-                    break
-            continue
-        
-    e.click()
+   #로그인 버튼 누르기
+    driver.find_element(By.CSS_SELECTOR, '#gnb_login_button').click()
     driver.implicitly_wait(3)
-    print(f"로그인 아이디:{ID}")
+    
+    e = driver.find_element(By.CSS_SELECTOR, '#id')
     cnt=0
     while not e.get_attribute('value'):
         if cnt>=3:
@@ -213,7 +190,7 @@ def NaverLogin(ID, PW, driver, main_handle):
         driver.implicitly_wait(2)
         cnt+=1
     
-    e = driver.find_element(By.NAME, 'pw')
+    e = driver.find_element(By.CSS_SELECTOR, '#pw')
     e.click()
     driver.implicitly_wait(3)
     while not e.get_attribute('value'):    
@@ -228,10 +205,8 @@ def NaverLogin(ID, PW, driver, main_handle):
 
     driver.find_element(By.CSS_SELECTOR , 'button.btn_login').click()
     driver.implicitly_wait(10)
-    
-    #창 다시 전환
-    driver.switch_to.window(main_handle)
-    return True
+  
+  
 
 def clearText(driver):
     input_e = driver.find_element(By.CSS_SELECTOR, 'div > div.article > div > div > div.InputBoxSearch_article__ckXvT > div.InputBoxSearch_section-input__C7oz4 > div > div > input')

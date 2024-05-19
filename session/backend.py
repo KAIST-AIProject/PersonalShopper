@@ -19,6 +19,13 @@ def NaverSession(id, pw, url, debug_mode=True):
     driver.get(url)
     driver.implicitly_wait(3) ## 연결 후 3초간 기다리기
     
+    #로그인 진행
+    print("로그인을 진행하겠습니다.")
+    NaverLogin(id, pw, driver)
+    driver.implicitly_wait(3) 
+    
+    driver.get(url)
+    driver.implicitly_wait(3)
     #########################################################    
     #옵션 선택
     if driver.find_elements(By.CSS_SELECTOR, "#content > div > div._2-I30XS1lA > div._2QCa6wHHPy > fieldset > div.bd_1jsdQ > div:nth-child(1) > div > div > button"):
@@ -39,16 +46,10 @@ def NaverSession(id, pw, url, debug_mode=True):
     main_handle = driver.current_window_handle
     da = Alert(driver)
 
-    try:
-        da.accept()
-        print("로그인을 진행하겠습니다.")
-    except:
-        print("로그인을 진행하겠습니다.")
-        
     driver.implicitly_wait(3)
     
     #배송지 선택    
-    NaverAddressCheck(driver,main_handle)
+    # NaverAddressCheck(driver,main_handle)
 
 
 def CoupangSession(id, pw, url, debug_mode=True):    
@@ -63,10 +64,14 @@ def CoupangSession(id, pw, url, debug_mode=True):
     
     #옵션 선택
     radio_opt_lst = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-radio")
-    if radio_opt_lst:
-        selected_opt = CoupangRadioOption(driver)
+    img_opt_lst = driver.find_elements(By.CSS_SELECTOR, "div.tab-selector__tab-image-title")
+    if img_opt_lst:
+        selected_opt = CoupangImgOption(driver)
     else:
-        selected_opt = CoupangClickOption(driver)
+        if radio_opt_lst:
+            selected_opt = CoupangRadioOption(driver)
+        else:
+            selected_opt = CoupangClickOption(driver)
 
     #구매 버튼 선택
     driver.find_element(By.CSS_SELECTOR, "button.prod-buy-btn").click()

@@ -210,20 +210,19 @@ def KurlyLinkGet(keyword, driver, n_top=10):
     driver.get(url)
     driver.implicitly_wait(2)
     
-    while True:
-        html = driver.page_source
 
-        #html parsing
-        soup = BeautifulSoup(html, 'html.parser')
-        
-        kurly_ntop_url = []
+    html = driver.page_source
 
-        qurey_arr = soup.select('div.css-11kh0cw a')
-        if qurey_arr:
-            break
-        # else:
-        #     print("html을 불러오지 못했습니다. 다시 시도하겠습니다.")
-            
+    #html parsing
+    soup = BeautifulSoup(html, 'html.parser')
+    
+    kurly_ntop_url = []
+
+    qurey_arr = soup.select('div.css-11kh0cw a')
+    
+    if not qurey_arr:
+        return []
+    
     len_link = min(len(qurey_arr),n_top)
     root = 'https://www.kurly.com'
     if len_link < n_top:
@@ -246,6 +245,11 @@ def KurlyFinalUrl(keyword, n_top, debug_mode=True):
     
     driver = webdriver.Chrome(options=options)
     url_list = KurlyLinkGet(keyword,driver, n_top)
+    
+    if not url_list:
+        print("해당 검색어로 컬리에서는 검색되는 상품이 없습니다.")
+        return None
+    
     kurly_url_lst = []
 
     data_details = []
@@ -309,7 +313,7 @@ def GmarketLinkGet(url_kword, n_top=10):
     soup = BeautifulSoup(html, 'html.parser')
     gmarket_ntop_url = []
     qurey_arr = soup.select('div.box__item-title span a.link__item')
-    for i in range(n_top):
+    for i in range(min(len(qurey_arr),n_top)):
         gmarket_ntop_url.append(qurey_arr[i]['href'])
     return gmarket_ntop_url
 
@@ -328,6 +332,11 @@ def GmarketFinalUrl(keyword, n_top, debug_mode=True):
     
     driver = webdriver.Chrome(options=options)
     url_list = GmarketLinkGet(keyword, n_top)
+    
+    if not url_list:
+        print("해당 검색어로 G마켓에서는 검색되는 상품이 없습니다.")
+        return None
+    
     gmarket_url_lst = []
 
     data_details = []

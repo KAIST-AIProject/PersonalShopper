@@ -93,6 +93,45 @@ def CoupangRadioOption(driver):
     print("*"*20)
     
     return selected_opt
+
+def CoupangImgOption(driver):
+    selected_opt = []
+    option_name= driver.find_elements(By.CSS_SELECTOR, "div.tab-selector__tab-image-title")
+
+    #옵션 종류 이름 
+    opt_type_name = driver.find_element(By.CSS_SELECTOR, "span.tab-selector__header-title").text
+    opt_lst = []
+    for i in range(len(option_name)):
+        opt_lst.append(option_name[i].text )
+
+    for idx, opt in enumerate(opt_lst):
+        print(f"{idx+1}번 옵션: {opt}")
+    print("*"*20)
+    while True:
+        try:
+            s_opt = input("위 옵션 중 번호를 선택해주세요:")
+            s_opt = int(s_opt)
+        except:
+            if s_opt == "":
+                break
+            print("정수형태의 번호로 다시 입력해주세요")
+            continue
+        
+        if 1<=s_opt<=len(opt_lst):
+            break
+        else:
+            print(f"1부터 {len(opt_lst)} 범위의 숫자를 입력해주세요:")
+        
+            
+    selected_opt.append(opt_lst[s_opt-1])
+    option_name[s_opt-1].click()
+    driver.implicitly_wait(1)
+
+    driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-radio")[0].click()
+
+    for idx, opt in enumerate(selected_opt):
+        print(f"내가 선택한 {idx+1}옵션: {opt}")
+    print("*"*20)
         
         
 ############################################# Option Scraping #############################################

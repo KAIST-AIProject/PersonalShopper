@@ -64,7 +64,7 @@ for t in thread:
   t.start()  
 
 for t in thread:
-  t.join()
+  t.join(timeout=120)
   
 #scraping 결과 저장
 final_link_dict = dict()
@@ -77,6 +77,8 @@ data_reviews = []
 
 
 for idx, thr_ret in enumerate(thread):
+  if thr_ret.get_result() == None:
+    continue
   final_link_dict[idx], data_details_dict[idx], data_reviews_dict[idx] = thr_ret.get_result()
   final_link_lst+=final_link_dict[idx]
   data_details+=data_details_dict[idx]
