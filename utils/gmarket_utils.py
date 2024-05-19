@@ -187,10 +187,10 @@ def OptionConfigCheck(driver, i, deep_info):
 
 #옵션 항목을 dictionary 형태로 가져오기
 def GmarketOptionGet(driver, option_info):
-    scroll_up_to_end(driver)
     if driver.find_elements(By.CSS_SELECTOR, "div.thumb img"):
         opt_btn_img_lst = driver.find_elements(By.CSS_SELECTOR, "div.section_now_selected button.select-item_option")
         for i in range(len(opt_btn_img_lst)//2):
+            scroll_up_to_end(driver)
             opt_btn_img_lst[i].click()
             opt_name_lst = driver.find_elements(By.CSS_SELECTOR, "div.info span.item_tit")
             opt_price_lst = driver.find_elements(By.CSS_SELECTOR, "li span.item_price")
@@ -217,6 +217,7 @@ def GmarketOptionGet(driver, option_info):
     opt_btn_lst = driver.find_elements(By.CSS_SELECTOR, "div.section_option_area button.select-item_option")
     for i in range(len(opt_btn_lst)//2):
         opt_btn_lst[i].click()
+        scroll_up_to_end(driver)
         #옵션 항목 불러오기
         opt_name_lst = driver.find_elements(By.CSS_SELECTOR, "ul.select-itemoption-list > li > a")
         opt_price_lst = driver.find_elements(By.CSS_SELECTOR, "li span.text__price")
