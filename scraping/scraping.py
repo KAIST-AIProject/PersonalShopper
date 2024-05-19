@@ -48,7 +48,7 @@ def CoupangFinalUrl(keyword, n_top, debug_mode=True):
     # 창 숨기는 옵션 추가
     # options.add_argument("headless")
     if debug_mode:
-        options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+        options.add_experimental_option("debuggerAddress", "127.0.0.1:9223")
     
     driver = webdriver.Chrome(options=options)
     url_list = CoupangLinkGet(keyword, n_top)
@@ -242,7 +242,7 @@ def KurlyFinalUrl(keyword, n_top, debug_mode=True):
     # 창 숨기는 옵션 추가
     # options.add_argument("headless")
     if debug_mode:
-        options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+        options.add_experimental_option("debuggerAddress", "127.0.0.1:9224")
     
     driver = webdriver.Chrome(options=options)
     url_list = KurlyLinkGet(keyword,driver, n_top)
@@ -324,7 +324,7 @@ def GmarketFinalUrl(keyword, n_top, debug_mode=True):
     # 창 숨기는 옵션 추가
     # options.add_argument("headless")
     if debug_mode:
-        options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+        options.add_experimental_option("debuggerAddress", "127.0.0.1:9225")
     
     driver = webdriver.Chrome(options=options)
     url_list = GmarketLinkGet(keyword, n_top)
