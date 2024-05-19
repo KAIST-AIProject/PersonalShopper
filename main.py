@@ -152,6 +152,7 @@ flag = input("구매 진행하시겠습니까? (Y/N):")
 while True:
   if flag.upper() == 'Y': 
     purchase_process(final_link)
+    break
   elif flag.upper() == 'N':
     print("구매를 종료합니다.")
     break

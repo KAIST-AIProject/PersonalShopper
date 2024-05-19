@@ -8,6 +8,9 @@ from utils import *
 
 #debugging mode 실행 터미널 명령어
 #/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir="/Users/Woo/Applications/Google Chrome.app/
+#/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9223 --user-data-dir="/Users/Woo/Applications/Google Chrome.app/
+#/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9224 --user-data-dir="/Users/Woo/Applications/Google Chrome.app/
+#/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9225 --user-data-dir="/Users/Woo/Applications/Google Chrome.app/
  
 def NaverSession(id, pw, url, debug_mode=True):
     chrome_options = Options() ## 옵션 추가를 위한 준비
