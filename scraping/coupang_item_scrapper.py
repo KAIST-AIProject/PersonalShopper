@@ -183,6 +183,8 @@ def Coupang_selenium_scraper(driver, save_path_item, save_path_quality):
     rating = check_css_element(driver, 'div.sdp-review__average__total-star__info > div.sdp-review__average__total-star__info-gray > div')
     if rating!=None:
         quality_info['총 평점'] = rating.get_attribute("data-rating")
+    else:
+        quality_info['총 평점'] = "정보 없음"
     quality_info['리뷰 수'] =check_exists_element_and_return_text(driver, 'div.sdp-review__average__total-star__info > div.sdp-review__average__total-star__info-count')
     quality_info['리뷰'] = coupang_collect_reviews(driver, 10)
     image_links, detail_texts = coupang_image_url_scrapper(driver)
@@ -194,8 +196,6 @@ def Coupang_selenium_scraper(driver, save_path_item, save_path_quality):
     with open(save_path_quality, 'wb') as quality_file:
         pickle.dump(quality_info, quality_file, pickle.HIGHEST_PROTOCOL )
 
-    print(item_info)
-    print(quality_info)
 
     return item_info, quality_info, image_links
 
