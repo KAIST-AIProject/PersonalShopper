@@ -9,10 +9,10 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 import pickle
 from bs4 import BeautifulSoup
-from .scrapper_utils import *
+from scrapper_utils import *
 
 
-def coupang_collect_reviews(driver, review_num):
+def scroll_to_review(driver):
     button_flag=False
     next_page_num=2
 
@@ -38,6 +38,12 @@ def coupang_collect_reviews(driver, review_num):
             print("Page is now too slow. I'll refresh the page once.")
             driver.refresh()
             driver.get(driver.current_url)
+
+def coupang_collect_reviews(driver, review_num):
+    next_page_num=2
+
+    review_list = []
+    scroll_to_review(driver)
     while review_num>0:
         scroll_down_to_end(driver, 4000)
         try: 
@@ -172,15 +178,11 @@ def Coupang_selenium_scraper(driver, save_path_item, save_path_quality):
     
 
     quality_info = dict()
-    button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable(
-                    (By.CSS_SELECTOR, '#btfTab > ul.tab-titles > li:nth-child(2)')
-                )
-            )
-    driver.execute_script("arguments[0].click();", button)
+    scroll_to_review(driver)
 
     rating = check_css_element(driver, 'div.sdp-review__average__total-star__info > div.sdp-review__average__total-star__info-gray > div')
-    quality_info['총 평점'] = rating.get_attribute("data-rating")
+    if rating!=None:
+        quality_info['총 평점'] = rating.get_attribute("data-rating")
     quality_info['리뷰 수'] =check_exists_element_and_return_text(driver, 'div.sdp-review__average__total-star__info > div.sdp-review__average__total-star__info-count')
     quality_info['리뷰'] = coupang_collect_reviews(driver, 10)
     image_links, detail_texts = coupang_image_url_scrapper(driver)
@@ -192,7 +194,8 @@ def Coupang_selenium_scraper(driver, save_path_item, save_path_quality):
     with open(save_path_quality, 'wb') as quality_file:
         pickle.dump(quality_info, quality_file, pickle.HIGHEST_PROTOCOL )
 
-
+    print(item_info)
+    print(quality_info)
 
     return item_info, quality_info, image_links
 
@@ -201,7 +204,8 @@ def Coupang_selenium_scraper(driver, save_path_item, save_path_quality):
 if __name__ == '__main__':
     # naver
     urls = [
-        'https://www.coupang.com/vp/products/5166844155?itemId=7119619991&vendorItemId=74411448862&sourceType=cmgoms&omsPageId=s189740&omsPageUrl=s189740&isAddedCart=',
+        'https://www.coupang.com/vp/products/130924213?itemId=847502340&vendorItemId=5154927733&isAddedCart=',
+        # 'https://www.coupang.com/vp/products/5166844155?itemId=7119619991&vendorItemId=74411448862&sourceType=cmgoms&omsPageId=s189740&omsPageUrl=s189740&isAddedCart=',
         'https://www.coupang.com/vp/products/7400367877?itemId=20405085300&vendorItemId=87431312803&q=%EC%95%84%EC%9D%B4%ED%8C%A8%EB%93%9C+%EC%BC%80%EC%9D%B4%EC%8A%A4&itemsCount=36&searchId=bf534d93a0b645c6b05b13b22867bb15&rank=33&isAddedCart=',
         'https://www.coupang.com/vp/products/1464545785?itemId=2518829089&vendorItemId=70821446248&q=%EC%9E%90%EC%A0%84%EA%B1%B0&itemsCount=36&searchId=6336bcc416f34b1e96eae0be576f2581&rank=2&isAddedCart='
            ]
