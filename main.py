@@ -121,9 +121,9 @@ for i in range(len(data_reviews)) :
     if i+1 in select_numbers : #select agent에서 선택된 product만 rating 
       print()
       print(f"==============================={i+1} 번째 product scoring 계산 중...================================")
-      scores = scoring_agent(data_reviews[i], rating_keyword_lst) 
+      scores, feedback_dict = scoring_agent(data_reviews[i], rating_keyword_lst) 
       scores.append(round(costs[i],3))
-      final_score.append([round(sum(scores)/5,2), i+1, scores]) 
+      final_score.append([round(sum(scores)/5,2), i+1, scores, feedback_dict ]) 
 
 final_score.sort( reverse = True)
 
@@ -134,7 +134,10 @@ if len(final_score)<5:
 print()
 print(f"## rating keyword : price, review positivity, {rating_keyword_lst[0]}, {rating_keyword_lst[1]}, {rating_keyword_lst[2]}")
 for i in range(final_num) :
-  print(f"{i+1}순위 : {final_score[i][1]}번 product , scores = {final_score[i][2]}, 평균 점수 : {final_score[i][0]} ")
+  # print(f"{i+1}순위 : {final_score[i][1]}번 product , scores = {final_score[i][2]}, 평균 점수 : {final_score[i][0]} ")
+  print(f"{i+1}순위 : {final_score[i][1]}번 product ,평균 점수 : {final_score[i][0]} ")
+  for j, key in enumerate(final_score[i][3].keys()) :
+     print(f"## {key} 키워드에 대한 점수 : {final_score[i][3][key][0]}점, reason : {final_score[i][3][key][2]} ")
 
 #TODO : 사용자가 선택한 숫자에 해당하는 링크를 반환. 
 user_select_num = int(input("최종 선택할 product의 번호를 입력하세요:"))

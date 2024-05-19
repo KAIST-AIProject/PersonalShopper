@@ -254,7 +254,7 @@ def feedback_rating(review, key_dict) :
         """
         rating 결과를 받아 feedback을 반환하는 함수
         """
-        base_prompt = "Each element of key_dics represents the evaluation criteria, the score that the product received, and the reason why it received this score. Refer to the product review information in product_info, determine whether it is reasonable for the product to receive the corresponding score and explain why. Each score is a number from 1 to 5. The higher the number, the more positive the evaluation is. Look at each key_dics pair, tell me if the score on each keyword is reasonable with True or False, and also tell me why you thought so. dont say anything other than True or False and the reason. Connect the four reasons with the letter @. Example : 'True@reason@False@reason@True@reason@False@reason'."
+        base_prompt = "Each element of key_dics represents the evaluation criteria, the score that the product received, and the reason why it received this score. Refer to the product review information in product_info, determine whether it is reasonable for the product to receive the corresponding score and explain why. Each score is a number from 1 to 5. The higher the number, the more positive the evaluation is. Look at each key_dics pair, tell me if the score on each keyword is reasonable with True or False, and also tell me why you thought so. dont say anything other than True or False and the reason. Reasons must be written in Korean. Connect the four reasons with the letter @. Example : 'True@reason@False@reason@True@reason@False@reason'."
         prompt_text = base_prompt + f"key_dicts = {key_dict}, product_info = {review}"
         response = client.chat.completions.create(
         model="gpt-4-turbo",
@@ -267,7 +267,7 @@ def feedback_rating(review, key_dict) :
         )
         result = response.choices[0].message.content
     
-        # print(f"feedback_result = {result}")
+        # print(f"feedback_rating_result = {result}")
         return result.split("@")
 
 def re_rating(review, feedback_dict) :
@@ -355,7 +355,7 @@ def scoring_agent(product_info, keyword_lst) :
         print(f"## 총 {loop_num}번의 feedback loop 를 돌고 난 후 최종 score = {score}, 최종 feedback = {feedback_dict}")
     else :
         print(f"## 처음 부터 모두 True를 받았기 때문에, score는 변하지 않고 {score}로 최종 결정되었음.")
-    return  score
+    return  score, feedback_dict
 
 
 ########################### Vision GPT ###########################
