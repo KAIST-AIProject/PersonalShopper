@@ -54,7 +54,7 @@ print('scraping 작업 실행')
 
 url_path = os.path.join("cache", "finalLink.pickle")
 website_name  = ['naver', 'kurly', 'coupang', 'gmarket']
-func_arr = [NaverFinalUrl]
+func_arr = [NaverFinalUrl, KurlyFinalUrl, CoupangFinalUrl, GmarketFinalUrl]
 
 
 ######################################### Multi-threading #########################################
@@ -99,7 +99,7 @@ print()
 if decision_keyword[0] == "None" :
    select_numbers = [i+1 for i in range(len(data_details))]
 else :
-      select_numbers=Select_numbers(data_details, decision_keyword)
+      select_numbers=NewSelectNumbers(data_details, decision_keyword)
 print(f"select_numbers = {select_numbers}") #select agent를 거쳐 filtering 된 product numbers의 리스트 
 
 costs =[] 

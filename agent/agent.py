@@ -123,7 +123,7 @@ def SelectAgent(prompt) :
     result = response.choices[0].message.content
     return result
 
-def Select_numbers(data_details, decision_keyword) :
+def SelectNumbers(data_details, decision_keyword) :
     print(f"==============================Select Agent 실행==============================")
     
     select_list = []
@@ -168,6 +168,37 @@ def Select_numbers(data_details, decision_keyword) :
             select_list.extend(list(map(int,answer.split('@'))))
     print(f"최종 select_agent result : {select_list}")
     return select_list
+
+def NewSelectNumbers(data_details, decision_keyword) :
+    print(f"==============================Select Agent 실행==============================")
+    L = len(data_details) #product 개수
+    _prompt_text = '''
+    The data_details contain the number of each product and the detailed information of the product. The user request key word is a condition that the product must be satisfied. If the product satisfies the condition, return 'True' and if not, return 'False'. Please do not say any thing other than 'True' or 'False'.
+    '''
+    selected = []
+    _prompt_text = _prompt_text + f"user_request  : {','.join(decision_keyword)}\n "
+    for s in range(L) :
+        prompt_text = _prompt_text + f"data_details : {data_details[s]}" 
+        count=0
+        while(count<2):
+            answer = SelectAgent(prompt_text)
+            if answer == 'True' or answer == "true" : #answer가 'True' 라면
+                selected.append(s+1)
+                count=2
+                prompt_text += "Response must be either 'True' or 'False.'"
+            elif answer == 'False' or answer == "false" : #answer가 'False' 라면 
+                count=2
+                prompt_text += "Response must be either 'True' or 'False.'"
+            count+=1       
+
+    
+    print(f"최종 select_agent result : {selected}")
+    return selected
+
+
+
+
+
 
 ############################Compare Agent############################
 def CompareAgent(data_reviews,select_numbers) :
@@ -317,7 +348,7 @@ def scoring_agent(product_info, keyword_lst) :
     score = []
    
     for j in range(len(keyword)) :
-        score.append(float(feedback_dict[keyword[j]][0])) #i 번째 product의 최종 score를 float list로 반환. 
+        score.append(int(feedback_dict[keyword[j]][0])) #i 번째 product의 최종 score를 float list로 반환. 
     if loop_num != 0 : #loop를 돌았을 경우
         print()
         print("==========================================================================")
