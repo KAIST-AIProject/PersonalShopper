@@ -178,6 +178,8 @@ def NaverLogin(ID, PW, driver):
     driver.implicitly_wait(3)
     
     e = driver.find_element(By.CSS_SELECTOR, '#id')
+    e.click()
+    driver.implicitly_wait(3)
     cnt=0
     while not e.get_attribute('value'):
         if cnt>=3:

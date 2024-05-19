@@ -216,8 +216,8 @@ def GmarketOptionGet(driver, option_info):
 
     opt_btn_lst = driver.find_elements(By.CSS_SELECTOR, "div.section_option_area button.select-item_option")
     for i in range(len(opt_btn_lst)//2):
-        opt_btn_lst[i].click()
         scroll_up_to_end(driver)
+        opt_btn_lst[i].click()
         #옵션 항목 불러오기
         opt_name_lst = driver.find_elements(By.CSS_SELECTOR, "ul.select-itemoption-list > li > a")
         opt_price_lst = driver.find_elements(By.CSS_SELECTOR, "li span.text__price")
