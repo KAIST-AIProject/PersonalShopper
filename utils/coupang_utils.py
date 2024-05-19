@@ -1,5 +1,7 @@
+from utils import *
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+
 
 def CoupangClickOption(driver):
     opt_btn_lst = driver.find_elements(By.CSS_SELECTOR, "div.prod-option__selected-container")
@@ -124,8 +126,14 @@ def CoupangRadioOptionGet(driver, option_info):
     option_name = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-name")
     option_price = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-price")
 
-    #옵션 종류 이름 
-    opt_type_name = driver.find_element(By.CSS_SELECTOR, "span.tab-selector__header-title").text
+    #옵션 종류 이름
+    while True:
+        try:
+            opt_type_name = driver.find_element(By.CSS_SELECTOR, "span.tab-selector__header-title").text
+            break
+        except:
+            scroll_up_to_end(driver)
+            print("옵션 이름이 선택되지 않습니다. 다시 시도합니다.")
 
     opt_lst = []
     for n,p in zip(option_name, option_price):
