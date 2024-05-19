@@ -194,18 +194,12 @@ def gmarket_selenium_scraper(driver, save_path_item, save_path_quality):
     
     quality_info['리뷰'] = gmarket_collect_reviews(driver, 30)
 
-    # print(len(quality_info['리뷰']))
-    # # print(item_info)
-    # print(quality_info)
+
     image_links, detail_texts = gmarket_image_url_scrapper(driver)
     
     # # print(len(image_links))
     # # print(detail_texts)
     item_info['상세 정보 문구'] = detail_texts
-
-    print(item_info)
-    print(quality_info)
-    print(image_links)
 
 
     with open(save_path_item,'wb') as item_file:

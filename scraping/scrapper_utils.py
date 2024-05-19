@@ -21,6 +21,21 @@ def check_exists_element_and_return_text(driver, selector):
     text = text.replace('\n', '').replace('\t', '').strip()
     return text
 
+def check_css_element(driver, selector):
+    try:
+        element = driver.find_element(By.CSS_SELECTOR, selector)
+    except NoSuchElementException:
+        return None
+    return element  
+
+
+def check_by_class_name(driver, class_name):
+    try:
+        element = driver.find_element(By.CLASS_NAME, class_name)
+    except NoSuchElementException:
+        return None
+    return element
+
 def scroll_down_to_end(driver, height = -1):
     SCROLL_PAUSE_TIME = 0.7
 

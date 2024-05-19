@@ -136,11 +136,18 @@ def Coupang_selenium_scraper(driver, save_path_item, save_path_quality):
     # driver.implicitly_wait(3) ## 연결 후 3초간 기다리기
 
     info_list = dict()
-    info_list['상품명'] = '#contents > div.prod-atf > div.prod-atf-main > div.prod-buy.new-oos-style.not-loyalty-member.eligible-address.without-subscribe-buy-type.DISPLAY_0.has-loyalty-exclusive-price.fix-verdor-section-display.move-atc-and-buy-now-ctas-atf.update-price-section-style-with-rds > div.prod-buy-header > h2'
-    info_list['현재 가격'] = '#contents > div.prod-atf > div.prod-atf-main > div.prod-buy.new-oos-style.not-loyalty-member.eligible-address.without-subscribe-buy-type.DISPLAY_0.has-loyalty-exclusive-price.fix-verdor-section-display.move-atc-and-buy-now-ctas-atf.update-price-section-style-with-rds > div.prod-price-container > div.prod-price > div > div.prod-sale-price.price-align.wow-only-coupon > span.total-price > strong'
-    info_list['할인 전 가격'] = '#contents > div.prod-atf > div.prod-atf-main > div.prod-buy.new-oos-style.not-loyalty-member.eligible-address.without-subscribe-buy-type.DISPLAY_0.has-loyalty-exclusive-price.fix-verdor-section-display.move-atc-and-buy-now-ctas-atf.update-price-section-style-with-rds > div.prod-price-container > div.prod-price > div > div.prod-origin-price > span.origin-price'
-    info_list['할인율'] = '#contents > div.prod-atf > div.prod-atf-main > div.prod-buy.new-oos-style.not-loyalty-member.eligible-address.without-subscribe-buy-type.DISPLAY_0.has-loyalty-exclusive-price.fix-verdor-section-display.move-atc-and-buy-now-ctas-atf.update-price-section-style-with-rds > div.prod-price-container > div.prod-price > div > div.prod-origin-price > span.discount-rate'
+    # info_list['상품명'] = '#contents > div.prod-atf > div.prod-atf-main > div.prod-buy.new-oos-style.not-loyalty-member.eligible-address.without-subscribe-buy-type.DISPLAY_0.has-loyalty-exclusive-price.fix-verdor-section-display.move-atc-and-buy-now-ctas-atf.update-price-section-style-with-rds > div.prod-buy-header > h2'
+    # info_list['현재 가격'] = '#contents > div.prod-atf > div.prod-atf-main > div.prod-buy.new-oos-style.not-loyalty-member.eligible-address.without-subscribe-buy-type.DISPLAY_0.has-loyalty-exclusive-price.fix-verdor-section-display.move-atc-and-buy-now-ctas-atf.update-price-section-style-with-rds > div.prod-price-container > div.prod-price > div > div.prod-sale-price.price-align.wow-only-coupon > span.total-price > strong'
+    # info_list['할인 전 가격'] = '#contents > div.prod-atf > div.prod-atf-main > div.prod-buy.new-oos-style.not-loyalty-member.eligible-address.without-subscribe-buy-type.DISPLAY_0.has-loyalty-exclusive-price.fix-verdor-section-display.move-atc-and-buy-now-ctas-atf.update-price-section-style-with-rds > div.prod-price-container > div.prod-price > div > div.prod-origin-price > span.origin-price'
+    # info_list['할인율'] = '#contents > div.prod-atf > div.prod-atf-main > div.prod-buy.new-oos-style.not-loyalty-member.eligible-address.without-subscribe-buy-type.DISPLAY_0.has-loyalty-exclusive-price.fix-verdor-section-display.move-atc-and-buy-now-ctas-atf.update-price-section-style-with-rds > div.prod-price-container > div.prod-price > div > div.prod-origin-price > span.discount-rate'
+    # info_list['상품정보 제공고시'] = '#itemBrief > div > table'
+
+    info_list['상품명'] = 'div.prod-buy-header > h2'
+    info_list['현재 가격'] = 'span.total-price > strong'
+    info_list['할인 전 가격'] = 'div.prod-price > div > div.prod-origin-price > span.origin-price'
+    info_list['할인율'] = 'span.discount-rate'
     info_list['상품정보 제공고시'] = '#itemBrief > div > table'
+
 
     item_info = dict()
     
@@ -165,9 +172,16 @@ def Coupang_selenium_scraper(driver, save_path_item, save_path_quality):
     
 
     quality_info = dict()
+    button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable(
+                    (By.CSS_SELECTOR, '#btfTab > ul.tab-titles > li:nth-child(2)')
+                )
+            )
+    driver.execute_script("arguments[0].click();", button)
 
-    quality_info['총 평점'] = check_exists_element_and_return_text(driver, "#prod-review-nav-link > span.rds-rating-score")
-    quality_info['리뷰 수'] =check_exists_element_and_return_text(driver, '#prod-review-nav-link > span.count')
+    rating = check_css_element(driver, 'div.sdp-review__average__total-star__info > div.sdp-review__average__total-star__info-gray > div')
+    quality_info['총 평점'] = rating.get_attribute("data-rating")
+    quality_info['리뷰 수'] =check_exists_element_and_return_text(driver, 'div.sdp-review__average__total-star__info > div.sdp-review__average__total-star__info-count')
     quality_info['리뷰'] = coupang_collect_reviews(driver, 10)
     image_links, detail_texts = coupang_image_url_scrapper(driver)
 
@@ -188,7 +202,8 @@ if __name__ == '__main__':
     # naver
     urls = [
         'https://www.coupang.com/vp/products/5166844155?itemId=7119619991&vendorItemId=74411448862&sourceType=cmgoms&omsPageId=s189740&omsPageUrl=s189740&isAddedCart=',
-        'https://www.coupang.com/vp/products/7400367877?itemId=20405085300&vendorItemId=87431312803&q=%EC%95%84%EC%9D%B4%ED%8C%A8%EB%93%9C+%EC%BC%80%EC%9D%B4%EC%8A%A4&itemsCount=36&searchId=bf534d93a0b645c6b05b13b22867bb15&rank=33&isAddedCart='
+        'https://www.coupang.com/vp/products/7400367877?itemId=20405085300&vendorItemId=87431312803&q=%EC%95%84%EC%9D%B4%ED%8C%A8%EB%93%9C+%EC%BC%80%EC%9D%B4%EC%8A%A4&itemsCount=36&searchId=bf534d93a0b645c6b05b13b22867bb15&rank=33&isAddedCart=',
+        'https://www.coupang.com/vp/products/1464545785?itemId=2518829089&vendorItemId=70821446248&q=%EC%9E%90%EC%A0%84%EA%B1%B0&itemsCount=36&searchId=6336bcc416f34b1e96eae0be576f2581&rank=2&isAddedCart='
            ]
     chrome_options = Options() ## 옵션 추가를 위한 준비
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") ## 디버깅 옵션 추가
