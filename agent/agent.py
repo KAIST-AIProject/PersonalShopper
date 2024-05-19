@@ -111,7 +111,7 @@ def KeywordAgentVoting(n_select, client, keyword):
 def SelectAgent(prompt) :
     prompt_text = prompt
     response = client.chat.completions.create(
-    model="gpt-4-turbo",
+    model="gpt-4o",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content":prompt_text},
@@ -152,7 +152,7 @@ def Select_numbers(data_details, decision_keyword) :
             print(f"run select agent one more time")
             prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 1@4."
             answer = SelectAgent(prompt_text)
-            select_list.extend(list(map(int,answer.split(' '))))
+            select_list.extend(list(map(int,answer.split('@'))))
     if L%N != 0 : #N개씩 처리한 후 나머지 처리
         data_details_N = '\n'.join(list(str(i) for i in data_details[(L//N)*N:]))
         prompt_text = _prompt_text + "/n data_details :"+ data_details_N
@@ -244,7 +244,7 @@ def re_rating(review, feedback_dict) :
     feedback 결과를 받아서 False인 경우에 대해 다시 rating을 받는 함수
     """
 
-    base_prompt = "product_info contains information including the price and review of the product. feedback_dict is each evaluation criterion, the score of the evaluation criterion, and the result of a True/False test to see if the score is correct, and the reason for the test. The score ranges from 1 to 5, and the higher the score, the better. score type : integer. If the test result is true, return the score as it is, and if it is false, refer to the product info and feedback to score a new score. Please split the new score to '@' according to each inspection standard and return it. example : '4@3@5@5' Please don't print anything other than the set format."
+    base_prompt = "product_info contains information including the price and review of the product. feedback_dict is each evaluation criterion, the score of the evaluation criterion, and the result of a True/False test to see if the score is correct, and the reason for the test. The score ranges from 1 to 5, and the higher the score, the better. score type : integer. If the test result is true, return the score as it is, and if it is false, refer to the product info and feedback to score a new score. Please split the new score to '@' according to each inspection standard and return it. example : '4@3@5@5' Please don't print anything other than the set format. please don't say a reason why you determine the score."
     prompt_text = base_prompt + f"product_info = {review}, feedback_dict = {feedback_dict}"
     response = client.chat.completions.create(
         model="gpt-4-turbo",
@@ -315,6 +315,7 @@ def scoring_agent(product_info, keyword_lst) :
         print(f"## {loop_num} 번째 loop를 통해 변경된 score= {score_dict}, feedback = {feedback_dict}")
     #모두 True가 되거나, loop가 5번 이상 돌았을 경우
     score = []
+   
     for j in range(len(keyword)) :
         score.append(float(feedback_dict[keyword[j]][0])) #i 번째 product의 최종 score를 float list로 반환. 
     if loop_num != 0 : #loop를 돌았을 경우
