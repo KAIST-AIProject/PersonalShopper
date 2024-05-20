@@ -254,7 +254,7 @@ def feedback_rating(review, key_dict) :
         """
         rating 결과를 받아 feedback을 반환하는 함수
         """
-        base_prompt = "Each element of key_dics represents the evaluation criteria, the score that the product received, and the reason why it received this score. Refer to the product review information in product_info, determine whether it is reasonable for the product to receive the corresponding score and explain why. Each score is a number from 1 to 5. The higher the number, the more positive the evaluation is. Look at each key_dics pair, tell me if the score on each keyword is reasonable with True or False, and also tell me why you thought so. dont say anything other than True or False and the reason. Reasons must be written in Korean. Connect the four reasons with the letter @. Example : 'True@reason@False@reason@True@reason@False@reason'."
+        base_prompt = "Each element of key_dicts represents the evaluation criteria and the score that the product received. Refer to the product review information in product_info, determine whether it is reasonable for the product to receive the corresponding score, indicate the validity of the score with 'True' or 'False', and explain the reason why. Each score is a number from 1 to 5. The higher the number, the more positive the evaluation is. Please do not say anything other than True or False and the reason. Reasons must be written in Korean. Connect the four reasons with the letter @. Example : 'True@reason@False@reason@True@reason@False@reason'."
         prompt_text = base_prompt + f"key_dicts = {key_dict}, product_info = {review}"
         response = client.chat.completions.create(
         model="gpt-4-turbo",
@@ -266,7 +266,6 @@ def feedback_rating(review, key_dict) :
         max_tokens=1000
         )
         result = response.choices[0].message.content
-    
         # print(f"feedback_rating_result = {result}")
         return result.split("@")
 
@@ -304,7 +303,7 @@ def scoring_agent(product_info, keyword_lst) :
     key_dict = {}
     for key, s in zip(keyword, score) :
         key_dict[key] = s
-    feedback = feedback_rating(product_info, score) #rating score에 대한 feedback 받아오기
+    feedback = feedback_rating(product_info, key_dict) #rating score에 대한 feedback 받아오기
     feedback_dict = {}
     for key, j in zip(keyword, range(len(keyword))) :
         feedback_dict[key] = [score[j], feedback[j*2], feedback[j*2+1]] # key : 판단 기준 keyword, value : [score, True/False, reason(feedback)]
