@@ -64,7 +64,7 @@ for t in thread:
   t.start()  
 
 for t in thread:
-  t.join(timeout=120)
+  t.join()
   
 #scraping 결과 저장
 final_link_dict = dict()
