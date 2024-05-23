@@ -104,10 +104,15 @@ else :
       select_numbers=NewSelectNumbers(data_details, decision_keyword)
 print(f"select_numbers = {select_numbers}") #select agent를 거쳐 filtering 된 product numbers의 리스트 
 
+
 costs =[] 
 for i in range(len(data_reviews)):
-    print(data_details[i]['상품명'], data_details[i]['현재 가격'], data_details[i]['할인 전 가격'])
-    costs.append(float(int(data_details[i]['현재 가격'])))
+    if data_details[i]['현재 가격'] == 'None' or data_details[i]['현재 가격']=='':
+      costs.append(0.0)
+      if i+1 in select_numbers:
+        select_numbers.remove(i+1)
+    else: 
+      costs.append(float(int(data_details[i]['현재 가격'])))
 
 cost_min = min(costs)
 cost_max = max(costs)

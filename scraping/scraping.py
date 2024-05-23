@@ -48,7 +48,7 @@ def CoupangFinalUrl(keyword, n_top, debug_mode=True):
     # 창 숨기는 옵션 추가
     # options.add_argument("headless")
     if debug_mode:
-        options.add_experimental_option("debuggerAddress", "127.0.0.1:9223")
+        options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     
     driver = webdriver.Chrome(options=options)
     url_list = CoupangLinkGet(keyword, n_top)
@@ -63,11 +63,17 @@ def CoupangFinalUrl(keyword, n_top, debug_mode=True):
         for url in url_list:
             driver.get(url)
             option_info = {'options':dict()}
-            CoupangOptionGet(driver, option_info)
-            print(option_info)
+            flag = True
+            try: 
+                CoupangOptionGet(driver, option_info)
+            except: 
+                flag=False
+            # print(option_info)
             scrapped_data_path = os.path.join("database", "Coupang_item_"+str(count+1)+".bin")
             review_data_path = os.path.join("database", "Coupang_item_review_"+str(count+1)+".bin")
             result_detail, result_review, result_image_url = Coupang_selenium_scraper(driver, scrapped_data_path, review_data_path)
+            if flag==False:
+                result_detail['현재 가격'] = ''
             result_detail.update(option_info)
             count+=1
             
@@ -169,10 +175,14 @@ def NaverFinalUrl(keyword, n_top, debug_mode=True):
                 #옵션 가져오기
                 opt_btn_lst =driver.find_elements(By.CSS_SELECTOR, '[data-shp-area-id*=opt]._nlog_impression_element')
                 option_info = {'options':dict()}
-                for i in range(len(opt_btn_lst)//2):
-                    NaverOptionGet(driver, i, [], option_info['options'])
-                    driver.refresh()
-                result_detail.update(option_info)
+                try: 
+                    for i in range(len(opt_btn_lst)//2):
+                        NaverOptionGet(driver, i, [], option_info['options'])
+                        driver.refresh()
+                    result_detail.update(option_info)
+                except: 
+                    result_detail['현재 가격'] = '' 
+
 
                 #vision_gpt 
                 # print(f"result_image_url = {result_image_url}")
@@ -241,7 +251,7 @@ def KurlyFinalUrl(keyword, n_top, debug_mode=True):
     # 창 숨기는 옵션 추가
     # options.add_argument("headless")
     if debug_mode:
-        options.add_experimental_option("debuggerAddress", "127.0.0.1:9224")
+        options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     
     driver = webdriver.Chrome(options=options)
     url_list = KurlyLinkGet(keyword,driver, n_top)
@@ -260,14 +270,21 @@ def KurlyFinalUrl(keyword, n_top, debug_mode=True):
     with tqdm(total=n_top, desc='Kurly', ascii=True) as pbar:
         for url in url_list:
             driver.get(url)
+            flag=True
             option_info = {'options':dict()}
-            KurlyOptionGet(driver, option_info)
+            try:
+                KurlyOptionGet(driver, option_info)
+            except:
+                flag=False
             scrapped_data_path = os.path.join("database", "Kurly_item_"+str(count+1)+".bin")
             review_data_path = os.path.join("database", "Kurly_item_review_"+str(count+1)+".bin")
             result_detail, result_review, result_image_url = kurly_selenium_scraper(driver, scrapped_data_path, review_data_path)
             result_detail.update(option_info)
             count+=1
             
+            if flag==False:
+                result_detail['현재 가격'] = '' 
+
             #local로 이미지 다운로드
             local_image_url= image_for_gpt(4, result_image_url, "database")
             # print(local_image_url)
@@ -328,7 +345,7 @@ def GmarketFinalUrl(keyword, n_top, debug_mode=True):
     # 창 숨기는 옵션 추가
     # options.add_argument("headless")
     if debug_mode:
-        options.add_experimental_option("debuggerAddress", "127.0.0.1:9225")
+        options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     
     driver = webdriver.Chrome(options=options)
     url_list = GmarketLinkGet(keyword, n_top)
@@ -359,9 +376,11 @@ def GmarketFinalUrl(keyword, n_top, debug_mode=True):
             
             #옵션 가져오기       
             option_info = {'options':dict()}
-            GmarketOptionGet(driver, option_info)    
-            print(option_info)  
-            
+            try:
+                GmarketOptionGet(driver, option_info)    
+            # print(option_info)  
+            except:
+                result_detail['현재 가격'] = ''        
             result_detail.update(option_info)
             count+=1
             
