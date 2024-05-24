@@ -13,7 +13,7 @@ def rating_keyword_sorting(review_list, rating_keyword_lst) :
     base_prompt = " Look at the product_information and give a score between 0 and 100 for each of the 5 rating_keywords. In the return format, five scores are splited by @.  For example, if each score is 100,90,80,70,60, please return '100@90@80@70@60'. Please don't print anything except the score and @.  " 
     prompt_text = base_prompt + f"rating_keywords = {' '.join(rating_keyword_lst)}, product_reviews = {review_list}"
     response = client.chat.completions.create(
-    model="gpt-4-turbo",
+    model="gpt-4o",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content":prompt_text},    
@@ -33,54 +33,54 @@ def rating_keyword_sorting(review_list, rating_keyword_lst) :
     return scores
 
 
-def review_rating_all(review_list,rating_keyword_lst ) : #review의 positive-negative 정도를 0~100 사이의 값을 가지는 점수로 변환해서 평균 내는 함수
-    base_prompt_text = "Score the positive level of the review by an integer from 0 to 100. Don't ever print anything other than the score"
+# def review_rating_all(review_list,rating_keyword_lst ) : #review의 positive-negative 정도를 0~100 사이의 값을 가지는 점수로 변환해서 평균 내는 함수
+#     base_prompt_text = "Score the positive level of the review by an integer from 0 to 100. Don't ever print anything other than the score"
     
     
-    prompt_text = base_prompt_text + f"\nReview : {review_list}"
-    response = client.chat.completions.create(
-    model="gpt-4-turbo",
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content":prompt_text},    
-    ],
-    temperature =0,
-    max_tokens=10
-    )
+#     prompt_text = base_prompt_text + f"\nReview : {review_list}"
+#     response = client.chat.completions.create(
+#     model="gpt-4o",
+#     messages=[
+#         {"role": "system", "content": "You are a helpful assistant."},
+#         {"role": "user", "content":prompt_text},    
+#     ],
+#     temperature =0,
+#     max_tokens=10
+#     )
 
-    result = response.choices[0].message.content
-    print(f"10개의 리뷰를 한 번에 평가한 점수 = {int(result)}")
+#     result = response.choices[0].message.content
+#     print(f"10개의 리뷰를 한 번에 평가한 점수 = {int(result)}")
 
-    return int(result)
-
-
-def review_rating_one(review_list, rating_keyword_lst) : #review의 positive-negative 정도를 0~100 사이의 값을 가지는 점수로 변환해서 평균 내는 함수
-    base_prompt_text = "Score the positive level of the review by an integer from 0 to 100. Don't ever print anything other than the score"
-
-    review_score_list = []
-    for i in range(len(review_list)) :
-        prompt_text = base_prompt_text + f"\nReview : {review_list[i]}"
-        response = client.chat.completions.create(
-        model="gpt-4-turbo",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content":prompt_text},    
-        ],
-        temperature =0,
-        max_tokens=10
-        )
-
-        result = response.choices[0].message.content
-        review_score_list.append(int(result))
-    print(f"리뷰를 한 개씩 평가해서 평균낸 점수 : {sum(review_score_list)/len(review_list)}")
-    return int(result)/len(review_list)
+#     return int(result)
 
 
-#TODO : price 점수 함수
-def price_rating(price_details) : #할인율, 할인 전 가격, 할인 후 가격 등 가격 관련 정보를 받아 rating 하는 함수
-    price_score = []
+# def review_rating_one(review_list, rating_keyword_lst) : #review의 positive-negative 정도를 0~100 사이의 값을 가지는 점수로 변환해서 평균 내는 함수
+#     base_prompt_text = "Score the positive level of the review by an integer from 0 to 100. Don't ever print anything other than the score"
 
-    return price_score
+#     review_score_list = []
+#     for i in range(len(review_list)) :
+#         prompt_text = base_prompt_text + f"\nReview : {review_list[i]}"
+#         response = client.chat.completions.create(
+#         model="gpt-4o",
+#         messages=[
+#             {"role": "system", "content": "You are a helpful assistant."},
+#             {"role": "user", "content":prompt_text},    
+#         ],
+#         temperature =0,
+#         max_tokens=10
+#         )
+
+#         result = response.choices[0].message.content
+#         review_score_list.append(int(result))
+#     print(f"리뷰를 한 개씩 평가해서 평균낸 점수 : {sum(review_score_list)/len(review_list)}")
+#     return int(result)/len(review_list)
+
+
+# #TODO : price 점수 함수
+# def price_rating(price_details) : #할인율, 할인 전 가격, 할인 후 가격 등 가격 관련 정보를 받아 rating 하는 함수
+#     price_score = []
+
+#     return price_score
 
 #TODO : product name을 보고 brand 명성 점수를 내는 함수 (GPT 이용)
 
@@ -123,51 +123,51 @@ def SelectAgent(prompt) :
     result = response.choices[0].message.content
     return result
 
-def SelectNumbers(data_details, decision_keyword) :
-    print(f"==============================Select Agent 실행==============================")
+# def SelectNumbers(data_details, decision_keyword) :
+#     print(f"==============================Select Agent 실행==============================")
     
-    select_list = []
-    N = 5  #한 번에 select agent가 고려할 상품의 개수 
-    L = len(data_details)
-    _prompt_text = '''
-    The data_details contain the number of each product and the detailed information of the product. The user request key word is a condition that the product must be satisfied.
-    Among the products below, please return the product numbers that meet all the conditions of the user request keyword according to the format.If there are multiple user requests keyword, all conditions must be met. If the user request keyword is None, return all products numbers.
-    if there are multiple product numbers to return, then return the numbers with a character '@' between them. 
-    For example, if product 3 and product 5 satisfy the conditions, return '3@5'
-    If none of the products meet the conditions, please return empty string and nothing else. You should not print out the product numbers that are not in the product_info.
-    please dont say anything other than specific format. 
-    ''' 
+#     select_list = []
+#     N = 5  #한 번에 select agent가 고려할 상품의 개수 
+#     L = len(data_details)
+#     _prompt_text = '''
+#     The data_details contain the number of each product and the detailed information of the product. The user request key word is a condition that the product must be satisfied.
+#     Among the products below, please return the product numbers that meet all the conditions of the user request keyword according to the format.If there are multiple user requests keyword, all conditions must be met. If the user request keyword is None, return all products numbers.
+#     if there are multiple product numbers to return, then return the numbers with a character '@' between them. 
+#     For example, if product 3 and product 5 satisfy the conditions, return '3@5'
+#     If none of the products meet the conditions, please return empty string and nothing else. You should not print out the product numbers that are not in the product_info.
+#     please dont say anything other than specific format. 
+#     ''' 
     
-    _prompt_text = _prompt_text + f"user_request  : {','.join(decision_keyword)}\n "
+#     _prompt_text = _prompt_text + f"user_request  : {','.join(decision_keyword)}\n "
     
-    for s in range(L//N) :   #한 번에 N개씩 select agent에 넣어서 선택 
-        data_details_N =  '\n'.join(list(str(d) for d in data_details[s*N:2*s*N]))
-        prompt_text = _prompt_text + "/n data_details : " + data_details_N
-        answer = SelectAgent(prompt_text)
-        # print(f"##########{s}번째 select_agent prompt : {prompt_text}")
-        print(f"select_agent answer {s+1} : {answer}")
-        try : 
-            select_list.extend(list(map(int,answer.split('@'))))
-        except :
-            print(f"run select agent one more time")
-            prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 1@4."
-            answer = SelectAgent(prompt_text)
-            select_list.extend(list(map(int,answer.split('@'))))
-    if L%N != 0 : #N개씩 처리한 후 나머지 처리
-        data_details_N = '\n'.join(list(str(i) for i in data_details[(L//N)*N:]))
-        prompt_text = _prompt_text + "/n data_details :"+ data_details_N
-        answer = SelectAgent(prompt_text)
-        # print(f"##########나머지 처리 select_agent prompt : {prompt_text}")
-        print(f"나머지 select_agent answer: {answer}")
-        try : 
-                select_list.extend(list(map(int,answer.split('@'))))
-        except :
-            print(f"run select agent one more time")
-            prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 1@4."
-            answer = SelectAgent(prompt_text)
-            select_list.extend(list(map(int,answer.split('@'))))
-    print(f"최종 select_agent result : {select_list}")
-    return select_list
+#     for s in range(L//N) :   #한 번에 N개씩 select agent에 넣어서 선택 
+#         data_details_N =  '\n'.join(list(str(d) for d in data_details[s*N:2*s*N]))
+#         prompt_text = _prompt_text + "/n data_details : " + data_details_N
+#         answer = SelectAgent(prompt_text)
+#         # print(f"##########{s}번째 select_agent prompt : {prompt_text}")
+#         print(f"select_agent answer {s+1} : {answer}")
+#         try : 
+#             select_list.extend(list(map(int,answer.split('@'))))
+#         except :
+#             print(f"run select agent one more time")
+#             prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 1@4."
+#             answer = SelectAgent(prompt_text)
+#             select_list.extend(list(map(int,answer.split('@'))))
+#     if L%N != 0 : #N개씩 처리한 후 나머지 처리
+#         data_details_N = '\n'.join(list(str(i) for i in data_details[(L//N)*N:]))
+#         prompt_text = _prompt_text + "/n data_details :"+ data_details_N
+#         answer = SelectAgent(prompt_text)
+#         # print(f"##########나머지 처리 select_agent prompt : {prompt_text}")
+#         print(f"나머지 select_agent answer: {answer}")
+#         try : 
+#                 select_list.extend(list(map(int,answer.split('@'))))
+#         except :
+#             print(f"run select agent one more time")
+#             prompt_text += "You should never print anything but numerers.For example, if products 1 and 4 are selected among products 1 to 10, please return 1@4."
+#             answer = SelectAgent(prompt_text)
+#             select_list.extend(list(map(int,answer.split('@'))))
+#     print(f"최종 select_agent result : {select_list}")
+#     return select_list
 
 def NewSelectNumbers(data_details, decision_keyword) :
     print(f"==============================Select Agent 실행==============================")
@@ -200,30 +200,30 @@ def NewSelectNumbers(data_details, decision_keyword) :
 
 
 
-############################Compare Agent############################
-def CompareAgent(data_reviews,select_numbers) :
-    final_number = 0
-    prompt_text = "Among the products below, please recommend one of the best products that are cheap, high-quality, and have good reviews. and Print out the selected product number and the reason for selecting the product according to the format  If there is only 1 product, choose that one product. Don't print out anything other than the number and reason. Please return the string that connects the number and reason with @. For example, if product 3 is selected, print 3@reason."
+
+# def CompareAgent(data_reviews,select_numbers) :
+#     final_number = 0
+#     prompt_text = "Among the products below, please recommend one of the best products that are cheap, high-quality, and have good reviews. and Print out the selected product number and the reason for selecting the product according to the format  If there is only 1 product, choose that one product. Don't print out anything other than the number and reason. Please return the string that connects the number and reason with @. For example, if product 3 is selected, print 3@reason."
     
-    for idx, data in enumerate(data_reviews) :
-        if (idx + 1) in select_numbers : 
-            prompt_text += str(data)
+#     for idx, data in enumerate(data_reviews) :
+#         if (idx + 1) in select_numbers : 
+#             prompt_text += str(data)
 
-    response = client.chat.completions.create(
-    model="gpt-4-turbo",
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content":prompt_text},
+#     response = client.chat.completions.create(
+#     model="gpt-4-turbo",
+#     messages=[
+#         {"role": "system", "content": "You are a helpful assistant."},
+#         {"role": "user", "content":prompt_text},
         
-    ],
-    temperature =0,
-    max_tokens=50
-    )
+#     ],
+#     temperature =0,
+#     max_tokens=50
+#     )
 
-    result = response.choices[0].message.content
-    final_number, reason = result.split('@')
+#     result = response.choices[0].message.content
+#     final_number, reason = result.split('@')
 
-    return final_number, reason
+#     return final_number, reason
 
 ############################Rating Agent############################
 def rating(review_list, rating_keyword_lst) :
@@ -231,7 +231,7 @@ def rating(review_list, rating_keyword_lst) :
     base_prompt = " Look at the product_information and give a score between 1 and 5 for each of the 4 rating_keywords. (score type : integer)In the return format, four scores are splited by @. The higher score indicates better quality of the product.  For example, if each score is 2,3,1,5 please return '2@3@1@5'. Please don't print anything except the score and @ and please always give all four scores. " 
     prompt_text = base_prompt + f"rating_keywords = {' '.join(rating_keyword_lst)}, product_reviews = {review_list}"
     response = client.chat.completions.create(
-    model="gpt-4-turbo",
+    model="gpt-4o",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content":prompt_text},    
@@ -274,7 +274,7 @@ def re_rating(review, feedback_dict) :
     feedback 결과를 받아서 False인 경우에 대해 다시 rating을 받는 함수
     """
 
-    base_prompt = "product_info contains information including the price and review of the product. feedback_dict is each evaluation criterion, the score of the evaluation criterion, and the result of a True/False test to see if the score is correct, and the reason for the test. The score ranges from 1 to 5, and the higher the score, the better. score type : integer. If the test result is true, return the score as it is, and if it is false, refer to the product info and feedback to score a new score. Please split the new score to '@' according to each inspection standard and return it. example : '4@3@5@5' Please don't print anything other than the set format. please don't say a reason why you determine the score."
+    base_prompt = "product_info contains information including the price and review of the product. feedback_dict is each evaluation criterion, the score of the evaluation criterion, and the result of a True/False test to see if the score is correct, and the reason for the test. The score ranges from 1 to 5, and the higher the score, the better. score type : integer. If the test result is true, return the score as it is, and if it is false, refer to the product info and feedback to score a new score. Please split the new score to '@' according to each inspection standard and return it. example : 4@3@5@5 Please don't print anything other than the set format. please don't say a reason why you determine the score."
     prompt_text = base_prompt + f"product_info = {review}, feedback_dict = {feedback_dict}"
     response = client.chat.completions.create(
         model="gpt-4-turbo",
@@ -446,7 +446,7 @@ def rating_keyword_agent(input_keyword, decision_keyword):
     온라인 쇼핑몰에서 {input_keyword}을 구매하려고 하는데 구매 시 중요하게 고려해야 할 요소 3가지를 알려주세요. 이때 {feature} 등을 구매에 고려해야 합니다. 혹시 가격이나 디자인 요소가 있다면 그것 외에 다른 것을 선택해주세요. 예시로 도시락통을 구매해야 한다고 하면 '안정성,재질,용량'만을 반환해주세요. 다른 말은 하지 말아주세요 제발.
     '''
     response = client.chat.completions.create(
-    model="gpt-4-turbo",
+    model="gpt-4o",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content":prompt_text},    
