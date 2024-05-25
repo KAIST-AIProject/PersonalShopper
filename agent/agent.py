@@ -5,32 +5,32 @@ import base64
 import requests
 
 client = OpenAI(api_key=config.api_key)
-def rating_keyword_sorting(review_list, rating_keyword_lst) :
-    keyword = ['price', 'review positivity' ] 
-    keyword.append(rating_keyword_lst)
-    print(f"input product : {review_list['Product_name']}")
+# def rating_keyword_sorting(review_list, rating_keyword_lst) :
+#     keyword = ['price', 'review positivity' ] 
+#     keyword.append(rating_keyword_lst)
+#     print(f"input product : {review_list['Product_name']}")
 
-    base_prompt = " Look at the product_information and give a score between 0 and 100 for each of the 5 rating_keywords. In the return format, five scores are splited by @.  For example, if each score is 100,90,80,70,60, please return '100@90@80@70@60'. Please don't print anything except the score and @.  " 
-    prompt_text = base_prompt + f"rating_keywords = {' '.join(rating_keyword_lst)}, product_reviews = {review_list}"
-    response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content":prompt_text},    
-    ],
-    temperature =0.5,
-    max_tokens=10
-    )
-    result = response.choices[0].message.content
-    try : 
-        scores = result.split("@")
-        scores = [int(s) for s in scores]
-        print(f"rating_keywords = {' '.join(rating_keyword_lst)}, score = {scores}")
-    except :
-        print(f"rating error : {result}")
+#     base_prompt = " Look at the product_information and give a score between 0 and 100 for each of the 5 rating_keywords. In the return format, five scores are splited by @.  For example, if each score is 100,90,80,70,60, please return 100@90@80@70@60. Please don't print anything except the score and @." 
+#     prompt_text = base_prompt + f"rating_keywords = {' '.join(rating_keyword_lst)}, product_reviews = {review_list}"
+#     response = client.chat.completions.create(
+#     model="gpt-4o",
+#     messages=[
+#         {"role": "system", "content": "You are a helpful assistant."},
+#         {"role": "user", "content":prompt_text},    
+#     ],
+#     temperature =0.5,
+#     max_tokens=10
+#     )
+#     result = response.choices[0].message.content
+#     try : 
+#         scores = result.split("@")
+#         scores = [int(s) for s in scores]
+#         print(f"rating_keywords = {' '.join(rating_keyword_lst)}, score = {scores}")
+#     except :
+#         print(f"rating error : {result}")
     
 
-    return scores
+#     return scores
 
 
 # def review_rating_all(review_list,rating_keyword_lst ) : #review의 positive-negative 정도를 0~100 사이의 값을 가지는 점수로 변환해서 평균 내는 함수
@@ -228,7 +228,7 @@ def NewSelectNumbers(data_details, decision_keyword) :
 ############################Rating Agent############################
 def rating(review_list, rating_keyword_lst) :
     # print(f"input product : {review_list['Product_name']}")
-    base_prompt = " Look at the product_information and give a score between 1 and 5 for each of the 4 rating_keywords. (score type : integer)In the return format, four scores are splited by @. The higher score indicates better quality of the product.  For example, if each score is 2,3,1,5 please return '2@3@1@5'. Please don't print anything except the score and @ and please always give all four scores. " 
+    base_prompt = " Look at the product_information and give a score between 1 and 5 for each of the 4 rating_keywords. (score type : integer)In the return format, four scores are splited by @. The higher score indicates better quality of the product.  For example, if each score is 2,3,1,5 please return 2@3@1@5. Please don't print anything except the score and @ and please always give all four scores. " 
     prompt_text = base_prompt + f"rating_keywords = {' '.join(rating_keyword_lst)}, product_reviews = {review_list}"
     response = client.chat.completions.create(
     model="gpt-4o",
@@ -242,7 +242,7 @@ def rating(review_list, rating_keyword_lst) :
     result = response.choices[0].message.content
     try : 
         scores = result.split("@")
-        scores = [int(s) for s in scores]
+        # scores = [int(s) for s in scores]
         
     except :
         print(f"rating error : {result}")
@@ -254,7 +254,7 @@ def feedback_rating(review, key_dict) :
         """
         rating 결과를 받아 feedback을 반환하는 함수
         """
-        base_prompt = "Each element of key_dicts represents the evaluation criteria and the score that the product received. Refer to the product review information in product_info, determine whether it is reasonable for the product to receive the corresponding score, indicate the validity of the score with 'True' or 'False', and explain the reason why. Each score is a number from 1 to 5. The higher the number, the more positive the evaluation is. Please do not say anything other than True or False and the reason. Reasons must be written in Korean. Connect the four reasons with the letter @. Example : 'True@reason@False@reason@True@reason@False@reason'."
+        base_prompt = "Each element of key_dicts represents the evaluation criteria and the score that the product received. Refer to the product review information in product_info, determine whether it is reasonable for the product to receive the corresponding score, indicate the validity of the score with 'True' or 'False', and explain the reason why. Each score is a number from 1 to 5. The higher the number, the more positive the evaluation is. Please do not say anything other than True or False and the reason. Reasons must be written in Korean. Connect the four reasons with the letter @. Example : True@reason@False@reason@True@reason@False@reason."
         prompt_text = base_prompt + f"key_dicts = {key_dict}, product_info = {review}"
         response = client.chat.completions.create(
         model="gpt-4-turbo",
@@ -274,7 +274,7 @@ def re_rating(review, feedback_dict) :
     feedback 결과를 받아서 False인 경우에 대해 다시 rating을 받는 함수
     """
 
-    base_prompt = "product_info contains information including the price and review of the product. feedback_dict is each evaluation criterion, the score of the evaluation criterion, and the result of a True/False test to see if the score is correct, and the reason for the test. The score ranges from 1 to 5, and the higher the score, the better. score type : integer. If the test result is true, return the score as it is, and if it is false, refer to the product info and feedback to score a new score. Please split the new score to '@' according to each inspection standard and return it. example : 4@3@5@5 Please don't print anything other than the set format. please don't say a reason why you determine the score."
+    base_prompt = "product_info contains information including the price and review of the product. feedback_dict is each evaluation criterion, the score of the evaluation criterion, and the result of a True/False test to see if the score is correct, and the reason for the test. The score ranges from 1 to 5, and the higher the score, the better. score type : integer. If the test result is true, return the score as it is, and if it is false, refer to the product info and feedback to score a new score. Please split the new score to @. according to each inspection standard and return it. example : 4@3@5@5 Please don't print anything other than the set format. please don't say a reason why you determine the score."
     prompt_text = base_prompt + f"product_info = {review}, feedback_dict = {feedback_dict}"
     response = client.chat.completions.create(
         model="gpt-4-turbo",
@@ -347,7 +347,8 @@ def scoring_agent(product_info, keyword_lst) :
     score = []
    
     for j in range(len(keyword)) :
-        score.append(int(feedback_dict[keyword[j]][0])) #i 번째 product의 최종 score를 float list로 반환. 
+        score.append(int(feedback_dict[keyword[j]][0].replace("'",'').replace('"',''))) #i 번째 product의 최종 score를 float list로 반환.  #TODO : int 로 반환하지 못하는 오류 있을 떄 있다. 3@4 이렇게 안나오고 "3@4" 이런식으로 나와서 결과가 "3, 4"가 될 경우 처리 하기. 
+    
     if loop_num != 0 : #loop를 돌았을 경우
         print()
         print("==========================================================================")

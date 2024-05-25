@@ -118,7 +118,7 @@ cost_min = min(costs)
 cost_max = max(costs)
 for i in range(len(data_reviews)):
    costs[i] = 5-5*(costs[i]-cost_min)/(cost_max-cost_min)
-print(costs)
+# print(costs)
 
 print(f"select_numbers = {select_numbers}") #select agent를 거쳐 filtering 된 product numbers의 리스트 
 
