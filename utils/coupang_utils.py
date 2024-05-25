@@ -172,7 +172,9 @@ def CoupangRadioOptionGet(driver, option_info):
             break
         except:
             scroll_up_to_end(driver)
-            print("옵션 이름이 선택되지 않습니다. 다시 시도합니다.")
+            width = 1200
+            height = 968
+            driver.set_window_size(width, height)
 
     opt_lst = []
     for n,p in zip(option_name, option_price):
