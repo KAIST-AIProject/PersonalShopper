@@ -434,7 +434,11 @@ def local_vision_gpt(image_path) :
     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
 
     # Extracting the content from the response
-    content = response.json().get('choices')[0]['message']['content']
+    try:
+        content = response.json().get('choices')[0]['message']['content']
+    except:
+        content = '정보없음'
+    
     return content
 
 

@@ -5,6 +5,9 @@ def download_image(image_url, image_path):
 # 다운받을 이미지 url
     url = image_url
 
+    # 이미지 url에서 '(', ')' 제거
+    url = url.replace('(', '').replace(')', '')
+    
     # time check
     # curl 요청
     try: 

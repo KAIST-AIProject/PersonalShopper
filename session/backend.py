@@ -186,7 +186,7 @@ def purchase_process(final_link):
         KurlySession(login_id, login_pw, final_link)
     elif "coupang" in final_link:
         login_id=config.coupang_id
-        login_pw=config.ciupang_pw
+        login_pw=config.coupang_id
         CoupangSession(login_id, login_pw, final_link)
     elif "gmarket" in final_link:
         login_id=config.gmarket_id

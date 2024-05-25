@@ -185,7 +185,6 @@ def Naver_selenium_scraper(driver, save_path_item, save_path_quality):
     # print(quality_info['리뷰'])
     # print(len(quality_info['리뷰']))
     image_links, detail_texts = Naver_image_url_scrapper(driver)
-
     # print(detail_texts)
     item_info['상세 정보 문구'] = detail_texts
     # print(item_info)

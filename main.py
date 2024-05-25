@@ -11,8 +11,17 @@ import config
 
 ######################################### 쇼핑 검색어 input 받기 #########################################
 #url scraping
+
 keyword = input("Search KeyWord 입력:") #질기지 않은 1등급 무항생제 스테이크용 한우 안심을 사고 싶어.
-n_top = int(input("검색 상위 N값 입력:"))
+
+while True:
+  n_top = input("검색 상위 N값 입력:")
+  if n_top.isdigit():
+    n_top = int(n_top)
+    break
+  else:
+    print("형식이 올바르지 않습니다. 숫자를 다시 입력해주세요")
+  
 
 
 ######################################### Keyword Agent #########################################
@@ -92,8 +101,6 @@ with open(url_path, "wb") as fw_url:
 
 print("scraping 완료!!")
 print()
-
-
 ######################################### Decision Agent 실행 #########################################
 #decision_agent : use gpt api
 #Step 1. select gpt 
@@ -103,7 +110,9 @@ if decision_keyword[0] == "None" :
 else :
       select_numbers=NewSelectNumbers(data_details, decision_keyword)
 
-
+if not select_numbers:
+  print("입력하신 키워드에 대한 결과가 없습니다. 다시 시도해주세요.")
+  exit()
 
 costs =[] 
 for i in range(len(data_reviews)):

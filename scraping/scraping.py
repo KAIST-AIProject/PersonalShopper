@@ -221,6 +221,8 @@ def KurlyLinkGet(keyword, driver, n_top=10):
     driver.get(url)
     driver.implicitly_wait(2)
     
+    scroll_down_to_end(driver)
+    driver.implicitly_wait(2)
 
     html = driver.page_source
 
@@ -267,7 +269,7 @@ def KurlyFinalUrl(keyword, n_top, debug_mode=True):
     data_reviews = []
     images_urls = []
 
-
+    n_top = min(n_top, len(url_list))
     with tqdm(total=n_top, desc='Kurly', ascii=True) as pbar:
         for url in url_list:
             driver.get(url)

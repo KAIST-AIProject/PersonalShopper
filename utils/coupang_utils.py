@@ -166,21 +166,16 @@ def CoupangRadioOptionGet(driver, option_info):
     option_price = driver.find_elements(By.CSS_SELECTOR, "div.option-table-list__option-price")
 
     #옵션 종류 이름
-    while True:
-        try:
-            opt_type_name = driver.find_element(By.CSS_SELECTOR, "span.tab-selector__header-title").text
-            break
-        except:
-            scroll_up_to_end(driver)
-            width = 1200
-            height = 968
-            driver.set_window_size(width, height)
-
+    opt_type_name = driver.find_elements(By.CSS_SELECTOR, "span.tab-selector__header-title")
+    
     opt_lst = []
     for n,p in zip(option_name, option_price):
         opt_lst.append(n.text + "(가격: " + p.text + ")")
-        
-    option_info['options'][opt_type_name] = opt_lst
+    
+    if opt_type_name:
+        option_info['options'][opt_type_name] = opt_lst
+    else:
+        option_info['options'] = opt_lst
     
 
 def CoupangImgOptinoGet(driver, option_info):
