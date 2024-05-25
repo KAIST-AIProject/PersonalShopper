@@ -127,7 +127,6 @@ def gmarket_image_url_scrapper(driver):
     images = container.find_elements(By.CSS_SELECTOR, 'img')
     # print(len(images))
     texts = container.text
-    print(texts)
     for image in images:
         srcs = image.get_attribute("src")
         if srcs!=None:
@@ -229,5 +228,4 @@ if __name__ == '__main__':
         driver.implicitly_wait(3) ## 연결 후 3초간 기다리기
         save_path_item = "gmarket_item1.bin"
         save_path_quality = "gmarket_item1_review.bin"
-        print(url)
         gmarket_selenium_scraper(driver, save_path_item, save_path_quality)

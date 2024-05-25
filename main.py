@@ -84,8 +84,8 @@ for idx, thr_ret in enumerate(thread):
   data_details+=data_details_dict[idx]
   data_reviews+=data_reviews_dict[idx]
 
-print(data_details)
-print(final_link_lst)
+# print(data_details)
+# print(final_link_lst)
 
 with open(url_path, "wb") as fw_url:
     pickle.dump(final_link_lst, fw_url)
@@ -102,7 +102,7 @@ if decision_keyword[0] == "None" :
    select_numbers = [i+1 for i in range(len(data_details))]
 else :
       select_numbers=NewSelectNumbers(data_details, decision_keyword)
-print(f"select_numbers = {select_numbers}") #select agent를 거쳐 filtering 된 product numbers의 리스트 
+
 
 
 costs =[] 
@@ -118,7 +118,9 @@ cost_min = min(costs)
 cost_max = max(costs)
 for i in range(len(data_reviews)):
    costs[i] = 5-5*(costs[i]-cost_min)/(cost_max-cost_min)
+print(costs)
 
+print(f"select_numbers = {select_numbers}") #select agent를 거쳐 filtering 된 product numbers의 리스트 
 
 #rating 점수로 순위 매기기 
 final_score = []
@@ -137,12 +139,17 @@ final_num=5
 if len(final_score)<5:
     final_num=len(final_score)
 print()
+print()
+print("===============================상품 추천 순위===============================")
 print(f"## rating keyword : price, review positivity, {rating_keyword_lst[0]}, {rating_keyword_lst[1]}, {rating_keyword_lst[2]}")
 for i in range(final_num) :
   # print(f"{i+1}순위 : {final_score[i][1]}번 product , scores = {final_score[i][2]}, 평균 점수 : {final_score[i][0]} ")
-  print(f"{i+1}순위 : {final_score[i][1]}번 product ,평균 점수 : {final_score[i][0]} ")
+  print()
+  print(f"{i+1}순위 : {final_score[i][1]}번 product, 상품명 : {data_details[final_score[i][1]-1]['상품명']}")
+  print(f"평균 점수 : {final_score[i][0]}, 구매처: {data_details[final_score[i][1]-1]['구매처']}")
+  print(f"## 가격에 대한 점수 : {final_score[i][2][-1]}점, 판매 가격: {data_details[final_score[i][1]-1]['현재 가격']} ")
   for j, key in enumerate(final_score[i][3].keys()) :
-     print(f"## {key} 키워드에 대한 점수 : {final_score[i][3][key][0]}점, reason : {final_score[i][3][key][2]} ")
+     print(f"## {key.strip()}에 대한 점수 : {final_score[i][3][key][0]}점, reason : {final_score[i][3][key][2]} ")
 
 #TODO : 사용자가 선택한 숫자에 해당하는 링크를 반환. 
 user_select_num = int(input("최종 선택할 product의 번호를 입력하세요:"))
@@ -155,9 +162,8 @@ final_link = final_link_lst[user_select_num-1]
 print(f"최종 선택 사이트 URL: {final_link}")
 print()
 
-flag = input("구매 진행하시겠습니까? (Y/N):")
-
 while True:
+  flag = input("구매 진행하시겠습니까? (Y/N):")
   if flag.upper() == 'Y': 
     purchase_process(final_link)
     break

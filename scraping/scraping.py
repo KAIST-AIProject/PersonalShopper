@@ -74,6 +74,7 @@ def CoupangFinalUrl(keyword, n_top, debug_mode=True):
             result_detail, result_review, result_image_url = Coupang_selenium_scraper(driver, scrapped_data_path, review_data_path)
             if flag==False:
                 result_detail['현재 가격'] = ''
+            result_detail['구매처'] = '쿠팡'
             result_detail.update(option_info)
             count+=1
             
@@ -82,7 +83,7 @@ def CoupangFinalUrl(keyword, n_top, debug_mode=True):
             # print(local_image_url)
 
             vision_info = local_vision_gpt(local_image_url)
-            print(f"vision_info = {vision_info}")
+            # print(f"vision_info = {vision_info}")
             result_detail['product detail form images'] = vision_info
             
             #compare_information : compare agent에게 제공할 정보 : 이름, 가격, 할인율, 번호, 리뷰 평균 점수...
@@ -182,7 +183,7 @@ def NaverFinalUrl(keyword, n_top, debug_mode=True):
                     result_detail.update(option_info)
                 except: 
                     result_detail['현재 가격'] = '' 
-
+                result_detail['구매처'] = '네이버 스토어'
 
                 #vision_gpt 
                 # print(f"result_image_url = {result_image_url}")
@@ -192,7 +193,7 @@ def NaverFinalUrl(keyword, n_top, debug_mode=True):
                 
 
                 vision_info = local_vision_gpt(local_image_url)
-                print(f"vision_info = {vision_info}")
+                # print(f"vision_info = {vision_info}")
                 result_detail['product detail form images'] = vision_info
 
                 #compare_information : compare agent에게 제공할 정보 : 이름, 가격, 할인율, 번호, 리뷰 평균 점수...
@@ -284,6 +285,7 @@ def KurlyFinalUrl(keyword, n_top, debug_mode=True):
             
             if flag==False:
                 result_detail['현재 가격'] = '' 
+            result_detail['구매처'] = '마켓 컬리'
 
             #local로 이미지 다운로드
             local_image_url= image_for_gpt(4, result_image_url, "database")
@@ -291,7 +293,7 @@ def KurlyFinalUrl(keyword, n_top, debug_mode=True):
 
             # vision_info = vision_gpt(result_image_url)
             vision_info = local_vision_gpt(local_image_url)
-            print(f"vision_info = {vision_info}")
+            # print(f"vision_info = {vision_info}")
             result_detail['product detail form images'] = vision_info
 
             #review positivity score
@@ -380,7 +382,8 @@ def GmarketFinalUrl(keyword, n_top, debug_mode=True):
                 GmarketOptionGet(driver, option_info)    
             # print(option_info)  
             except:
-                result_detail['현재 가격'] = ''        
+                result_detail['현재 가격'] = ''    
+            result_detail['구매처'] = '지마켓'    
             result_detail.update(option_info)
             count+=1
             
@@ -390,7 +393,7 @@ def GmarketFinalUrl(keyword, n_top, debug_mode=True):
  
             # vision_info = vision_gpt(result_image_url)
             vision_info = local_vision_gpt(local_image_url)
-            print(f"vision_info = {vision_info}")
+            # print(f"vision_info = {vision_info}")
             result_detail['product detail form images'] = vision_info
 
             #review positivity score
