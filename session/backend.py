@@ -4,6 +4,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from utils import *
 
 #debugging mode 실행 터미널 명령어
@@ -76,6 +78,12 @@ def CoupangSession(id, pw, url, debug_mode=True):
         else:
             selected_opt = CoupangClickOption(driver)
 
+    # 구매 버튼이 나타날 때까지 대기
+    wait = WebDriverWait(driver, 10)
+    buy_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.prod-buy-btn")))
+
+    # 구매 버튼 클릭
+    buy_button.click()
     #구매 버튼 선택
     driver.find_element(By.CSS_SELECTOR, "button.prod-buy-btn").click()
 

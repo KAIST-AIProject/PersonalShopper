@@ -110,7 +110,8 @@ def gmarket_image_url_scrapper(driver):
         driver.execute_script("arguments[0].click();", button)
         scroll_down_to_end(driver)
     except: 
-        print("button not found")
+        # print("button not found")
+        pass
 
     
     driver.switch_to.frame('detail1')
