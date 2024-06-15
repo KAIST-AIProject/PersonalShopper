@@ -93,6 +93,80 @@ The project is divided into several key components:
 - **Future Improvement**: Enable users to specify their own evaluation factors. For instance, when purchasing a hand cream, users might input factors like 'moisturizing effect,' 'finish feel,' and 'ease of use.'
 
 
+## How to Use
+
+### Preparation Steps
+
+For large websites like Coupang, Naver, etc., software-based access is often classified as a bot, making scraping tasks difficult. To prevent scraping tasks from being blocked, this project uses the Python Selenium library in debugging mode.
+
+### Debugging Mode Setup
+
+### For MAC Users Only
+(Windows users should find their own way to run debugging mode)
+
+```sh
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir="/Users/{UserName}/Applications/Google Chrome.app/"
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9223 --user-data-dir="/Users/{UserName}/Applications/Google Chrome.app/"
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9224 --user-data-dir="/Users/{UserName}/Applications/Google Chrome.app/"
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9225 --user-data-dir="/Users/{UserName}/Applications/Google Chrome.app/"
+```
+
+Open the terminal and replace `{UserName}` with your username on your MAC, then execute the command. A browser window that can be controlled in debugging mode will open, and all future scraping tasks will be performed through this browser window.
+
+### Multithreading
+
+This project scrapes information from four sites (Coupang, Naver, Gmarket, Market Kurly). To speed up this process, the code is written based on multithreading. Therefore, you need to create 4 browser windows in debugging mode to execute multithreading.
+
+### Setting config_template
+```
+#Coupang
+Coupang_id = ""
+Coupang_pw = ""
+
+#Naver
+naver_id = ""
+naver_pw = ""
+
+#Market Kurly
+kurly_id = ""
+kurly_pw = ""
+
+#Gmarket
+gmarket_id = ""
+gmarket_pw = ""
+```
+
+To proceed with this project, you need to configure the config_template. For the purchase process, login information for Coupang, Naver, Gmarket, and Market Kurly is required. Please set the ID and password information for each site in this file.
+
+
+### Running code
+To run the application, execute the main.py script.
+
+```
+python main.py
+```
+
+Upon running the script, you will be prompted to enter a search keyword.
+When you see the prompt asking for a "Search KeyWord 입력," enter the keyword for the product you are interested in. For example, you might enter:
+
+```
+Search KeyWord 입력:계곡에서 사용하기 좋은 물안경
+```
+
+When a search keyword is entered, the following processes are executed in sequence: keyword extraction, scraping, filtering, rating, and feedback.
+
+```
+ating keyword : price, review positivity, 성분, 피부 타입, 용량
+
+1순위 : 5번 product , scores = [4, 5, 5, 5, 4.774], 평균 점수 : 4.75
+2순위 : 2번 product , scores = [4, 5, 4, 5, 3.964], 평균 점수 : 4.39
+3순위 : 1번 product , scores = [4, 4, 4, 5, 4.164], 평균 점수 : 4.23
+4순위 : 10번 product , scores = [5, 4, 5, 3, 2.778], 평균 점수 : 3.96
+최종 선택할 product의 번호를 입력하세요:
+```
+
+After all processes are completed, the top-rated sites are recommended. You can then enter the number of the desired site in the input field, and the purchase process will proceed on the selected site.
+
 ## Contributors
 - **Kim Dongwoo**
 - **Lee Chaewon**
@@ -100,3 +174,4 @@ The project is divided into several key components:
 
 ## Conclusion
 Personal Shopper AI aims to revolutionize the online shopping experience by providing a smart, personalized, and efficient shopping assistant. The project leverages advanced AI techniques and continuous refinement to meet the dynamic needs of users.
+
